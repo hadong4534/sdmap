@@ -17,13 +17,19 @@ const NaverIcon = () => (<svg width="15" height="15" viewBox="0 0 24 24" fill="#
 
 export default function Login() {
   const [msg, setMsg] = useState("");
+  const KAKAO_CLIENT_ID = "3a5653c45c10d757fa65b9e36d946b35";
+
+  function kakaoLogin() {
+    // 카카오 OIDC: 이메일 없이 openid scope만 요청 (KOE205 회피)
+    const redirectUri = encodeURIComponent(window.location.origin + "/api/auth/kakao/callback");
+    window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=openid`;
+  }
+
   async function oauth(provider) {
+    if (provider === "kakao") { kakaoLogin(); return; }
     if (provider === "naver") { setMsg("네이버 로그인은 준비 중이에요. (곧 활성화)"); return; }
     if (!isSupabaseReady || !supabase) { setMsg("로그인 설정 준비 중이에요. 잠시 후 다시 시도해 주세요."); return; }
-    const options = { redirectTo: window.location.origin + "/home" };
-    // 카카오는 비즈앱 전환 전까지 이메일 동의항목을 못 켜므로 닉네임/프로필만 요청
-    if (provider === "kakao") options.scopes = "profile_nickname";
-    const { error } = await supabase.auth.signInWithOAuth({ provider, options });
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.origin + "/home" } });
     if (error) setMsg(error.message);
   }
   return (
