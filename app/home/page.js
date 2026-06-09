@@ -191,11 +191,19 @@ export default function Home() {
       </footer>
 
       {/* Mobile tab bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-line flex z-30">
-        {[["홈", true], ["검색", false], ["찜", false], ["예약", false], ["마이", false]].map(([label, on]) => (
-          <div key={label} className={`flex-1 flex flex-col items-center justify-center gap-1 text-[10px] font-bold ${on ? "text-brand-600" : "text-muted"}`}>
-            <span className="text-base">{on ? "●" : "○"}</span>{label}
-          </div>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-line flex z-30 pb-[env(safe-area-inset-bottom)]">
+        {[
+          { label: "홈", active: true, icon: <path d="M3 11l9-8 9 8M5 10v10h14V10" /> },
+          { label: "검색", active: false, icon: <><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></> },
+          { label: "찜", active: false, icon: <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /> },
+          { label: "예약", active: false, icon: <><rect x="3" y="4" width="18" height="17" rx="3" /><path d="M3 9h18M8 2v4M16 2v4M9 14l2 2 4-4" /></> },
+          { label: "마이", active: false, icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></> },
+        ].map((t) => (
+          <a key={t.label} href={t.label === "홈" ? "/home" : undefined}
+            className={`flex-1 h-16 flex flex-col items-center justify-center gap-1 text-[10px] font-bold ${t.active ? "text-brand-600" : "text-muted"}`}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{t.icon}</svg>
+            {t.label}
+          </a>
         ))}
       </nav>
     </div>
