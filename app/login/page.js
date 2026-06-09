@@ -39,21 +39,21 @@ export default function Login() {
   }
 
   return (
-    <main className="h-[100dvh] flex flex-col items-center justify-center px-7 bg-surface overflow-hidden">
-      <div className="w-full max-w-sm flex flex-col items-center text-center">
+    <main className="min-h-[100dvh] flex flex-col items-center justify-center px-7 bg-surface pb-24 md:pb-32">
+      <div className="w-full max-w-sm md:max-w-[330px] flex flex-col items-center text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/logo_full.png" alt="스드맵" className="w-36 h-auto" />
+        <img src="/images/logo_full.png" alt="스드맵" className="w-32 md:w-36 h-auto" />
         <p className="mt-3 text-[15px] font-bold text-ink">웨딩부터 신혼·출산까지, 한 곳에서</p>
         <p className="mt-1 text-[12px] text-muted">정찰제 비교 · 즉시예약 · 커플 위시리스트</p>
 
-        <div className="w-full mt-6 space-y-2">
-          <button onClick={() => oauth("kakao")} className="relative w-full h-12 rounded-xl bg-[#FEE500] text-[#191600] font-bold text-sm flex items-center justify-center">
+        <div className="w-full mt-9 md:mt-10 space-y-2.5">
+          <button onClick={() => oauth("kakao")} className="relative w-full h-12 md:h-11 rounded-xl bg-[#FEE500] text-[#191600] font-bold text-sm flex items-center justify-center">
             <span className="absolute left-4"><KakaoIcon /></span> 카카오로 시작하기
           </button>
-          <button onClick={() => oauth("naver")} className="relative w-full h-12 rounded-xl bg-[#03C75A] text-white font-bold text-sm flex items-center justify-center">
+          <button onClick={() => oauth("naver")} className="relative w-full h-12 md:h-11 rounded-xl bg-[#03C75A] text-white font-bold text-sm flex items-center justify-center">
             <span className="absolute left-4"><NaverIcon /></span> 네이버로 시작하기
           </button>
-          <button onClick={() => oauth("google")} className="relative w-full h-12 rounded-xl bg-white border border-line text-[#1F1F1F] font-bold text-sm flex items-center justify-center">
+          <button onClick={() => oauth("google")} className="relative w-full h-12 md:h-11 rounded-xl bg-white border border-line text-[#1F1F1F] font-bold text-sm flex items-center justify-center">
             <span className="absolute left-4"><GoogleIcon /></span> Google로 시작하기
           </button>
         </div>
@@ -63,8 +63,8 @@ export default function Login() {
         </div>
 
         <div className="w-full flex gap-2">
-          <Link href="/signin" className="flex-1 h-11 rounded-xl bg-brand-grad text-white font-bold text-sm flex items-center justify-center">로그인</Link>
-          <Link href="/signup" className="flex-1 h-11 rounded-xl bg-brand-50 text-brand-700 font-bold text-sm flex items-center justify-center">회원가입</Link>
+          <Link href="/signin" className="flex-1 h-11 md:h-10 rounded-xl bg-brand-grad text-white font-bold text-sm flex items-center justify-center">로그인</Link>
+          <Link href="/signup" className="flex-1 h-11 md:h-10 rounded-xl bg-brand-50 text-brand-700 font-bold text-sm flex items-center justify-center">회원가입</Link>
         </div>
 
         <Link href="/home" className="text-muted text-[12px] font-bold mt-3">먼저 둘러보기</Link>
