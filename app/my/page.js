@@ -21,7 +21,7 @@ export default function My() {
   async function logout() { await supabase.auth.signOut(); router.replace("/login"); }
   const m = user?.user_metadata || {};
   const name = prof?.name || m.name || m.full_name || m.nickname || (user?.email ? user.email.split("@")[0] : "회원");
-  const menu = [["내 예약", "/bookings"], ["찜한 업체", "/favorites"]];
+  const menu = [["개인정보 설정", "/onboarding"], ["내 예약 / 계약", "/bookings"], ["찜한 업체", "/favorites"], ["비교함", "/compare"]];
   return (
     <div className="min-h-screen bg-surface pb-20">
       <div className="bg-brand-grad text-white px-6 pt-8 pb-6">

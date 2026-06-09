@@ -22,10 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getUser().then(async ({ data }) => {
-      const u = data?.user ?? null; setUser(u);
-      if (u) { const { data: p } = await supabase.from("profiles").select("phone").eq("id", u.id).maybeSingle(); if (!p || !p.phone) router.replace("/onboarding"); }
-    });
+    supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
     supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(8).then(({ data }) => setPopular(data || []));
   }, [router]);
   useEffect(() => { if (supabase && ids.length) supabase.from("vendors").select("*").in("id", ids).then(({ data }) => setCompareV(data || [])); else setCompareV([]); }, [ids]);
@@ -39,13 +36,13 @@ export default function Home() {
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
         <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur px-4 py-3 flex items-center">
           <img src="/images/logo_full.png" alt="스드맵" className="h-7 w-auto" />
-          <Link href="/my" className="ml-auto text-xl text-brand-600">🔔</Link>
+          <Link href="/my" className="ml-auto"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-600"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></Link>
         </header>
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-6">
           {/* 검색 */}
           <Link href="/search" className="flex items-center gap-2 bg-white border border-line rounded-2xl px-4 h-12 shadow-card">
-            <span className="text-brand-500">🔍</span><span className="text-[15px] text-muted">업체명, 상품, 키워드로 검색</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg><span className="text-[15px] text-muted">업체명, 상품, 키워드로 검색</span>
           </Link>
 
           {/* 카테고리 */}
@@ -59,7 +56,7 @@ export default function Home() {
               <div className="flex items-center gap-2"><span className="font-extrabold text-ink text-lg">AI 체크</span><span className="text-[10px] font-extrabold text-white bg-brand-500 px-1.5 py-0.5 rounded">NEW</span></div>
               <p className="text-[14px] text-body mt-2 leading-relaxed">견적의 숨겨진 항목과 추가 비용 위험을<br className="hidden md:block"/> 찾아드려요.</p>
               <Link href="/quote" className="inline-block mt-3 h-11 leading-[44px] px-5 rounded-xl bg-brand-500 text-white font-bold text-sm">내 견적 AI 분석하기</Link>
-              <span className="absolute right-4 top-4 text-3xl opacity-70">✦</span>
+              <span className="absolute right-4 top-4 text-brand-300"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
             </div>
             <div className="rounded-[20px] border border-line bg-white p-5 shadow-card">
               <div className="flex items-end justify-between"><div><div className="text-[13px] text-muted font-bold">{name}님의 결혼 준비</div><div className="text-[26px] font-extrabold text-brand-600 leading-tight">D-218</div></div><div className="text-sm text-muted font-bold">진행률 32%</div></div>

@@ -25,12 +25,14 @@ export default function Onboarding() {
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       const u = data?.user ?? null;
       if (!u) { router.replace("/login"); return; }
       setUser(u);
       const m = u.user_metadata || {};
-      setName(m.name || m.full_name || m.nickname || m.preferred_username || "");
+      const { data: p } = await supabase.from("profiles").select("*").eq("id", u.id).maybeSingle();
+      setName(p?.name || m.name || m.full_name || m.nickname || m.preferred_username || "");
+      if (p) { setPhone(p.phone || ""); setPostcode(p.postcode || ""); setAddress(p.address || ""); setAddrDetail(p.address_detail || ""); setPath(p.signup_path || ""); if (p.phone) setVerified(true); }
     });
   }, [router]);
 
@@ -56,10 +58,7 @@ export default function Onboarding() {
   async function submit() {
     setMsg("");
     if (!user || !supabase) return;
-    if (!verified) return setMsg("휴대폰 인증을 먼저 완료해 주세요. (필수)");
     if (!name) return setMsg("이름을 입력해 주세요.");
-    if (!address) return setMsg("주소를 입력해 주세요.");
-    if (!path) return setMsg("가입 경로를 선택해 주세요.");
     setBusy(true);
     const { error } = await supabase.from("profiles").upsert({
       id: user.id, name, phone: phone.replace(/[^0-9]/g, ""),
@@ -67,7 +66,7 @@ export default function Onboarding() {
     });
     setBusy(false);
     if (error) return setMsg("저장 실패: " + error.message);
-    router.replace("/home");
+    setMsg("저장됐어요!"); setTimeout(() => router.replace("/my"), 800);
   }
 
   return (
@@ -75,13 +74,13 @@ export default function Onboarding() {
       <div className="w-full max-w-sm">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/images/logo_full.png" alt="스드맵" className="w-32 h-auto mx-auto" />
-        <h1 className="text-xl font-extrabold text-center mt-4">추가 정보 입력</h1>
-        <p className="text-[13px] text-muted text-center mt-1 mb-6">가입을 완료하려면 아래 정보를 입력해 주세요.</p>
+        <h1 className="text-xl font-extrabold text-center mt-4">개인정보 설정</h1>
+        <p className="text-[13px] text-muted text-center mt-1 mb-6">이름·연락처·주소를 설정하면 예약·상담이 편해져요. (선택 입력)</p>
 
         <div className="space-y-3">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="이름" className={field} />
           <div className="space-y-2">
-            <label className="text-[13px] font-bold text-ink">휴대폰 인증 <span className="text-rose">*필수</span></label>
+            <label className="text-[13px] font-bold text-ink">휴대폰 <span className="text-muted text-[11px]">(인증 시 SMS 알림)</span></label>
             <div className="flex gap-2">
               <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="010-0000-0000" className={field} />
               <button onClick={sendCode} disabled={busy} className="px-4 rounded-xl bg-brand-100 text-brand-700 font-bold text-[13px] whitespace-nowrap">인증번호 받기</button>
@@ -111,7 +110,7 @@ export default function Onboarding() {
             </select>
           </div>
           <button onClick={submit} disabled={busy} className="w-full h-[52px] rounded-xl bg-brand-grad text-white font-extrabold text-sm shadow-soft mt-1 disabled:opacity-60">
-            {busy ? "저장 중..." : "가입 완료"}
+            {busy ? "저장 중..." : "저장하기"}
           </button>
         </div>
         {msg && <p className="mt-4 text-[12px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{msg}</p>}

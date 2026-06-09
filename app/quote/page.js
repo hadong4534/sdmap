@@ -37,7 +37,7 @@ export default function Quote() {
           <p className="text-[13px] text-muted mb-4">받은 스드메·웨딩홀 견적서 사진을 올리면, 총 견적·예상 추가금·누락 항목·계약 전 질문을 AI가 분석해드려요.</p>
 
           <label className="block rounded-2xl border-2 border-dashed border-brand-200 bg-white p-6 text-center cursor-pointer">
-            {preview ? <img src={preview} alt="견적서" className="max-h-60 mx-auto rounded-lg" /> : <><div className="text-3xl">🧾</div><div className="font-extrabold text-ink mt-2">견적서 사진 / 캡처 올리기</div><div className="text-[12px] text-muted mt-1">탭하여 카메라 촬영 또는 파일 선택</div></>}
+            {preview ? <img src={preview} alt="견적서" className="max-h-60 mx-auto rounded-lg" /> : <><div className="flex justify-center text-brand-500"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-brand-500"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg></div><div className="font-extrabold text-ink mt-2">견적서 사진 / 캡처 올리기</div><div className="text-[12px] text-muted mt-1">탭하여 카메라 촬영 또는 파일 선택</div></>}
             <input type="file" accept="image/*" onChange={onFile} className="hidden" />
           </label>
 
