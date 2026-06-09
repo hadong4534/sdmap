@@ -17,10 +17,9 @@ export default function Sidebar() {
   const path = usePathname();
   return (
     <aside className="hidden md:flex flex-col w-60 shrink-0 h-screen sticky top-0 bg-white border-r border-line p-4">
-      <Link href="/home" className="flex items-center gap-2 px-2 py-2 mb-3">
+      <Link href="/home" className="flex items-center px-2 py-2 mb-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/logo_icon.png" alt="스드맵" className="h-7 w-auto" />
-        <span className="font-extrabold text-lg text-brand-700">스드맵</span>
+        <img src="/images/logo_full.png" alt="스드맵" className="h-7 w-auto" />
       </Link>
       <nav className="flex-1 space-y-1">
         {NAV.map(([href, label, d]) => {
@@ -33,11 +32,11 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="rounded-2xl bg-brand-grad text-white p-4 mt-3">
-        <div className="text-xs opacity-90 font-bold">결혼 준비</div>
-        <div className="text-xl font-extrabold mt-0.5">D-218</div>
-        <div className="mt-2 h-1.5 bg-white/30 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full" style={{ width: "32%" }} /></div>
-        <div className="text-[11px] opacity-90 mt-1">진행률 32%</div>
+      <div className="rounded-2xl bg-brand-50 border border-brand-100 p-4 mt-3">
+        <div className="text-xs text-muted font-bold">결혼 준비</div>
+        <div className="text-xl font-extrabold mt-0.5 text-brand-700">D-218</div>
+        <div className="mt-2 h-1.5 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: "32%" }} /></div>
+        <div className="text-[11px] text-muted mt-1">진행률 32%</div>
       </div>
     </aside>
   );

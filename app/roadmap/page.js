@@ -21,10 +21,10 @@ export default function Roadmap() {
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
         <header className="bg-white border-b border-line"><div className="max-w-4xl mx-auto px-4 md:px-8 py-4 font-extrabold text-lg">준비 로드맵</div></header>
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-6">
-          <div className="rounded-2xl bg-brand-grad text-white p-5">
-            <div className="text-sm opacity-90 font-bold">결혼 준비 D-218</div>
-            <div className="mt-2 h-2 bg-white/30 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full" style={{ width: "32%" }} /></div>
-            <div className="text-[12px] opacity-90 mt-1">진행률 32% · 현재 단계: 스드메</div>
+          <div className="rounded-2xl bg-white border border-brand-100 p-5 shadow-card">
+            <div className="text-sm text-muted font-bold">결혼 준비 D-218</div>
+            <div className="mt-2 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: "32%" }} /></div>
+            <div className="text-[12px] text-muted mt-1">진행률 32% · 현재 단계: <b className="text-brand-700">스드메</b></div>
           </div>
           <div className="mt-6 relative pl-7">
             <div className="absolute left-[10px] top-1 bottom-1 w-0.5 bg-line" />

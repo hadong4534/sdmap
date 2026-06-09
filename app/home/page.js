@@ -47,20 +47,20 @@ export default function Home() {
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
         {/* mobile header */}
         <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur px-4 py-3 flex items-center">
-          <div className="flex items-center gap-1.5"><img src="/images/logo_icon.png" alt="" className="h-7 w-auto" /><span className="font-extrabold text-brand-700">스드맵</span></div>
+          <img src="/images/logo_full.png" alt="스드맵" className="h-7 w-auto" />
           <div className="ml-auto flex gap-3 text-muted"><Link href="/my">🔔</Link><Link href="/my">👤</Link></div>
         </header>
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-6">
           {/* D-day + AI coach */}
           <div className="grid md:grid-cols-[1.3fr_1fr] gap-4">
-            <div className="rounded-2xl bg-brand-grad text-white p-5 shadow-soft">
-              <div className="text-sm opacity-90 font-bold">{name}님의 결혼 준비</div>
-              <div className="flex items-end gap-3 mt-1"><div className="text-3xl font-extrabold">D-218</div><div className="text-sm opacity-90 mb-1">진행률 32%</div></div>
-              <div className="mt-3 h-2 bg-white/30 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full" style={{ width: "32%" }} /></div>
+            <div className="rounded-2xl bg-white border border-brand-100 p-5 shadow-card">
+              <div className="text-sm text-muted font-bold">{name}님의 결혼 준비</div>
+              <div className="flex items-end gap-3 mt-1"><div className="text-3xl font-extrabold text-brand-700">D-218</div><div className="text-sm text-muted mb-1">진행률 32%</div></div>
+              <div className="mt-3 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: "32%" }} /></div>
               <div className="mt-4">
-                <div className="text-xs opacity-90 font-bold mb-2">오늘 결정해야 할 3가지</div>
-                <ul className="space-y-1.5">{TODOS.map((t, i) => (<li key={i} className="flex items-center gap-2 text-[13px] bg-white/15 rounded-lg px-3 py-2"><span className="w-4 h-4 rounded-full border border-white/70 inline-block" />{t}</li>))}</ul>
+                <div className="text-xs text-muted font-bold mb-2">오늘 결정해야 할 3가지</div>
+                <ul className="space-y-1.5">{TODOS.map((t, i) => (<li key={i} className="flex items-center gap-2 text-[13px] bg-surface rounded-lg px-3 py-2 text-body"><span className="w-4 h-4 rounded-full border-2 border-brand-300 inline-block" />{t}</li>))}</ul>
               </div>
             </div>
             <div className="rounded-2xl bg-white border border-line p-5 shadow-card">
