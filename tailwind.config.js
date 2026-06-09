@@ -1,45 +1,20 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx}",
-    "./components/**/*.{js,jsx}",
-  ],
+  content: ["./app/**/*.{js,jsx}", "./components/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
-        // 스드맵 브랜드 바이올렛 스케일
-        brand: {
-          50: "#F4F1FE",
-          100: "#EAE4FC",
-          200: "#D6CBF8",
-          300: "#BCABF1",
-          400: "#9F8AE9",
-          500: "#8B7BE8",
-          600: "#7361DA",
-          700: "#5E4CC0",
-          800: "#4A3C97",
-          900: "#382D72",
-        },
-        ink: "#2A2640",
-        body: "#5A5570",
-        muted: "#918CA6",
-        line: "#ECE9F5",
-        surface: "#FAF9FE",
-        ok: "#34C7A0",
-        warn: "#F5B544",
-        rose: "#B5688A",
+        brand: { 50:"#F3EEFF",100:"#E8E1FA",200:"#D9CEF6",300:"#C0AEEF",400:"#A488EB",500:"#8B6FE8",600:"#7A5FE0",700:"#674BD0",800:"#4F38A6",900:"#3A2A7C" },
+        ink: "#252236", body: "#4A4560", muted: "#7B748C", line: "#E8E1FA", surface: "#F3EEFF",
+        risk: "#FF8A65", safe: "#41C7A7", card: "#FFFFFF",
       },
       backgroundImage: {
-        "brand-grad": "linear-gradient(135deg,#B7A6F0 0%,#8B7BE8 50%,#6E5AD6 100%)",
-        "brand-soft": "linear-gradient(135deg,#F4F1FE 0%,#EAE4FC 100%)",
-        "brand-glow": "radial-gradient(120% 120% at 25% 15%,#C9BEF7 0%,#8B7BE8 55%,#5E4CC0 100%)",
+        "brand-grad": "linear-gradient(135deg,#8B6FE8 0%,#7A5FE0 100%)",
+        "brand-soft": "linear-gradient(135deg,#F3EEFF 0%,#E8E1FA 100%)",
+        "brand-glow": "radial-gradient(120% 120% at 25% 15%,#B79DF2 0%,#8B6FE8 55%,#674BD0 100%)",
       },
-      fontFamily: {
-        sans: ['"Malgun Gothic"', '"Apple SD Gothic Neo"', "system-ui", "sans-serif"],
-      },
-      boxShadow: {
-        soft: "0 14px 34px rgba(94,76,192,0.18)",
-      },
+      fontFamily: { sans: ['"Pretendard"','"Malgun Gothic"','"Apple SD Gothic Neo"','system-ui','sans-serif'] },
+      boxShadow: { soft: "0 10px 30px rgba(123,90,224,0.10)", card: "0 4px 18px rgba(80,56,166,0.07)" },
     },
   },
   plugins: [],
