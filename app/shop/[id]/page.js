@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { CATS, CAT_IMG, won } from "@/lib/const";
-import { useCompare } from "@/lib/compare";
+import { useCompare, recordView } from "@/lib/compare";
 import Sidebar from "@/components/Sidebar";
 import RiskBadge, { riskLevel } from "@/components/RiskBadge";
 import AiSummaryCard from "@/components/AiSummaryCard";
@@ -42,7 +42,8 @@ export default function Shop() {
   const { has, toggle } = useCompare();
 
   useEffect(() => {
-    if (!supabase || !id) return;
+    if (!id) return; recordView(id);
+    if (!supabase) return;
     supabase.from("vendors").select("*").eq("id", id).maybeSingle().then(async ({ data }) => {
       setV(data);
       if (data) {

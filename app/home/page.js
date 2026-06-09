@@ -1,143 +1,110 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import { CATS, CAT_IMG, won } from "@/lib/const";
+import { CATS, CAT_IMG } from "@/lib/const";
+import { useCompare, getRecent } from "@/lib/compare";
+import Sidebar from "@/components/Sidebar";
 import TabBar from "@/components/TabBar";
+import VendorCard from "@/components/VendorCard";
+import RoadmapProgress from "@/components/RoadmapProgress";
 
-const bg = (src) => ({ backgroundImage: `url('${src}')`, backgroundSize: "cover", backgroundPosition: "center" });
+const bg = (s) => ({ backgroundImage: `url('${s}')`, backgroundSize: "cover", backgroundPosition: "center" });
+const TODOS = ["스튜디오 견적 2곳 비교하기", "드레스 투어 일정 잡기", "웨딩홀 계약서 환불 조건 확인하기"];
+const CATS8 = [["studio","스튜디오"],["dress","드레스"],["makeup","메이크업"],["hall","웨딩홀"],["snap","스냅"],["ring","예물"],["suit","예복"],["invite","청첩장"]];
 
-function VendorCard({ v }) {
-  return (
-    <Link href={`/shop/${v.id}`} className="rounded-2xl overflow-hidden bg-white border border-line block">
-      <div className="h-32 md:h-40 relative" style={bg(v.thumbnail_url || CAT_IMG[v.category])}>
-        <span className="absolute top-2 right-2 w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-brand-500 text-sm">♡</span>
-      </div>
-      <div className="p-3">
-        <div className="font-extrabold text-sm md:text-[15px] text-ink truncate">{v.name}</div>
-        <div className="text-[12px] text-muted mt-0.5 truncate">{v.region} · {CATS[v.category]}</div>
-        <div className="text-[12px] text-warn font-extrabold mt-1.5">★ {v.rating} <span className="text-muted font-normal">({v.review_count})</span></div>
-      </div>
-    </Link>
-  );
+function Section({ title, more, children }) {
+  return (<section className="pt-7"><div className="flex items-baseline justify-between mb-3"><h3 className="text-base md:text-lg font-extrabold text-ink">{title}</h3>{more && <Link href={more} className="text-[12px] text-muted font-bold">전체보기 ›</Link>}</div>{children}</section>);
 }
 
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [vendors, setVendors] = useState([]);
-  const [seg, setSeg] = useState("all");
+  const [popular, setPopular] = useState([]);
+  const [compareV, setCompareV] = useState([]);
+  const [recentV, setRecentV] = useState([]);
+  const { ids } = useCompare();
 
   useEffect(() => {
     if (!supabase) return;
-    const check = async (u) => {
-      setUser(u);
-      if (u) {
-        const { data: prof } = await supabase.from("profiles").select("phone").eq("id", u.id).maybeSingle();
-        if (!prof || !prof.phone) router.replace("/onboarding");
-      }
-    };
-    supabase.auth.getUser().then(({ data }) => check(data?.user ?? null));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setUser(s?.user ?? null));
-    supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(12).then(({ data }) => setVendors(data || []));
-    return () => sub.subscription.unsubscribe();
+    supabase.auth.getUser().then(async ({ data }) => {
+      const u = data?.user ?? null; setUser(u);
+      if (u) { const { data: p } = await supabase.from("profiles").select("phone").eq("id", u.id).maybeSingle(); if (!p || !p.phone) router.replace("/onboarding"); }
+    });
+    supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(8).then(({ data }) => setPopular(data || []));
+    const rec = getRecent();
+    if (rec.length) supabase.from("vendors").select("*").in("id", rec).then(({ data }) => setRecentV(data || []));
   }, [router]);
+  useEffect(() => { if (supabase && ids.length) supabase.from("vendors").select("*").in("id", ids).then(({ data }) => setCompareV(data || [])); else setCompareV([]); }, [ids]);
 
   const mm = user?.user_metadata || {};
-  const displayName = user ? (mm.name || mm.full_name || mm.nickname || (user.email ? user.email.split("@")[0] : "회원")) : null;
-  async function logout() { if (supabase) { await supabase.auth.signOut(); setUser(null); } }
-
-  const filtered = seg === "all" ? vendors : vendors.filter((v) => v.category === seg);
+  const name = user ? (mm.name || mm.full_name || mm.nickname || "회원") : "게스트";
 
   return (
-    <div className="min-h-screen bg-surface pb-20 md:pb-0">
-      <header className="sticky top-0 z-30 bg-white border-b border-line">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
-          <div className="flex items-center gap-3 py-3">
-            <Link href="/home" className="flex items-center gap-1.5 shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/logo_icon.png" alt="스드맵" className="h-8 w-auto" />
-              <span className="font-extrabold text-lg text-brand-700">스드맵</span>
-            </Link>
-            <Link href="/search" className="hidden md:flex flex-1 items-center gap-2 bg-brand-50 border border-brand-100 rounded-xl px-3.5 py-2.5">
-              <span className="text-brand-500">🔍</span><span className="text-[13px] text-muted">스튜디오, 드레스, 메이크업, 웨딩홀 검색</span>
-            </Link>
-            <nav className="hidden lg:flex gap-4 text-[13.5px] font-bold text-body shrink-0">
-              <Link href="/search?cat=studio">스튜디오</Link><Link href="/search?cat=dress">드레스</Link><Link href="/search?cat=makeup">메이크업</Link><Link href="/search?cat=hall">웨딩홀</Link>
-            </nav>
-            <div className="flex-1 md:hidden" />
-            {user ? (
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[13px] font-bold text-ink hidden sm:inline">{displayName}님</span>
-                <button onClick={logout} className="text-[13px] font-bold text-muted border border-line rounded-lg px-3 py-2">로그아웃</button>
+    <div className="min-h-screen bg-surface md:flex">
+      <Sidebar />
+      <div className="flex-1 min-w-0 pb-24 md:pb-10">
+        {/* mobile header */}
+        <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur px-4 py-3 flex items-center">
+          <div className="flex items-center gap-1.5"><img src="/images/logo_icon.png" alt="" className="h-7 w-auto" /><span className="font-extrabold text-brand-700">스드맵</span></div>
+          <div className="ml-auto flex gap-3 text-muted"><Link href="/my">🔔</Link><Link href="/my">👤</Link></div>
+        </header>
+
+        <div className="max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-6">
+          {/* D-day + AI coach */}
+          <div className="grid md:grid-cols-[1.3fr_1fr] gap-4">
+            <div className="rounded-2xl bg-brand-grad text-white p-5 shadow-soft">
+              <div className="text-sm opacity-90 font-bold">{name}님의 결혼 준비</div>
+              <div className="flex items-end gap-3 mt-1"><div className="text-3xl font-extrabold">D-218</div><div className="text-sm opacity-90 mb-1">진행률 32%</div></div>
+              <div className="mt-3 h-2 bg-white/30 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full" style={{ width: "32%" }} /></div>
+              <div className="mt-4">
+                <div className="text-xs opacity-90 font-bold mb-2">오늘 결정해야 할 3가지</div>
+                <ul className="space-y-1.5">{TODOS.map((t, i) => (<li key={i} className="flex items-center gap-2 text-[13px] bg-white/15 rounded-lg px-3 py-2"><span className="w-4 h-4 rounded-full border border-white/70 inline-block" />{t}</li>))}</ul>
               </div>
-            ) : <Link href="/login" className="bg-brand-grad text-white font-extrabold text-[13px] px-4 py-2 rounded-lg shrink-0">로그인</Link>}
+            </div>
+            <div className="rounded-2xl bg-white border border-line p-5 shadow-card">
+              <div className="flex items-center gap-2 font-extrabold text-ink text-sm"><span className="text-brand-600">✦</span> AI 준비 코치</div>
+              <div className="mt-3 rounded-xl bg-[#FFF1EC] p-3">
+                <div className="text-[13px] text-ink font-bold">루미에르 스튜디오 견적서에 <span className="text-risk">원본비가 미포함</span>되어 있어요.</div>
+                <div className="text-[12px] text-muted mt-1">예상 추가금 20~40만원이 발생할 수 있어요.</div>
+              </div>
+              <Link href="/quote" className="mt-3 block text-center text-[13px] font-bold text-white bg-brand-grad rounded-xl py-2.5">견적서 분석하기</Link>
+            </div>
           </div>
-          <div className="md:hidden pb-3 space-y-2">
-            <div className="text-[13px] font-bold text-ink">📍 서울 강남구 <span className="text-muted">▾</span></div>
-            <Link href="/search" className="flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-xl px-3.5 py-3">
-              <span className="text-brand-500">🔍</span><span className="text-[13px] text-muted">스튜디오, 드레스, 홀 검색</span>
+
+          {/* 로드맵 */}
+          <Section title="준비 로드맵" more="/roadmap"><RoadmapProgress current={1} /></Section>
+
+          {/* 빠른 실행 (mobile) */}
+          <div className="grid grid-cols-4 gap-2 pt-6 md:hidden">
+            {[["견적 분석","/quote","🧾"],["업체 탐색","/search","🔍"],["비교함","/compare","⚖️"],["로드맵","/roadmap","🗺️"]].map(([l,h,e]) => (
+              <Link key={l} href={h} className="bg-white border border-line rounded-2xl py-3 flex flex-col items-center gap-1 text-[11px] font-bold text-body"><span className="text-xl">{e}</span>{l}</Link>
+            ))}
+          </div>
+
+          {compareV.length > 0 && <Section title="비교 중인 업체" more="/compare"><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{compareV.map((v) => <VendorCard key={v.id} v={v} />)}</div></Section>}
+          {recentV.length > 0 && <Section title="최근 본 업체"><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{recentV.slice(0,4).map((v) => <VendorCard key={v.id} v={v} />)}</div></Section>}
+
+          <Section title="지역별 인기 업체" more="/search"><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{popular.slice(0, 8).map((v) => <VendorCard key={v.id} v={v} />)}</div></Section>
+
+          {/* 카테고리 */}
+          <Section title="카테고리">
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-2.5">
+              {CATS8.map(([k, l]) => (<Link key={k} href={`/search?cat=${k}`} className="flex flex-col items-center gap-2"><div className="w-full aspect-square rounded-2xl overflow-hidden" style={bg(CAT_IMG[k] || CAT_IMG.studio)} /><span className="text-[12px] font-bold text-ink">{l}</span></Link>))}
+            </div>
+          </Section>
+
+          {/* 견적 업로드 */}
+          <Section title="견적서 분석">
+            <Link href="/quote" className="block rounded-2xl border-2 border-dashed border-brand-200 bg-white p-6 text-center">
+              <div className="text-2xl">🧾</div>
+              <div className="font-extrabold text-ink mt-2">받은 견적서를 올려보세요</div>
+              <div className="text-[13px] text-muted mt-1">총 견적·예상 추가금·누락 항목·평균가 비교를 한 번에 분석해드려요</div>
             </Link>
-          </div>
+          </Section>
         </div>
-      </header>
-
-      <section className="relative h-[200px] md:h-[340px] flex items-end md:items-center" style={bg("/images/hero.png")}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/10 md:bg-gradient-to-r md:from-brand-900/70 md:via-brand-900/30 md:to-transparent" />
-        <div className="relative z-10 max-w-6xl mx-auto w-full px-5 md:px-10 pb-5 md:pb-0 text-white">
-          <h2 className="text-[22px] md:text-4xl font-extrabold leading-snug drop-shadow">결혼 준비의 시작과 끝,<br />한 곳에서.</h2>
-          <p className="mt-2 text-[13px] md:text-base text-white/95 drop-shadow">정찰제 가격을 한눈에 비교하고, 바로 예약하세요.</p>
-        </div>
-      </section>
-
-      <main className="max-w-6xl mx-auto px-4 md:px-8">
-        <section className="pt-6">
-          <h3 className="text-base md:text-xl font-extrabold mb-3">카테고리</h3>
-          <div className="grid grid-cols-4 gap-2.5 md:gap-4">
-            {Object.keys(CATS).map((c) => (
-              <Link key={c} href={`/search?cat=${c}`} className="flex flex-col items-center gap-2">
-                <div className="w-full aspect-square rounded-2xl overflow-hidden" style={bg(CAT_IMG[c])} />
-                <span className="text-[12px] md:text-sm font-bold text-ink">{CATS[c]}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="pt-8">
-          <div className="flex items-baseline justify-between mb-3">
-            <h3 className="text-base md:text-xl font-extrabold">스드메 TOP</h3>
-            <Link href="/search" className="text-[12px] text-muted font-bold">전체보기 ›</Link>
-          </div>
-          <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar">
-            {[["all", "전체"], ...Object.entries(CATS)].map(([k, label]) => (
-              <button key={k} onClick={() => setSeg(k)} className={`text-[13px] font-bold px-4 py-1.5 rounded-full whitespace-nowrap ${seg === k ? "bg-brand-grad text-white" : "bg-brand-50 text-brand-700"}`}>{label}</button>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            {filtered.map((v) => <VendorCard key={v.id} v={v} />)}
-            {filtered.length === 0 && <p className="col-span-full text-center text-muted text-sm py-8">표시할 업체가 없어요.</p>}
-          </div>
-        </section>
-
-        <section className="pt-8 grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="rounded-2xl p-5 md:p-6 text-white bg-brand-grad"><small className="text-xs opacity-90 font-bold">6월 한정</small><b className="text-lg block mt-1">스드메 패키지 최대 30%</b></div>
-          <div className="rounded-2xl p-5 md:p-6 text-white bg-brand-glow"><small className="text-xs opacity-90 font-bold">신규가입 혜택</small><b className="text-lg block mt-1">첫 예약 5만원 즉시 할인</b></div>
-        </section>
-
-        <section className="pt-8 pb-10">
-          <h3 className="text-base md:text-xl font-extrabold mb-3">결혼 매거진</h3>
-          <div className="rounded-2xl overflow-hidden border border-line bg-white md:flex">
-            <div className="h-32 md:h-44 md:w-72" style={bg("/images/hero.png")} />
-            <div className="p-4 md:p-6 flex flex-col justify-center"><div className="font-extrabold text-[15px] md:text-lg text-ink">2026 스드메 예약, 언제부터 시작할까?</div><div className="text-[12px] md:text-sm text-muted mt-1">예식 D-day 역산 체크리스트</div></div>
-          </div>
-        </section>
-      </main>
-
-      <footer className="hidden md:block bg-brand-50 border-t border-line">
-        <div className="max-w-6xl mx-auto px-8 py-6 flex justify-between text-xs text-muted"><div><b className="text-brand-700">스드맵</b> · Studio·Dress·Make-up MAP</div><div>회사소개 · 이용약관 · 개인정보처리방침 · 고객센터</div></div>
-      </footer>
+      </div>
       <TabBar active="home" />
     </div>
   );
