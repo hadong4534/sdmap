@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { categories, topVendors, regions, reviews } from "@/lib/data";
+import { supabase } from "@/lib/supabaseClient";
 
 const bg = (src) => ({ backgroundImage: `url('${src}')`, backgroundSize: "cover", backgroundPosition: "center" });
 
@@ -31,6 +32,17 @@ export default function Home() {
   const [seg, setSeg] = useState("실내");
   const segs = ["실내", "야외", "부케"];
 
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, sess) => setUser(sess?.user ?? null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+  const m = user?.user_metadata || {};
+  const displayName = user ? (m.name || m.full_name || m.nickname || m.preferred_username || (user.email ? user.email.split("@")[0] : "회원")) : null;
+  async function logout() { if (supabase) { await supabase.auth.signOut(); setUser(null); } }
+
   return (
     <div className="min-h-screen bg-surface pb-20 md:pb-0">
       {/* ===== Header ===== */}
@@ -51,7 +63,14 @@ export default function Home() {
               <span>스튜디오</span><span>드레스</span><span>메이크업</span><span>웨딩홀</span><span>매거진</span>
             </nav>
             <div className="flex-1 md:hidden" />
-            <button className="bg-brand-grad text-white font-extrabold text-[13px] px-4 py-2 rounded-lg shrink-0">로그인</button>
+            {user ? (
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[13px] font-bold text-ink hidden sm:inline">{displayName}님</span>
+                <button onClick={logout} className="text-[13px] font-bold text-muted border border-line rounded-lg px-3 py-2">로그아웃</button>
+              </div>
+            ) : (
+              <a href="/login" className="bg-brand-grad text-white font-extrabold text-[13px] px-4 py-2 rounded-lg shrink-0">로그인</a>
+            )}
           </div>
           {/* mobile search + location */}
           <div className="md:hidden pb-3 space-y-2">
