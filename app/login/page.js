@@ -20,7 +20,10 @@ export default function Login() {
   async function oauth(provider) {
     if (provider === "naver") { setMsg("네이버 로그인은 준비 중이에요. (곧 활성화)"); return; }
     if (!isSupabaseReady || !supabase) { setMsg("로그인 설정 준비 중이에요. 잠시 후 다시 시도해 주세요."); return; }
-    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.origin + "/home" } });
+    const options = { redirectTo: window.location.origin + "/home" };
+    // 카카오는 비즈앱 전환 전까지 이메일 동의항목을 못 켜므로 닉네임/프로필만 요청
+    if (provider === "kakao") options.scopes = "profile_nickname profile_image";
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options });
     if (error) setMsg(error.message);
   }
   return (
