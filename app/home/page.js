@@ -40,9 +40,10 @@ export default function Home() {
       {/* ===== Top nav ===== */}
       <header className="sticky top-0 z-30 bg-white border-b border-line">
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-3 flex items-center gap-4">
-          <div className="flex items-center gap-2 text-brand-700 font-extrabold text-xl shrink-0">
-            <span className="w-8 h-8 rounded-lg bg-brand-grad flex items-center justify-center text-white text-base">♥</span>
-            <span className="hidden sm:inline">스드맵</span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo_icon.png" alt="스드맵" className="h-9 w-auto" />
+            <span className="hidden sm:inline text-brand-700 font-extrabold text-xl">스드맵</span>
           </div>
           <div className="hidden md:block text-sm font-bold text-ink shrink-0">📍 서울 강남구 ▾</div>
           <div className="flex-1 flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-xl px-3.5 py-2.5">
