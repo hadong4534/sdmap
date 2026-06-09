@@ -22,7 +22,7 @@ export default function Login() {
     if (!isSupabaseReady || !supabase) { setMsg("로그인 설정 준비 중이에요. 잠시 후 다시 시도해 주세요."); return; }
     const options = { redirectTo: window.location.origin + "/home" };
     // 카카오는 비즈앱 전환 전까지 이메일 동의항목을 못 켜므로 닉네임/프로필만 요청
-    if (provider === "kakao") options.scopes = "profile_nickname profile_image";
+    if (provider === "kakao") options.scopes = "profile_nickname";
     const { error } = await supabase.auth.signInWithOAuth({ provider, options });
     if (error) setMsg(error.message);
   }
