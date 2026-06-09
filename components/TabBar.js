@@ -4,14 +4,14 @@ const ICONS = {
   home: <path d="M3 11l9-8 9 8M5 10v10h14V10" />,
   search: <><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></>,
   compare: <path d="M7 20V11M12 20V5M17 20V14" />,
-  roadmap: <path d="M4 4v16M4 5h12l-2 3 2 3H4" />,
+  ai: <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7z" />,
   my: <><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></>,
 };
 const ITEMS = [
   { k: "home", href: "/home", label: "홈" },
   { k: "search", href: "/search", label: "탐색" },
   { k: "compare", href: "/compare", label: "비교" },
-  { k: "roadmap", href: "/roadmap", label: "로드맵" },
+  { k: "ai", href: "/quote", label: "AI 체크" },
   { k: "my", href: "/my", label: "마이" },
 ];
 export default function TabBar({ active }) {
