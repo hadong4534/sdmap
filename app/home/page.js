@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { categories, topVendors, regions, reviews } from "@/lib/data";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -32,13 +33,21 @@ export default function Home() {
   const [seg, setSeg] = useState("실내");
   const segs = ["실내", "야외", "부케"];
 
+  const router = useRouter();
   const [user, setUser] = useState(null);
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
+    const check = async (u) => {
+      setUser(u);
+      if (u) {
+        const { data: prof } = await supabase.from("profiles").select("phone").eq("id", u.id).maybeSingle();
+        if (!prof || !prof.phone) router.replace("/onboarding");
+      }
+    };
+    supabase.auth.getUser().then(({ data }) => check(data?.user ?? null));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, sess) => setUser(sess?.user ?? null));
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [router]);
   const m = user?.user_metadata || {};
   const displayName = user ? (m.name || m.full_name || m.nickname || m.preferred_username || (user.email ? user.email.split("@")[0] : "회원")) : null;
   async function logout() { if (supabase) { await supabase.auth.signOut(); setUser(null); } }
