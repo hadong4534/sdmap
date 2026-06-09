@@ -1,7 +1,7 @@
 import "./globals.css";
 import Script from "next/script";
 
-const TITLE = "스드맵 (SDM) — 웨딩부터 신혼·출산까지, 한 곳에서";
+const TITLE = "스드맵 — 웨딩부터 신혼·출산까지, 한 곳에서";
 const DESC = "스드메·웨딩홀부터 신혼여행·돌잔치·신혼부부 금융까지. 결혼 준비의 시작과 끝, 그리고 그 이후를 함께하는 가족 생애주기 플랫폼 스드맵.";
 
 export const metadata = {
