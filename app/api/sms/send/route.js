@@ -7,7 +7,7 @@ export async function POST(req) {
 
   const key = process.env.SOLAPI_API_KEY;
   const secret = process.env.SOLAPI_API_SECRET;
-  const from = process.env.SOLAPI_SENDER;
+  const from = (process.env.SOLAPI_SENDER || "").replace(/[^0-9]/g, "");
   if (!key || !secret || !from)
     return Response.json({ error: "SMS 환경변수(SOLAPI_*)가 설정되지 않았습니다." }, { status: 500 });
 
