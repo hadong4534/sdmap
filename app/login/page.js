@@ -25,9 +25,16 @@ export default function Login() {
     window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=openid`;
   }
 
+  const NAVER_CLIENT_ID = "sEEZUV6Af91nPvG1EmGo";
+  function naverLogin() {
+    const redirectUri = encodeURIComponent(window.location.origin + "/api/auth/naver/callback");
+    const state = Math.random().toString(36).slice(2);
+    window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${redirectUri}&state=${state}`;
+  }
+
   async function oauth(provider) {
     if (provider === "kakao") { kakaoLogin(); return; }
-    if (provider === "naver") { setMsg("네이버 로그인은 준비 중이에요. (곧 활성화)"); return; }
+    if (provider === "naver") { naverLogin(); return; }
     if (!isSupabaseReady || !supabase) { setMsg("로그인 설정 준비 중이에요. 잠시 후 다시 시도해 주세요."); return; }
     const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.origin + "/home" } });
     if (error) setMsg(error.message);
