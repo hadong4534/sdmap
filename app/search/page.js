@@ -13,12 +13,14 @@ const REGIONS = ["전체","서울","경기","인천","부산","대구","대전"]
 const SORTS = [["recommend","추천순"],["priceAsc","예상가 낮은순"],["priceDesc","예상가 높은순"],["rating","평점순"],["riskAsc","위험 낮은순"]];
 const PRICES = [["all","전체"],["u120","120만 이하"],["120to180","120~180만"],["o180","180만 이상"]];
 const RISKS = [["all","전체"],["low","낮음"],["mid","보통"],["high","높음"]];
-const SHEETS = { cat:{title:"카테고리",opts:[["all","전체"],["studio","스튜디오"],["dress","드레스"],["makeup","메이크업"],["hall","웨딩홀"]]}, region:{title:"지역",opts:REGIONS.map(r=>[r,r])}, price:{title:"가격대 (예상 최종가)",opts:PRICES}, risk:{title:"추가금 위험",opts:RISKS}, sort:{title:"정렬",opts:SORTS} };
+const BASE_CATS = [["all","전체"],["studio","스튜디오"],["dress","드레스"],["makeup","메이크업"],["hall","웨딩홀"]];
+const SHEETS = { cat:{title:"카테고리",opts:BASE_CATS}, region:{title:"지역",opts:REGIONS.map(r=>[r,r])}, price:{title:"가격대 (예상 최종가)",opts:PRICES}, risk:{title:"추가금 위험",opts:RISKS}, sort:{title:"정렬",opts:SORTS} };
 
 export default function Search() {
   const [all, setAll] = useState([]);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("all");
+  const [catOpts, setCatOpts] = useState(BASE_CATS);
   const [region, setRegion] = useState("전체");
   const [price, setPrice] = useState("all");
   const [risk, setRisk] = useState("all");
@@ -27,12 +29,16 @@ export default function Search() {
   const { ids } = useCompare();
   const [compareV, setCompareV] = useState([]);
 
-  useEffect(() => { const sp = new URLSearchParams(window.location.search); const c = sp.get("cat"); if (c) setCat(c); const qq = sp.get("q"); if (qq) setQ(qq); if (supabase) supabase.from("vendors").select("*").eq("status","active").then(({data})=>setAll(data||[])); }, []);
+  useEffect(() => { const sp = new URLSearchParams(window.location.search); const c = sp.get("cat"); if (c) setCat(c); const qq = sp.get("q"); if (qq) setQ(qq); if (supabase) {
+      supabase.from("vendors").select("*").eq("status","active").then(({data})=>setAll(data||[]));
+      supabase.from("categories").select("key,label").eq("status","active").order("sort").then(({data})=>{ if (data?.length) setCatOpts([["all","전체"], ...data.map((c)=>[c.key,c.label])]); });
+    } }, []);
   useEffect(() => { if (supabase && ids.length) supabase.from("vendors").select("*").in("id", ids).then(({data})=>setCompareV(data||[])); else setCompareV([]); }, [ids]);
 
   const val = { cat, region, price, risk, sort };
   const setVal = { cat:setCat, region:setRegion, price:setPrice, risk:setRisk, sort:setSort };
-  const labelOf = (k) => SHEETS[k].opts.find(o=>o[0]===val[k])?.[1];
+  const sheetOpts = (k) => (k === "cat" ? catOpts : SHEETS[k].opts);
+  const labelOf = (k) => sheetOpts(k).find(o=>o[0]===val[k])?.[1];
 
   let list = all.filter(v =>
     (cat==="all"||v.category===cat) && (region==="전체"||(v.region||"").includes(region)) && (!q || [v.name, v.region, v.type, v.description, JSON.stringify(v.tags || [])].join(" ").toLowerCase().includes(q.toLowerCase())) &&
@@ -92,7 +98,7 @@ export default function Search() {
           <div className="relative w-full md:w-80 bg-white rounded-t-3xl md:rounded-3xl p-5 pb-8 md:pb-5 max-h-[70vh] overflow-auto" onClick={(e)=>e.stopPropagation()}>
             <div className="w-10 h-1 bg-line rounded-full mx-auto mb-3 md:hidden" />
             <div className="font-extrabold text-ink text-lg mb-3">{SHEETS[sheet].title}</div>
-            <div className="space-y-1">{SHEETS[sheet].opts.map(([v,l])=>(<button key={v} onClick={()=>{setVal[sheet](v);setSheet(null);}} className={`w-full text-left px-4 h-12 rounded-xl text-[15px] font-bold ${val[sheet]===v?"bg-brand-50 text-brand-700":"text-body"}`}>{l}</button>))}</div>
+            <div className="space-y-1">{sheetOpts(sheet).map(([v,l])=>(<button key={v} onClick={()=>{setVal[sheet](v);setSheet(null);}} className={`w-full text-left px-4 h-12 rounded-xl text-[15px] font-bold ${val[sheet]===v?"bg-brand-50 text-brand-700":"text-body"}`}>{l}</button>))}</div>
           </div>
         </div>
       )}

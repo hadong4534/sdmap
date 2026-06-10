@@ -146,16 +146,6 @@ export function StickyCTA({ onCompare, onConsult, inCompare }) {
   );
 }
 
-const _qm = [
-  ["studio","스튜디오","/search?cat=studio",<g key="a"><rect x="3" y="7" width="18" height="12" rx="2.5"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.4-2h5L16 7"/></g>],
-  ["dress","드레스","/search?cat=dress",<g key="b"><path d="M10 3l2 2 2-2M12 5v3M9 8l-3 11h12L15 8a3 3 0 00-6 0z"/></g>],
-  ["makeup","메이크업","/search?cat=makeup",<g key="c"><path d="M5 19l8-8M14 7l3 3M13 10l2.5-6 3.5 3.5-6 2.5"/><circle cx="7" cy="17" r="1.6"/></g>],
-  ["hall","웨딩홀","/search?cat=hall",<g key="d"><path d="M3 21V9l9-5 9 5v12M9 21v-6h6v6"/></g>],
-  ["snap","스냅","/search",<g key="e"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 16l-5-5L5 19"/></g>],
-  ["suit","예복","/search",<g key="f"><path d="M12 3a1.8 1.8 0 00-1 3.4L4 12v3h16v-3l-7-5.6A1.8 1.8 0 0012 3z"/></g>],
-  ["ring","예물","/search",<g key="g"><circle cx="12" cy="14" r="5.5"/><path d="M9 9l3-4 3 4"/></g>],
-  ["more","더보기","/search",<g key="h"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></g>],
-];
 const _qmColor = {
   studio: { bg: "linear-gradient(135deg,#EFE9FF,#E3D8FE)", fg: "#7A5FE0" },
   dress: { bg: "linear-gradient(135deg,#FDEFF6,#F9DEEC)", fg: "#D6679F" },
@@ -164,19 +154,41 @@ const _qmColor = {
   snap: { bg: "linear-gradient(135deg,#E9F8F3,#D7F1E8)", fg: "#2FA88C" },
   suit: { bg: "linear-gradient(135deg,#ECECFE,#DEDEFB)", fg: "#6366F1" },
   ring: { bg: "linear-gradient(135deg,#FFF7E5,#FBECC8)", fg: "#D9A21B" },
+  invitation: { bg: "linear-gradient(135deg,#FFF0F0,#FBDADA)", fg: "#D66A6A" },
+  honeymoon: { bg: "linear-gradient(135deg,#E8F6FB,#D2EBF6)", fg: "#3E9BC4" },
+  dol: { bg: "linear-gradient(135deg,#F0FAE9,#DEF2D0)", fg: "#5FA838" },
   more: { bg: "linear-gradient(135deg,#F3F2F7,#E9E7F0)", fg: "#6E6880" },
 };
-export function IconQuickMenu() {
+const _qmIcon = {
+  studio: <g key="a"><rect x="3" y="7" width="18" height="12" rx="2.5"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.4-2h5L16 7"/></g>,
+  dress: <g key="b"><path d="M10 3l2 2 2-2M12 5v3M9 8l-3 11h12L15 8a3 3 0 00-6 0z"/></g>,
+  makeup: <g key="c"><path d="M5 19l8-8M14 7l3 3M13 10l2.5-6 3.5 3.5-6 2.5"/><circle cx="7" cy="17" r="1.6"/></g>,
+  hall: <g key="d"><path d="M3 21V9l9-5 9 5v12M9 21v-6h6v6"/></g>,
+  snap: <g key="e"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 16l-5-5L5 19"/></g>,
+  suit: <g key="f"><path d="M12 3a1.8 1.8 0 00-1 3.4L4 12v3h16v-3l-7-5.6A1.8 1.8 0 0012 3z"/></g>,
+  ring: <g key="g"><circle cx="12" cy="14" r="5.5"/><path d="M9 9l3-4 3 4"/></g>,
+  invitation: <g key="i"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 8l9 6 9-6"/></g>,
+  honeymoon: <g key="j"><path d="M2 16l20-7-9 4-2 6-2-4-7 1z"/></g>,
+  dol: <g key="k"><path d="M5 21h14M6 21v-6a6 6 0 0112 0v6"/><path d="M12 9V6M10.5 4.5L12 6l1.5-1.5"/></g>,
+  more: <g key="h"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></g>,
+};
+export function IconQuickMenu({ categories = [] }) {
+  const items = categories.length
+    ? categories
+    : [["studio","스튜디오","active"],["dress","드레스","active"],["makeup","메이크업","active"],["hall","웨딩홀","active"]].map(([key,label,status]) => ({ key, label, status }));
   return (
     <div className="grid grid-cols-4 gap-y-3.5 gap-x-1 mt-4">
-      {_qm.map(([k, l, h, icon]) => {
-        const c = _qmColor[k] || _qmColor.more;
+      {items.map((c) => {
+        const col = _qmColor[c.key] || _qmColor.more;
+        const coming = c.status === "coming";
+        const href = coming ? "/partner" : `/search?cat=${c.key}`;
         return (
-          <Link key={k} href={h} className="flex flex-col items-center gap-1.5">
-            <span className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center shadow-[0_2px_10px_rgba(139,111,232,0.10)]" style={{ background: c.bg, color: c.fg }}>
-              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+          <Link key={c.key} href={href} className="relative flex flex-col items-center gap-1.5">
+            <span className={`w-[52px] h-[52px] rounded-2xl flex items-center justify-center shadow-[0_2px_10px_rgba(139,111,232,0.10)] ${coming ? "opacity-55" : ""}`} style={{ background: col.bg, color: col.fg }}>
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{_qmIcon[c.key] || _qmIcon.more}</svg>
             </span>
-            <span className="text-[11.5px] font-bold text-body">{l}</span>
+            {coming && <span className="absolute -top-1 right-1 text-[8.5px] font-extrabold text-white bg-[#B7AECB] px-1 py-[1px] rounded">준비중</span>}
+            <span className={`text-[11.5px] font-bold ${coming ? "text-muted" : "text-body"}`}>{c.label}</span>
           </Link>
         );
       })}

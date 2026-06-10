@@ -22,6 +22,7 @@ export default function Admin() {
   const [memberQ, setMemberQ] = useState("");
   const [sf, setSf] = useState({ email: "", password: "", name: "", role: "cs" });
   const [pf2, setPf2] = useState({ email: "", role: "manager" });
+  const [cats, setCats] = useState([]);
   const [form, setForm] = useState({ name: "", category: "studio", region: "서울", status: "active" });
   const [msg, setMsg] = useState("");
 
@@ -45,6 +46,8 @@ export default function Admin() {
       supabase.from("cs_inquiries").select("*, vendors(name)").order("created_at", { ascending: false }).limit(200),
     ]);
     setVendors(v || []); setApps(a || []); setBookings(b || []); setInquiries(cs || []);
+    const { data: ct } = await supabase.from("categories").select("*").order("sort");
+    setCats(ct || []);
     if (r === "admin") {
       const { data: st } = await supabase.rpc("list_staff");
       setStaff(st || []);
@@ -91,6 +94,10 @@ export default function Admin() {
     load();
   }
   async function reject(id) { await supabase.from("vendor_applications").update({ status: "rejected" }).eq("id", id); load(); }
+  async function setCatStatus(key, status) {
+    const { error } = await supabase.from("categories").update({ status }).eq("key", key);
+    if (error) setMsg("카테고리 변경 실패: " + error.message); load();
+  }
   async function searchMembers(q) {
     let qy = supabase.from("profiles").select("id, name, phone, role, created_at").order("created_at", { ascending: false }).limit(50);
     if (q) qy = qy.or(`name.ilike.%${q}%,phone.ilike.%${q}%`);
@@ -174,6 +181,20 @@ export default function Admin() {
 
         {tab === "vendors" && (
           <section className="py-6">
+            <div className="bg-white border border-line rounded-2xl p-5 mb-5">
+              <h3 className="font-extrabold mb-1">카테고리 운영</h3>
+              <p className="text-[12px] text-muted mb-3">준비중: 입점 모집만 노출 · 활성: 고객 탐색 공개 · 숨김: 미노출</p>
+              <div className="flex flex-wrap gap-2">
+                {cats.map((c) => (
+                  <div key={c.key} className="flex items-center gap-1.5 border border-line rounded-xl px-3 py-2">
+                    <b className="text-[13px]">{c.label}</b>
+                    <select value={c.status} onChange={(e) => setCatStatus(c.key, e.target.value)} className={`h-8 rounded-lg border px-1.5 text-[12px] font-bold ${c.status === "active" ? "border-[#9FE0CD] text-[#1FA888] bg-[#F2FBF8]" : c.status === "coming" ? "border-brand-200 text-brand-700 bg-brand-50" : "border-line text-muted bg-surface"}`}>
+                      <option value="active">활성</option><option value="coming">준비중</option><option value="hidden">숨김</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </div>
             <div className="bg-white border border-line rounded-2xl p-5 mb-5">
               <h3 className="font-extrabold mb-3">업체 직접 등록</h3>
               <div className="flex flex-wrap gap-2 items-center">

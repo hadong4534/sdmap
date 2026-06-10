@@ -25,6 +25,7 @@ export default function Home() {
   const [wd, setWd] = useState("");
   const [unread, setUnread] = useState(0);
   const [kw, setKw] = useState("");
+  const [cats, setCats] = useState([]);
   const { ids } = useCompare();
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function Home() {
       }
     });
     supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(8).then(({ data }) => setPopular(data || []));
+    supabase.from("categories").select("*").neq("status", "hidden").order("sort").then(({ data }) => setCats(data || []));
   }, [router]);
   useEffect(() => { if (supabase && ids.length) supabase.from("vendors").select("*").in("id", ids).then(({ data }) => setCompareV(data || [])); else setCompareV([]); }, [ids]);
 
@@ -150,7 +152,7 @@ export default function Home() {
           </form>
 
           {/* 빠른 메뉴 (모바일 전용) */}
-          <div className="md:hidden"><IconQuickMenu /></div>
+          <div className="md:hidden"><IconQuickMenu categories={cats} /></div>
 
           {/* 가이드 배너 */}
           <Link href="/guide" className="mt-4 flex items-center gap-3 bg-white border border-line rounded-2xl px-4 py-3 shadow-card">
