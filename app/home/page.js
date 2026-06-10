@@ -29,7 +29,7 @@ export default function Home() {
     if (!supabase) return;
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data?.user ?? null; setUser(u);
-      if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date, name").eq("id", u.id).maybeSingle(); setProf(p || {}); }
+      if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date, name, budget").eq("id", u.id).maybeSingle(); setProf(p || {}); }
     });
     supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(8).then(({ data }) => setPopular(data || []));
   }, [router]);
@@ -52,7 +52,9 @@ export default function Home() {
     const risky = compareV.filter((v) => (v.risk_score || 0) >= 60);
     const top = [...compareV].sort((a, b) => (b.estimated_final_price || 0) - (a.estimated_final_price || 0))[0];
     const low = [...compareV].sort((a, b) => (a.estimated_final_price || 0) - (b.estimated_final_price || 0))[0];
+    const overBudget = prof?.budget && avg > prof.budget;
     insights = [
+      ...(overBudget ? [{ tone: "risk", text: <>비교함 평균 예상 최종가가 설정 예산보다 <b>{fmtMan(avg - prof.budget)} 높아요.</b></> }] : []),
       risky.length
         ? { tone: "risk", text: <>비교 중인 {compareV.length}곳 중 <b>{risky.length}곳은 추가금 확인</b>이 필요해요.</> }
         : { tone: "safe", text: <>비교 중인 {compareV.length}곳 모두 추가금 위험이 낮은 편이에요.</> },
@@ -69,7 +71,7 @@ export default function Home() {
         <span className="ml-auto text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full">{insights.length}건</span>
       </div>
       <ul className="mt-3 space-y-2">
-        {insights.map((it, i) => (
+        {insights.slice(0, 3).map((it, i) => (
           <li key={i} className="flex gap-2 text-[13.5px] text-body leading-relaxed">
             <span className="mt-[7px] w-1.5 h-1.5 rounded-full shrink-0" style={{ background: it.tone === "risk" ? "#FF8A65" : it.tone === "safe" ? "#41C7A7" : "#8B6FE8" }} />
             <span>{it.text}</span>

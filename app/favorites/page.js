@@ -71,6 +71,30 @@ export default function Favorites() {
             </div>
           )}
 
+          {partner && (both.length + onlyMine.length + onlyPartner.length) >= 2 && (() => {
+            const all = [...both, ...onlyMine, ...onlyPartner];
+            const fmtMan = (n) => `${Math.round((n || 0) / 10000)}만원`;
+            const cheap = [...all].sort((a, b) => (a.estimated_final_price || 0) - (b.estimated_final_price || 0))[0];
+            const safe = [...all].sort((a, b) => (a.risk_score || 99) - (b.risk_score || 99))[0];
+            const balanced = [...all].sort((a, b) => {
+              const score = (v) => (v.estimated_final_price || 0) / 1000000 + (v.risk_score || 50) / 25 - (v.rating || 4) * 0.8;
+              return score(a) - score(b);
+            })[0];
+            return (
+              <div className="rounded-2xl border border-brand-100 bg-white p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
+                  <b className="text-[15.5px] text-ink">스드맵 AI 커플 요약</b>
+                </div>
+                <ul className="space-y-2 text-[13.5px] text-body leading-relaxed">
+                  <li className="flex gap-2"><span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" />두 분이 함께 찜한 업체는 <b>{both.length}곳</b>이에요.{both.length === 0 && " 서로의 찜을 둘러보고 후보를 좁혀보세요."}</li>
+                  <li className="flex gap-2"><span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[#41C7A7] shrink-0" />예산을 우선하면 <b>{cheap.name}</b>({fmtMan(cheap.estimated_final_price)}), 추가금 안정성을 우선하면 <b>{safe.name}</b>(위험 {safe.risk_score})이 좋아 보여요.</li>
+                  <li className="flex gap-2"><span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-brand-500 shrink-0" />가격·위험·후기를 함께 보면 <b className="text-brand-700">{balanced.name}</b>이 가장 균형이 좋아요. 상담 시 미포함 항목을 확인해 보세요.</li>
+                </ul>
+              </div>
+            );
+          })()}
+
           {partner && both.length > 0 && (
             <section>
               <div className="font-extrabold text-ink text-[15px] mb-2.5 mt-1">둘 다 찜한 업체 <span className="text-brand-600">{both.length}</span></div>

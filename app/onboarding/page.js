@@ -20,6 +20,8 @@ export default function Onboarding() {
   const [address, setAddress] = useState("");
   const [addrDetail, setAddrDetail] = useState("");
   const [path, setPath] = useState("");
+  const [weddingDate, setWeddingDate] = useState("");
+  const [budget, setBudget] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -31,6 +33,8 @@ export default function Onboarding() {
       setUser(u);
       const m = u.user_metadata || {};
       const { data: p } = await supabase.from("profiles").select("*").eq("id", u.id).maybeSingle();
+      if (p?.wedding_date) setWeddingDate(p.wedding_date);
+      if (p?.budget) setBudget(String(p.budget));
       setName(p?.name || m.name || m.full_name || m.nickname || m.preferred_username || "");
       if (p) { setPhone(p.phone || ""); setPostcode(p.postcode || ""); setAddress(p.address || ""); setAddrDetail(p.address_detail || ""); setPath(p.signup_path || ""); if (p.phone) setVerified(true); }
     });
@@ -63,6 +67,7 @@ export default function Onboarding() {
     const { error } = await supabase.from("profiles").upsert({
       id: user.id, name, phone: phone.replace(/[^0-9]/g, ""),
       postcode, address, address_detail: addrDetail, signup_path: path,
+      wedding_date: weddingDate || null, budget: budget ? parseInt(budget) : null,
     });
     setBusy(false);
     if (error) return setMsg("저장 실패: " + error.message);
@@ -94,6 +99,17 @@ export default function Onboarding() {
             {verified && <p className="text-[12px] text-ok font-bold">✓ 인증 완료</p>}
           </div>
           <div className="space-y-2">
+            <label className="text-[13px] font-bold text-ink">예식 예정일 <span className="text-muted text-[11px]">(맞춤 일정·체크리스트 제공)</span></label>
+            <input type="date" value={weddingDate} onChange={(e) => setWeddingDate(e.target.value)} className={field} />
+            <label className="text-[13px] font-bold text-ink">스드메 예산 <span className="text-muted text-[11px]">(예산 초과 알림에 사용돼요)</span></label>
+            <select value={budget} onChange={(e) => setBudget(e.target.value)} className={field}>
+              <option value="">선택 안 함</option>
+              <option value="1000000">100만원 이하</option>
+              <option value="1500000">150만원</option>
+              <option value="2000000">200만원</option>
+              <option value="2500000">250만원</option>
+              <option value="3000000">300만원 이상</option>
+            </select>
             <label className="text-[13px] font-bold text-ink">주소</label>
             <div className="flex gap-2">
               <input value={postcode} readOnly placeholder="우편번호" className={field + " bg-brand-50"} />
