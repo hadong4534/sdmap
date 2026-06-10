@@ -18,6 +18,10 @@ export default function Admin() {
   const [bookings, setBookings] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [users, setUsers] = useState([]);
+  const [staff, setStaff] = useState([]);
+  const [memberQ, setMemberQ] = useState("");
+  const [sf, setSf] = useState({ email: "", password: "", name: "", role: "cs" });
+  const [pf2, setPf2] = useState({ email: "", role: "manager" });
   const [form, setForm] = useState({ name: "", category: "studio", region: "서울", status: "active" });
   const [msg, setMsg] = useState("");
 
@@ -42,8 +46,9 @@ export default function Admin() {
     ]);
     setVendors(v || []); setApps(a || []); setBookings(b || []); setInquiries(cs || []);
     if (r === "admin") {
-      const { data: u } = await supabase.from("profiles").select("id, name, phone, role, created_at").order("created_at", { ascending: false }).limit(300);
-      setUsers(u || []);
+      const { data: st } = await supabase.rpc("list_staff");
+      setStaff(st || []);
+      searchMembers("");
     }
   }
   async function addVendor() {
@@ -86,6 +91,31 @@ export default function Admin() {
     load();
   }
   async function reject(id) { await supabase.from("vendor_applications").update({ status: "rejected" }).eq("id", id); load(); }
+  async function searchMembers(q) {
+    let qy = supabase.from("profiles").select("id, name, phone, role, created_at").order("created_at", { ascending: false }).limit(50);
+    if (q) qy = qy.or(`name.ilike.%${q}%,phone.ilike.%${q}%`);
+    const { data } = await qy; setUsers(data || []);
+  }
+  async function createStaff() {
+    setMsg("");
+    if (!sf.email || !sf.password || !sf.name) return setMsg("이메일·비밀번호·이름을 입력하세요.");
+    const { data, error } = await supabase.rpc("create_staff_account", { p_email: sf.email, p_password: sf.password, p_name: sf.name, p_role: sf.role });
+    if (error || data !== "ok") return setMsg("발급 실패: " + (error?.message || ({email_exists:"이미 가입된 이메일", weak_password:"비밀번호 8자 이상", invalid_role:"잘못된 역할", forbidden:"권한 없음"})[data] || data));
+    setMsg(`직원 계정 발급 완료 — ${sf.email} / 임시 비밀번호를 본인에게 전달하세요.`);
+    setSf({ email: "", password: "", name: "", role: "cs" }); load();
+  }
+  async function promoteStaff() {
+    setMsg("");
+    if (!pf2.email) return setMsg("회원 이메일을 입력하세요.");
+    const { data, error } = await supabase.rpc("promote_staff", { p_email: pf2.email, p_role: pf2.role });
+    if (error || data !== "ok") return setMsg("승격 실패: " + (error?.message || ({not_found:"해당 이메일의 회원이 없어요", forbidden:"권한 없음"})[data] || data));
+    setMsg("승격 완료 — 본인에게 알림이 발송됐어요."); setPf2({ email: "", role: "manager" }); load();
+  }
+  async function demoteStaff(id) {
+    if (!window.confirm("직원 권한을 해제할까요? (일반회원으로 전환)")) return;
+    const { data, error } = await supabase.rpc("demote_staff", { p_user_id: id });
+    if (error || data !== "ok") setMsg("해제 실패: " + (error?.message || data)); load();
+  }
   async function answerInquiry(id) {
     const a = window.prompt("답변 내용을 입력하세요"); if (!a) return;
     const { error } = await supabase.from("cs_inquiries").update({ answer: a, status: "answered", answered_at: new Date().toISOString() }).eq("id", id);
@@ -109,7 +139,8 @@ export default function Admin() {
     ["apps", `입점 신청${pendingApps.length ? ` (${pendingApps.length})` : ""}`, ["admin","manager"]],
     ["bookings", "예약 데이터", ["admin","manager"]],
     ["cs", `CS 문의${openCs ? ` (${openCs})` : ""}`, ["admin","cs"]],
-    ["users", "회원·역할", ["admin"]],
+    ["staff", "직원 관리", ["admin"]],
+    ["users", "회원 조회", ["admin"]],
   ];
   const TABS = ALL_TABS.filter(([,,roles]) => roles.includes(myRole)).map(([k,l]) => [k,l]);
 
@@ -206,29 +237,78 @@ export default function Admin() {
           </section>
         )}
 
+        {tab === "staff" && (
+          <section className="py-6 space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-white border border-line rounded-2xl p-5">
+                <h3 className="font-extrabold mb-1">직원 계정 발급</h3>
+                <p className="text-[12px] text-muted mb-3">본사에서 직접 생성해 임시 비밀번호를 전달하세요.</p>
+                <div className="space-y-2">
+                  <input className={field + " w-full"} placeholder="이메일" value={sf.email} onChange={(e)=>setSf({...sf,email:e.target.value})} />
+                  <input className={field + " w-full"} placeholder="임시 비밀번호 (8자 이상)" value={sf.password} onChange={(e)=>setSf({...sf,password:e.target.value})} />
+                  <div className="flex gap-2">
+                    <input className={field + " flex-1"} placeholder="이름" value={sf.name} onChange={(e)=>setSf({...sf,name:e.target.value})} />
+                    <select className={field} value={sf.role} onChange={(e)=>setSf({...sf,role:e.target.value})}>
+                      <option value="cs">CS담당자</option><option value="manager">입점관리자</option><option value="admin">최고관리자</option>
+                    </select>
+                  </div>
+                  <button onClick={createStaff} className="w-full h-11 rounded-lg bg-brand-grad text-white font-bold text-sm">계정 발급</button>
+                </div>
+              </div>
+              <div className="bg-white border border-line rounded-2xl p-5">
+                <h3 className="font-extrabold mb-1">기존 회원 승격</h3>
+                <p className="text-[12px] text-muted mb-3">이미 가입한 회원을 이메일로 직원으로 지정해요.</p>
+                <div className="space-y-2">
+                  <input className={field + " w-full"} placeholder="회원 이메일" value={pf2.email} onChange={(e)=>setPf2({...pf2,email:e.target.value})} />
+                  <select className={field + " w-full"} value={pf2.role} onChange={(e)=>setPf2({...pf2,role:e.target.value})}>
+                    <option value="manager">입점관리자</option><option value="cs">CS담당자</option><option value="admin">최고관리자</option>
+                  </select>
+                  <button onClick={promoteStaff} className="w-full h-11 rounded-lg bg-brand-500 text-white font-bold text-sm">승격</button>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white border border-line rounded-2xl overflow-x-auto">
+              <div className="px-5 pt-4 font-extrabold">직원 목록 <span className="text-muted text-sm font-bold">{staff.length}명</span></div>
+              <table className="w-full text-sm min-w-[560px]">
+                <thead><tr className="text-left text-muted text-xs border-b border-line"><th className="px-5 py-2.5">이름</th><th className="px-4 py-2.5">이메일</th><th className="px-4 py-2.5">역할</th><th className="px-4 py-2.5">관리</th></tr></thead>
+                <tbody>
+                  {staff.map((u) => (
+                    <tr key={u.id} className="border-b border-line/60">
+                      <td className="px-5 py-2.5 font-bold">{u.name || "-"}</td>
+                      <td className="px-4 py-2.5 text-muted">{u.email}</td>
+                      <td className="px-4 py-2.5"><span className={`text-xs font-extrabold px-2 py-0.5 rounded ${u.role==="admin"?"bg-ink text-white":u.role==="manager"?"bg-brand-50 text-brand-700":"bg-[#FFF6E8] text-[#C9821B]"}`}>{({admin:"최고관리자",manager:"입점관리자",cs:"CS담당자"})[u.role]}</span></td>
+                      <td className="px-4 py-2.5"><button onClick={()=>demoteStaff(u.id)} className="text-xs text-muted font-bold underline">권한 해제</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
         {tab === "users" && (
-          <section className="py-6 bg-white border border-line rounded-2xl mt-6 overflow-x-auto">
-            <table className="w-full text-sm min-w-[560px]">
-              <thead><tr className="text-left text-muted text-xs border-b border-line"><th className="px-4 py-2">이름</th><th className="px-4 py-2">연락처</th><th className="px-4 py-2">가입일</th><th className="px-4 py-2">역할</th></tr></thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} className="border-b border-line/60">
-                    <td className="px-4 py-2.5 font-bold">{u.name || "-"}</td>
-                    <td className="px-4 py-2.5 text-muted">{u.phone || "-"}</td>
-                    <td className="px-4 py-2.5 text-muted">{u.created_at ? new Date(u.created_at).toLocaleDateString("ko-KR") : "-"}</td>
-                    <td className="px-4 py-2.5">
-                      <select value={u.role || "user"} onChange={(e) => changeRole(u.id, e.target.value)} className="h-9 rounded-lg border border-line px-2 text-xs bg-white">
-                        <option value="user">일반회원</option>
-                        <option value="vendor">입점업체</option>
-                        <option value="cs">CS담당자</option>
-                        <option value="manager">입점관리자</option>
-                        <option value="admin">최고관리자</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <section className="py-6">
+            <div className="flex gap-2 mb-4">
+              <input className={field + " flex-1 max-w-sm"} placeholder="이름·연락처 검색" value={memberQ} onChange={(e)=>setMemberQ(e.target.value)} onKeyDown={(e)=>e.key==="Enter"&&searchMembers(memberQ)} />
+              <button onClick={()=>searchMembers(memberQ)} className="h-10 px-5 rounded-lg bg-brand-500 text-white text-sm font-bold">검색</button>
+            </div>
+            <div className="bg-white border border-line rounded-2xl overflow-x-auto">
+              <table className="w-full text-sm min-w-[560px]">
+                <thead><tr className="text-left text-muted text-xs border-b border-line"><th className="px-5 py-2.5">이름</th><th className="px-4 py-2.5">연락처</th><th className="px-4 py-2.5">가입일</th><th className="px-4 py-2.5">역할</th></tr></thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr key={u.id} className="border-b border-line/60">
+                      <td className="px-5 py-2.5 font-bold">{u.name || "-"}</td>
+                      <td className="px-4 py-2.5 text-muted">{u.phone || "-"}</td>
+                      <td className="px-4 py-2.5 text-muted">{u.created_at ? new Date(u.created_at).toLocaleDateString("ko-KR") : "-"}</td>
+                      <td className="px-4 py-2.5"><span className="text-xs font-bold text-body">{({customer:"일반회원",vendor:"입점업체",cs:"CS담당자",manager:"입점관리자",admin:"최고관리자"})[u.role] || "일반회원"}</span></td>
+                    </tr>
+                  ))}
+                  {users.length===0 && <tr><td colSpan="4" className="px-5 py-8 text-center text-muted">검색 결과가 없어요.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[12px] text-muted mt-2.5">직원 지정·해제는 <b>직원 관리</b> 탭에서, 입점업체 연결은 <b>업체 관리</b>의 연결코드로 처리해요.</p>
           </section>
         )}
 

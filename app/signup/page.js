@@ -11,6 +11,7 @@ const field = "w-full h-12 rounded-xl border border-line px-3.5 text-sm outline-
 
 export default function Signup() {
   const router = useRouter();
+  const [who, setWho] = useState("customer"); // customer | vendor
   const [tab, setTab] = useState("email");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -91,8 +92,8 @@ export default function Signup() {
       });
     }
     setBusy(false);
-    setMsg("가입이 완료됐어요! 🎉");
-    setTimeout(() => router.push("/home"), 1200);
+    setMsg(who === "vendor" ? "가입 완료! 업체 연결 화면으로 이동해요." : "가입이 완료됐어요!");
+    setTimeout(() => router.push(who === "vendor" ? "/vendor" : "/home"), 1200);
   }
 
   return (
@@ -100,7 +101,12 @@ export default function Signup() {
       <div className="w-full max-w-sm">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/images/logo_full.png" alt="스드맵" className="w-32 h-auto mx-auto" />
-        <h1 className="text-xl font-extrabold text-center mt-4 mb-6">회원가입</h1>
+        <h1 className="text-xl font-extrabold text-center mt-4 mb-4">회원가입</h1>
+        <div className="flex gap-2 mb-5">
+          <button type="button" onClick={() => setWho("customer")} className={`flex-1 h-12 rounded-xl text-sm font-bold border ${who === "customer" ? "bg-brand-500 text-white border-brand-500" : "bg-white text-body border-line"}`}>예비부부 (고객)</button>
+          <button type="button" onClick={() => setWho("vendor")} className={`flex-1 h-12 rounded-xl text-sm font-bold border ${who === "vendor" ? "bg-brand-500 text-white border-brand-500" : "bg-white text-body border-line"}`}>사장님 (입점업체)</button>
+        </div>
+        {who === "vendor" && <p className="text-[12.5px] text-body bg-brand-50 rounded-xl px-3.5 py-2.5 mb-4 leading-relaxed">가입 후 <b>업체 연결 코드</b>를 입력하면 업체 대시보드가 열려요. 아직 입점 전이라면 가입 후 입점 신청부터 진행해 주세요.</p>}
 
         <div className="flex bg-brand-50 rounded-xl p-1 mb-6">
           <button onClick={() => setTab("email")} className={`flex-1 h-10 rounded-lg text-[13px] font-bold ${tab === "email" ? "bg-white text-brand-700 shadow" : "text-muted"}`}>이메일(아이디)</button>
