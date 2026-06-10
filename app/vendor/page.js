@@ -38,6 +38,18 @@ export default function Vendor() {
     setProducts(p || []); setBookings(b || []); setReviews(r || []); setInquiries(c || []);
   }, []);
 
+  const [claimCode, setClaimCode] = useState("");
+  const [claimMsg, setClaimMsg] = useState("");
+  async function doClaim() {
+    setClaimMsg("");
+    if (!claimCode.trim()) return setClaimMsg("코드를 입력해 주세요.");
+    const { data, error } = await supabase.rpc("claim_vendor", { code: claimCode });
+    if (error) return setClaimMsg("연결 실패: " + error.message);
+    if (data === "invalid_code") return setClaimMsg("코드가 올바르지 않거나 이미 연결된 업체예요. 담당자에게 재발급을 요청해 주세요.");
+    if (data === "login_required") return setClaimMsg("로그인이 필요해요.");
+    window.location.reload();
+  }
+
   useEffect(() => {
     (async () => {
       if (!supabase) { setOk(false); return; }
@@ -73,7 +85,18 @@ export default function Vendor() {
   }
 
   if (ok === null) return <main className="min-h-screen flex items-center justify-center text-muted">불러오는 중...</main>;
-  if (ok === false) return <main className="min-h-screen flex flex-col items-center justify-center text-muted text-sm gap-2"><p>연결된 입점 매장이 없어요.</p><a href="/home" className="text-brand-700 font-bold">← 홈으로</a></main>;
+  if (ok === false) return (
+    <main className="min-h-screen flex flex-col items-center justify-center px-7 bg-surface">
+      <div className="w-full max-w-sm bg-white border border-line rounded-2xl p-6 text-center">
+        <div className="text-[17px] font-extrabold text-ink">업체 연결 코드를 입력하세요</div>
+        <p className="text-[13px] text-muted mt-2 leading-relaxed">입점 승인 시 스드맵 담당자가 전달드린 8자리 코드를 입력하면 내 업체 대시보드가 열려요.</p>
+        <input value={claimCode} onChange={(e) => setClaimCode(e.target.value.toUpperCase())} maxLength={8} placeholder="예: A1B2C3D4" className="w-full h-12 mt-4 rounded-xl border border-line px-3 text-center tracking-[0.3em] font-extrabold text-ink bg-white outline-none focus:border-brand-400" />
+        <button onClick={doClaim} className="w-full h-12 mt-2.5 rounded-xl bg-brand-500 text-white font-bold text-sm">업체 연결하기</button>
+        {claimMsg && <p className="mt-2.5 text-[12px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{claimMsg}</p>}
+        <p className="text-[12px] text-muted mt-4">아직 입점 전이라면 <a href="/partner" className="text-brand-700 font-bold underline">입점 신청</a> 후 승인 안내를 기다려주세요.</p>
+      </div>
+    </main>
+  );
 
   const revenue = bookings.filter((b) => ["confirmed", "done"].includes(b.status)).reduce((s, b) => s + (b.amount || 0), 0);
   const pending = bookings.filter((b) => b.status === "requested").length;

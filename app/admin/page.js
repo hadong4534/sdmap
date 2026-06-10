@@ -54,8 +54,18 @@ export default function Admin() {
   }
   async function setStatus(id, status) { await supabase.from("vendors").update({ status }).eq("id", id); load(); }
   async function approve(app) {
-    await supabase.from("vendors").insert({ name: app.business_name, category: app.category, region: app.region, phone: app.contact_phone, status: "active" });
-    await supabase.from("vendor_applications").update({ status: "approved" }).eq("id", app.id); load();
+    const { data: v, error } = await supabase.from("vendors").insert({ name: app.business_name, category: app.category, region: app.region, phone: app.contact_phone, status: "active" }).select("id").single();
+    if (error) { setMsg("승인 실패: " + error.message); return; }
+    const { data: code } = await supabase.rpc("issue_vendor_claim_code", { vid: v.id });
+    await supabase.from("vendor_applications").update({ status: "approved" }).eq("id", app.id);
+    setMsg(`승인 완료. 업체 연결코드: ${code} — ${app.contact_name || "담당자"}(${app.contact_phone})에게 전달하세요.`);
+    load();
+  }
+  async function reissueCode(vid) {
+    const { data: code, error } = await supabase.rpc("issue_vendor_claim_code", { vid });
+    if (error) setMsg("코드 발급 실패: " + error.message);
+    else { setMsg(`연결코드 발급: ${code} (클립보드 복사됨)`); try { navigator.clipboard.writeText(code); } catch {} }
+    load();
   }
   async function reject(id) { await supabase.from("vendor_applications").update({ status: "rejected" }).eq("id", id); load(); }
   async function answerInquiry(id) {
@@ -171,19 +181,26 @@ export default function Admin() {
             </div>
             <div className="bg-white border border-line rounded-2xl overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체명</th><th className="text-left p-3">카테고리</th><th className="text-left p-3">지역</th><th className="text-left p-3">상태</th><th className="p-3">관리</th></tr></thead>
+                <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체명</th><th className="text-left p-3">카테고리</th><th className="text-left p-3">지역</th><th className="text-left p-3">상태</th><th className="text-left p-3">계정 연결</th><th className="p-3">관리</th></tr></thead>
                 <tbody>
                   {vendors.map((v)=>(
                     <tr key={v.id} className="border-t border-line">
                       <td className="p-3 font-bold">{v.name}</td><td className="p-3">{CATS[v.category]}</td><td className="p-3">{v.region}</td>
                       <td className="p-3"><span className={`text-xs font-bold px-2 py-0.5 rounded ${v.status==="active"?"bg-green-100 text-green-700":"bg-gray-100 text-gray-500"}`}>{v.status}</span></td>
+                      <td className="p-3">
+                        {v.owner_id
+                          ? <span className="text-xs font-bold text-[#1FA888] bg-[#E8F8F3] px-2 py-0.5 rounded">계정 연결됨</span>
+                          : v.claim_code
+                            ? <span className="text-xs font-bold text-brand-700">코드 <b className="tracking-widest">{v.claim_code}</b> <button onClick={()=>reissueCode(v.id)} className="ml-1 underline text-muted">재발급</button></span>
+                            : <button onClick={()=>reissueCode(v.id)} className="text-xs font-bold text-brand-700 underline">연결코드 발급</button>}
+                      </td>
                       <td className="p-3 text-center">
                         {v.status!=="active" && <button onClick={()=>setStatus(v.id,"active")} className="text-xs text-brand-700 font-bold mr-2">활성화</button>}
                         {v.status==="active" && <button onClick={()=>setStatus(v.id,"hidden")} className="text-xs text-muted font-bold">숨김</button>}
                       </td>
                     </tr>
                   ))}
-                  {vendors.length===0 && <tr><td colSpan="5" className="p-6 text-center text-muted">등록된 업체가 없어요.</td></tr>}
+                  {vendors.length===0 && <tr><td colSpan="6" className="p-6 text-center text-muted">등록된 업체가 없어요.</td></tr>}
                 </tbody>
               </table>
             </div>
