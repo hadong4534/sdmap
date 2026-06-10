@@ -61,7 +61,7 @@ export default function Quote() {
         </div></header>
 
         <div className="max-w-3xl mx-auto px-4 md:px-8 py-6">
-          {!res && <p className="text-[13px] text-muted mb-4 leading-relaxed">스드메·웨딩홀 견적서 사진을 올리면 <b className="text-ink">총 견적, 예상 추가금, 누락 의심 항목, 계약 전 질문</b>을 AI가 분석해드려요.</p>}
+          {!res && <p className="text-[13px] text-muted mb-4 leading-relaxed">스드메·웨딩홀 견적서 사진을 올리면 <b className="text-ink">총 견적, 예상 추가금, 누락 의심 항목, 계약 전 질문</b>을 AI가 분석해드려요. <Link href="/methodology" className="text-brand-600 font-bold underline underline-offset-2">어떻게 분석하나요?</Link></p>}
 
           <label className="block rounded-2xl border-2 border-dashed border-brand-200 bg-white p-6 text-center cursor-pointer">
             {preview ? <img src={preview} alt="견적서" className="max-h-56 mx-auto rounded-lg" /> : <><div className="flex justify-center"><Ico c="#7A5FE0" d={<><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></>} /></div><div className="font-extrabold text-ink mt-2">견적서 사진 / 캡처 올리기</div><div className="text-[12px] text-muted mt-1">탭하여 카메라 촬영 또는 파일 선택</div></>}

@@ -51,7 +51,10 @@ export default function Bookings() {
                     </div>
                     <div className="flex items-center justify-between mt-3">
                       <div className="text-[14px] text-body">{b.booking_date || "일정 협의"} {b.booking_time || ""} · <b className="text-brand-600">{won(b.amount)}</b></div>
-                      <Link href={`/shop/${b.vendor_id}`} className="text-[12px] font-bold text-brand-700 bg-brand-50 px-3 py-1.5 rounded-lg">업체 보기</Link>
+                      <div className="flex gap-1.5">
+                        {b.status === "done" && <Link href={`/shop/${b.vendor_id}`} className="text-[12px] font-bold text-white bg-brand-500 px-3 py-1.5 rounded-lg">후기 쓰기 ★</Link>}
+                        <Link href={`/shop/${b.vendor_id}`} className="text-[12px] font-bold text-brand-700 bg-brand-50 px-3 py-1.5 rounded-lg">업체 보기</Link>
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -180,7 +180,7 @@ export function InfoSheet({ open, onClose, title, children }) {
         <div className="mx-auto w-10 h-1 rounded-full bg-line mb-4 md:hidden" />
         <div className="flex items-center justify-between mb-3"><b className="text-[16px] text-ink">{title}</b><button onClick={onClose} className="text-muted text-xl leading-none px-1">×</button></div>
         {children}
-        <p className="text-[11.5px] text-muted mt-4 leading-relaxed">스드맵의 예상치는 업체가 공개한 정보와 미포함 항목 기준으로 계산한 참고용 수치예요. 실제 금액과 조건은 상담 시 꼭 확인해 보세요.</p>
+        <p className="text-[11.5px] text-muted mt-4 leading-relaxed">스드맵의 예상치는 업체가 공개한 정보와 미포함 항목 기준으로 계산한 참고용 수치예요. 실제 금액과 조건은 상담 시 꼭 확인해 보세요. <a href="/methodology" className="text-brand-600 font-bold underline underline-offset-2">산정 방식 자세히 보기</a></p>
       </div>
     </div>
   );
