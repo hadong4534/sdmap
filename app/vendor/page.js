@@ -39,6 +39,9 @@ export default function Vendor() {
   }, []);
 
   const [claimCode, setClaimCode] = useState("");
+  const [gallery, setGallery] = useState([]);
+  const [pricing, setPricing] = useState({ base_price: "", expected_extra_fee: "", excluded: "" });
+  const [upBusy, setUpBusy] = useState(false);
   const [claimMsg, setClaimMsg] = useState("");
   async function doClaim() {
     setClaimMsg("");
@@ -59,11 +62,46 @@ export default function Vendor() {
       if (!v) { setOk(false); return; }
       setVendor(v);
       setStore({ name: v.name || "", region: v.region || "", phone: v.phone || "", description: v.description || "", thumbnail_url: v.thumbnail_url || "" });
+      setGallery(Array.isArray(v.images) ? v.images : []);
+      setPricing({ base_price: String(v.base_price ?? ""), expected_extra_fee: String(v.expected_extra_fee ?? ""), excluded: (Array.isArray(v.excluded_items) ? v.excluded_items : []).map((e) => `${e.name}|${e.label}`).join("\n") });
       setOk(true);
       loadAll(v.id);
     })();
   }, [router, loadAll]);
 
+  async function uploadImg(file, kind) {
+    if (!file || !vendor) return null;
+    setUpBusy(true);
+    const path = `${vendor.id}/${kind}_${Date.now()}.jpg`;
+    const { error } = await supabase.storage.from("vendor-images").upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" });
+    setUpBusy(false);
+    if (error) { setMsg("업로드 실패: " + error.message); return null; }
+    return supabase.storage.from("vendor-images").getPublicUrl(path).data.publicUrl;
+  }
+  async function onThumb(e) {
+    const url = await uploadImg(e.target.files?.[0], "thumb");
+    if (url) { setStore({ ...store, thumbnail_url: url }); setMsg("대표 이미지 업로드 완료 — 저장을 눌러 반영하세요."); }
+  }
+  async function onGallery(e) {
+    const files = Array.from(e.target.files || []).slice(0, 8);
+    const urls = [];
+    for (const f of files) { const u = await uploadImg(f, "g"); if (u) urls.push(u); }
+    if (urls.length) { const next = [...gallery, ...urls].slice(0, 10); setGallery(next); await supabase.from("vendors").update({ images: next }).eq("id", vendor.id); setMsg(`갤러리 ${urls.length}장 추가 완료`); }
+  }
+  async function removeGallery(i) {
+    const next = gallery.filter((_, idx) => idx !== i); setGallery(next);
+    await supabase.from("vendors").update({ images: next }).eq("id", vendor.id);
+  }
+  async function requestPricing() {
+    setMsg("");
+    const bp = parseInt(pricing.base_price) || 0;
+    const ef = parseInt(pricing.expected_extra_fee) || 0;
+    const excluded = pricing.excluded.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => { const [name, label] = l.split("|"); return { name: (name || "").trim(), label: (label || "별도").trim() }; });
+    const { data, error } = await supabase.rpc("submit_vendor_pricing", { vid: vendor.id, payload: { base_price: bp, expected_extra_fee: ef, excluded_items: excluded } });
+    if (error || data !== "ok") return setMsg("검수 요청 실패: " + (error?.message || data));
+    setMsg("검수 요청 완료 — 입점관리자 승인 후 고객 화면에 반영돼요.");
+    const { data: v } = await supabase.from("vendors").select("*").eq("id", vendor.id).maybeSingle(); if (v) setVendor(v);
+  }
   async function saveStore() {
     setMsg(""); const { error } = await supabase.from("vendors").update(store).eq("id", vendor.id);
     setMsg(error ? "저장 실패: " + error.message : "매장 정보 저장 완료");
@@ -207,8 +245,44 @@ export default function Vendor() {
               <input className={field} placeholder="지역" value={store.region} onChange={(e) => setStore({ ...store, region: e.target.value })} />
               <input className={field} placeholder="전화번호" value={store.phone} onChange={(e) => setStore({ ...store, phone: e.target.value })} />
               <textarea className={field + " h-24 py-2"} placeholder="소개" value={store.description} onChange={(e) => setStore({ ...store, description: e.target.value })} />
-              <input className={field} placeholder="대표 이미지 URL" value={store.thumbnail_url} onChange={(e) => setStore({ ...store, thumbnail_url: e.target.value })} />
-              <button onClick={saveStore} className="h-11 px-6 rounded-lg bg-brand-grad text-white font-bold text-sm">저장</button>
+              <div>
+                <div className="text-[13px] font-bold text-ink mb-1.5">대표 이미지</div>
+                <div className="flex items-center gap-3">
+                  {store.thumbnail_url ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={store.thumbnail_url} alt="" className="w-20 h-20 rounded-xl object-cover border border-line" /> : <div className="w-20 h-20 rounded-xl bg-surface border border-line" />}
+                  <label className="h-10 px-4 rounded-lg bg-brand-50 text-brand-700 text-sm font-bold flex items-center cursor-pointer">{upBusy ? "업로드 중…" : "이미지 선택"}<input type="file" accept="image/*" onChange={onThumb} className="hidden" /></label>
+                </div>
+              </div>
+              <div>
+                <div className="text-[13px] font-bold text-ink mb-1.5">갤러리 <span className="text-muted font-normal">({gallery.length}/10 · 추가 즉시 반영)</span></div>
+                <div className="flex flex-wrap gap-2">
+                  {gallery.map((g, i) => (
+                    <div key={i} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={g} alt="" className="w-16 h-16 rounded-lg object-cover border border-line" />
+                      <button onClick={() => removeGallery(i)} className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-ink text-white text-[10px] leading-none">×</button>
+                    </div>
+                  ))}
+                  <label className="w-16 h-16 rounded-lg border-2 border-dashed border-brand-200 flex items-center justify-center text-brand-500 text-xl cursor-pointer">+<input type="file" accept="image/*" multiple onChange={onGallery} className="hidden" /></label>
+                </div>
+              </div>
+              <button onClick={saveStore} className="h-11 px-6 rounded-lg bg-brand-grad text-white font-bold text-sm">기본 정보 저장</button>
+
+              <div className="border-t border-line pt-4 mt-2">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold">가격·구성 정보</h3>
+                  {vendor?.pending_update && <span className="text-[11px] font-extrabold text-[#E8663C] bg-[#FFF1EC] px-2 py-0.5 rounded">검수 대기 중</span>}
+                </div>
+                <p className="text-[12px] text-muted mt-1">가격 신뢰를 위해 변경 사항은 스드맵 검수 후 고객 화면에 반영돼요.</p>
+                <div className="space-y-2.5 mt-3">
+                  <div className="flex gap-2">
+                    <div className="flex-1"><div className="text-[12px] font-bold text-muted mb-1">기준가(원)</div><input type="number" className={field} value={pricing.base_price} onChange={(e) => setPricing({ ...pricing, base_price: e.target.value })} /></div>
+                    <div className="flex-1"><div className="text-[12px] font-bold text-muted mb-1">예상 추가금 합계(원)</div><input type="number" className={field} value={pricing.expected_extra_fee} onChange={(e) => setPricing({ ...pricing, expected_extra_fee: e.target.value })} /></div>
+                  </div>
+                  <div><div className="text-[12px] font-bold text-muted mb-1">미포함 항목 (한 줄에 하나, 항목명|금액 형식)</div>
+                  <textarea className={field + " h-24 py-2"} placeholder={"원본비|20~30만원\n헬퍼비|10~15만원"} value={pricing.excluded} onChange={(e) => setPricing({ ...pricing, excluded: e.target.value })} /></div>
+                  <button onClick={requestPricing} disabled={!!vendor?.pending_update} className="h-11 px-6 rounded-lg bg-brand-500 text-white font-bold text-sm disabled:opacity-50">{vendor?.pending_update ? "검수 대기 중" : "변경 검수 요청"}</button>
+                </div>
+              </div>
               {msg && <p className="text-xs text-brand-700">{msg}</p>}
             </div>
           </section>

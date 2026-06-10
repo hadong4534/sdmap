@@ -58,7 +58,25 @@ export default function Admin() {
     if (error) { setMsg("승인 실패: " + error.message); return; }
     const { data: code } = await supabase.rpc("issue_vendor_claim_code", { vid: v.id });
     await supabase.from("vendor_applications").update({ status: "approved" }).eq("id", app.id);
-    setMsg(`승인 완료. 업체 연결코드: ${code} — ${app.contact_name || "담당자"}(${app.contact_phone})에게 전달하세요.`);
+    const sms = await smsClaim(app.contact_phone, code, app.business_name);
+    setMsg(`승인 완료 · 연결코드 ${code} · ${sms}`);
+    load();
+  }
+  async function smsClaim(phone, code, vendorName) {
+    if (!phone) return "연락처 없음 — 수동 전달 필요";
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const r = await fetch("/api/sms/claim", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ phone, code, vendorName }) });
+      const j = await r.json();
+      return r.ok ? "SMS 발송 완료" : (j.error || "발송 실패 — 수동 전달 필요");
+    } catch { return "발송 실패 — 수동 전달 필요"; }
+  }
+  async function reviewPricing(v, approve) {
+    const p = v.pending_update || {};
+    const summary = `기준가: ${(p.base_price ?? v.base_price)?.toLocaleString()}원\n예상 추가금: ${(p.expected_extra_fee ?? v.expected_extra_fee)?.toLocaleString()}원\n미포함 항목: ${(p.excluded_items || []).map((e) => e.name).join(", ") || "변경 없음"}`;
+    if (!window.confirm(`${v.name} 변경 요청 ${approve ? "승인" : "반려"}\n\n${summary}`)) return;
+    const { data, error } = await supabase.rpc("review_vendor_pricing", { vid: v.id, approve });
+    setMsg(error ? "검수 실패: " + error.message : data === "ok" ? (approve ? "승인·반영 완료" : "반려 완료") : data);
     load();
   }
   async function reissueCode(vid) {
@@ -151,6 +169,13 @@ export default function Admin() {
                             : <button onClick={()=>reissueCode(v.id)} className="text-xs font-bold text-brand-700 underline">연결코드 발급</button>}
                       </td>
                       <td className="p-3 text-center">
+                        {v.pending_update && (
+                          <span className="inline-flex items-center gap-1.5 mr-2">
+                            <span className="text-[11px] font-extrabold text-[#E8663C] bg-[#FFF1EC] px-2 py-0.5 rounded">검수 대기</span>
+                            <button onClick={()=>reviewPricing(v, true)} className="text-xs text-brand-700 font-bold underline">승인</button>
+                            <button onClick={()=>reviewPricing(v, false)} className="text-xs text-muted font-bold underline">반려</button>
+                          </span>
+                        )}
                         {v.status!=="active" && <button onClick={()=>setStatus(v.id,"active")} className="text-xs text-brand-700 font-bold mr-2">활성화</button>}
                         {v.status==="active" && <button onClick={()=>setStatus(v.id,"hidden")} className="text-xs text-muted font-bold">숨김</button>}
                       </td>
