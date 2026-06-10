@@ -23,6 +23,10 @@ export default function Shop() {
   const [msg, setMsg] = useState("");
   const [sheet, setSheet] = useState(null); // "price" | "risk"
   const [gIdx, setGIdx] = useState(0);
+  const [canReview, setCanReview] = useState(false);
+  const [myReview, setMyReview] = useState(null);
+  const [rv, setRv] = useState({ rating: 5, content: "" });
+  const [rvMsg, setRvMsg] = useState("");
   const { has, toggle } = useCompare();
 
   useEffect(() => {
@@ -33,7 +37,17 @@ export default function Shop() {
       if (data) { const { data: sim } = await supabase.from("vendors").select("*").eq("category", data.category).eq("status", "active").neq("id", id).limit(4); setSimilar(sim || []); }
     });
     supabase.from("reviews").select("*").eq("vendor_id", id).order("created_at", { ascending: false }).then(({ data }) => setReviews(data || []));
-    supabase.auth.getUser().then(async ({ data }) => { const u = data?.user ?? null; setUser(u); if (u) { const { data: f } = await supabase.from("favorites").select("vendor_id").eq("user_id", u.id).eq("vendor_id", id).maybeSingle(); setFav(!!f); } });
+    supabase.auth.getUser().then(async ({ data }) => {
+      const u = data?.user ?? null; setUser(u);
+      if (u) {
+        const { data: f } = await supabase.from("favorites").select("vendor_id").eq("user_id", u.id).eq("vendor_id", id).maybeSingle(); setFav(!!f);
+        const [{ data: bk }, { data: mr }] = await Promise.all([
+          supabase.from("bookings").select("id").eq("user_id", u.id).eq("vendor_id", id).in("status", ["confirmed", "done"]).limit(1),
+          supabase.from("reviews").select("id").eq("user_id", u.id).eq("vendor_id", id).maybeSingle(),
+        ]);
+        setCanReview((bk || []).length > 0); setMyReview(mr);
+      }
+    });
   }, [id]);
 
   async function toggleFav() {
@@ -46,6 +60,16 @@ export default function Shop() {
     const { data: prof } = await supabase.from("profiles").select("name, phone").eq("id", user.id).maybeSingle();
     const { error } = await supabase.from("bookings").insert({ user_id: user.id, vendor_id: id, status: "requested", amount: v.base_price, customer_name: prof?.name || "고객", customer_phone: prof?.phone || "", memo: "상담 신청" });
     setMsg(error ? "신청 실패: " + error.message : "상담 신청이 접수됐어요. '마이 > 내 예약/계약'에서 확인하세요.");
+  }
+
+  async function submitReview() {
+    setRvMsg("");
+    if (!rv.content.trim()) return setRvMsg("후기 내용을 적어주세요.");
+    const { error } = await supabase.from("reviews").insert({ user_id: user.id, vendor_id: id, rating: rv.rating, content: rv.content.trim() });
+    if (error) return setRvMsg("등록 실패: " + error.message);
+    setRvMsg("후기가 등록됐어요. 감사합니다!"); setMyReview({}); setRv({ rating: 5, content: "" });
+    const { data } = await supabase.from("reviews").select("*").eq("vendor_id", id).order("created_at", { ascending: false });
+    setReviews(data || []);
   }
 
   if (!v) return <main className="min-h-screen flex items-center justify-center text-muted">불러오는 중...</main>;
@@ -109,7 +133,22 @@ export default function Shop() {
             <Card title="포함 항목"><ul className="space-y-1.5">{incl.map((t,i)=>(<li key={i} className="flex gap-2 text-[14px] text-body"><span className="text-safe">✓</span>{t}</li>))}</ul></Card>
             <Card title="계약 전 꼭 물어볼 질문"><ul className="space-y-2">{(v.contract_questions||[]).map((q,i)=>(<li key={i} className="flex gap-2 text-[14px] text-body"><span className="text-brand-500 font-bold">Q{i+1}.</span>{q}</li>))}</ul></Card>
             <div className="md:col-span-2"><ComparisonMini vendors={similar.slice(0,3)} /></div>
-            <div className="md:col-span-2"><Card title={`후기 ${reviews.length} · 신뢰도 ${v.review_trust_score}점`}><div className="space-y-2">{reviews.map((r)=>(<div key={r.id} className="border border-line rounded-xl p-3"><div className="font-extrabold text-[13px]" style={{color:"#E0922A"}}>{"★".repeat(r.rating)}</div><p className="text-[14px] text-body mt-1">{r.content}</p></div>))}{reviews.length===0&&<p className="text-muted text-sm">아직 후기가 없어요.</p>}</div></Card></div>
+            <div className="md:col-span-2"><Card title={`후기 ${reviews.length} · 신뢰도 ${v.review_trust_score}점`}>
+              {user && canReview && !myReview && (
+                <div className="mb-4 rounded-xl border border-brand-100 bg-brand-50/50 p-3.5">
+                  <div className="text-[13px] font-extrabold text-ink">계약 고객 후기 쓰기</div>
+                  <div className="flex gap-1 mt-2">
+                    {[1,2,3,4,5].map((n) => (
+                      <button key={n} onClick={() => setRv({ ...rv, rating: n })} className={`text-[22px] leading-none ${n <= rv.rating ? "text-[#E0922A]" : "text-line"}`}>★</button>
+                    ))}
+                  </div>
+                  <textarea value={rv.content} onChange={(e) => setRv({ ...rv, content: e.target.value })} rows={3} placeholder="상담·계약 경험을 솔직하게 남겨주세요. 추가금이 있었는지도 알려주시면 다른 커플에게 큰 도움이 돼요." className="w-full mt-2 rounded-xl border border-line px-3 py-2.5 text-sm bg-white resize-none outline-none focus:border-brand-400" />
+                  <button onClick={submitReview} className="mt-2 h-10 px-5 rounded-xl bg-brand-500 text-white text-[13px] font-bold">등록하기</button>
+                </div>
+              )}
+              {user && !canReview && !myReview && <p className="mb-3 text-[12px] text-muted">후기는 이 업체와 상담을 확정·완료한 고객만 작성할 수 있어요.</p>}
+              {rvMsg && <p className="mb-3 text-[12px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{rvMsg}</p>}
+              <div className="space-y-2">{reviews.map((r)=>(<div key={r.id} className="border border-line rounded-xl p-3"><div className="font-extrabold text-[13px]" style={{color:"#E0922A"}}>{"★".repeat(r.rating)}</div><p className="text-[14px] text-body mt-1">{r.content}</p></div>))}{reviews.length===0&&<p className="text-muted text-sm">아직 후기가 없어요.</p>}</div></Card></div>
           </div>
           {msg && <p className="mx-4 md:mx-0 mt-4 text-[13px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{msg}</p>}
         </div>

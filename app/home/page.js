@@ -24,6 +24,7 @@ export default function Home() {
   const [prof, setProf] = useState(null);
   const [wd, setWd] = useState("");
   const [unread, setUnread] = useState(0);
+  const [kw, setKw] = useState("");
   const { ids } = useCompare();
 
   useEffect(() => {
@@ -134,9 +135,11 @@ export default function Home() {
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-6">
           {/* 검색 */}
-          <Link href="/search" className="flex items-center gap-2 bg-white border border-line rounded-2xl px-4 h-12 shadow-card">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg><span className="text-[15px] text-muted">업체명, 상품, 키워드로 검색</span>
-          </Link>
+          <form onSubmit={(e) => { e.preventDefault(); router.push(kw.trim() ? `/search?q=${encodeURIComponent(kw.trim())}` : "/search"); }} className="flex items-center gap-2 bg-white border border-line rounded-2xl px-4 h-12 shadow-card focus-within:border-brand-300">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500 shrink-0"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg>
+            <input value={kw} onChange={(e) => setKw(e.target.value)} placeholder="업체명, 지역, 키워드로 검색" className="flex-1 min-w-0 bg-transparent outline-none text-[15px] text-ink placeholder:text-muted" />
+            {kw && <button type="submit" className="shrink-0 h-8 px-3 rounded-lg bg-brand-500 text-white text-[12px] font-bold">검색</button>}
+          </form>
 
           {/* 빠른 메뉴 (모바일 전용) */}
           <div className="md:hidden"><IconQuickMenu /></div>

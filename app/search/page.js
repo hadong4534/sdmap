@@ -27,7 +27,7 @@ export default function Search() {
   const { ids } = useCompare();
   const [compareV, setCompareV] = useState([]);
 
-  useEffect(() => { const c = new URLSearchParams(window.location.search).get("cat"); if (c) setCat(c); if (supabase) supabase.from("vendors").select("*").eq("status","active").then(({data})=>setAll(data||[])); }, []);
+  useEffect(() => { const sp = new URLSearchParams(window.location.search); const c = sp.get("cat"); if (c) setCat(c); const qq = sp.get("q"); if (qq) setQ(qq); if (supabase) supabase.from("vendors").select("*").eq("status","active").then(({data})=>setAll(data||[])); }, []);
   useEffect(() => { if (supabase && ids.length) supabase.from("vendors").select("*").in("id", ids).then(({data})=>setCompareV(data||[])); else setCompareV([]); }, [ids]);
 
   const val = { cat, region, price, risk, sort };
@@ -35,7 +35,7 @@ export default function Search() {
   const labelOf = (k) => SHEETS[k].opts.find(o=>o[0]===val[k])?.[1];
 
   let list = all.filter(v =>
-    (cat==="all"||v.category===cat) && (region==="전체"||(v.region||"").includes(region)) && (!q||v.name.includes(q)) &&
+    (cat==="all"||v.category===cat) && (region==="전체"||(v.region||"").includes(region)) && (!q || [v.name, v.region, v.type, v.description, JSON.stringify(v.tags || [])].join(" ").toLowerCase().includes(q.toLowerCase())) &&
     (price==="all"||(price==="u120"?v.estimated_final_price<=1200000:price==="120to180"?v.estimated_final_price>1200000&&v.estimated_final_price<=1800000:v.estimated_final_price>1800000)) &&
     (risk==="all"||(risk==="low"?v.risk_score<45:risk==="mid"?v.risk_score>=45&&v.risk_score<70:v.risk_score>=70)));
   list = [...list].sort((a,b)=> sort==="priceAsc"?a.estimated_final_price-b.estimated_final_price : sort==="priceDesc"?b.estimated_final_price-a.estimated_final_price : sort==="rating"?b.rating-a.rating : sort==="riskAsc"?a.risk_score-b.risk_score : b.review_count-a.review_count);
@@ -63,6 +63,13 @@ export default function Search() {
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 md:flex md:gap-6">
           <main className="flex-1 min-w-0">
             <p className="text-[13px] text-muted font-bold mb-3">검색결과 <b className="text-ink">{list.length}</b>곳</p>
+            {list.length === 0 && (
+              <div className="rounded-2xl border border-line bg-white px-6 py-10 text-center">
+                <div className="text-[15px] font-extrabold text-ink">조건에 맞는 업체가 없어요</div>
+                <p className="text-[13px] text-muted mt-1.5">검색어를 줄이거나 필터를 풀어보세요.</p>
+                <button onClick={() => { setQ(""); setCat("all"); setRegion("전체"); setPrice("all"); setRisk("all"); }} className="mt-4 h-10 px-5 rounded-xl bg-brand-50 text-brand-700 text-[13px] font-bold">필터 초기화</button>
+              </div>
+            )}
             <div className="space-y-3 md:hidden">{list.map(v=><VendorListItem key={v.id} v={v} />)}</div>
             <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4">{list.map(v=><VendorCard key={v.id} v={v} />)}</div>
             {list.length===0 && <p className="text-center text-muted text-sm py-12">조건에 맞는 업체가 없어요.</p>}
