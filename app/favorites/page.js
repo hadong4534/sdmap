@@ -89,13 +89,13 @@ export default function Favorites() {
           {mine === null && <p className="text-center text-muted text-sm py-10">불러오는 중...</p>}
 
           {mine && !partner && mine.length > 0 && (
-            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4 text-[13.5px] text-body">
+            <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-4 text-[13.5px] text-body">
               <b className="text-brand-700">커플 계정을 연결</b>하면 두 분의 찜을 한눈에 볼 수 있어요. <Link href="/my" className="font-bold text-brand-600 underline underline-offset-2">마이페이지에서 연결 →</Link>
             </div>
           )}
 
           {mine && mine.length > 0 && (
-            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4 flex items-center justify-between">
+            <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-4 flex items-center justify-between">
               <div className="text-[13.5px] text-body"><b className="text-brand-700">{inCompareCnt}곳</b>이 비교함에 담겨 있어요.</div>
               <Link href="/compare" className="shrink-0 h-10 px-4 rounded-xl bg-brand-500 text-white text-[13px] font-bold flex items-center">비교함 →</Link>
             </div>
@@ -111,7 +111,7 @@ export default function Favorites() {
               return score(a) - score(b);
             })[0];
             return (
-              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
                   <b className="text-[15.5px] text-ink">스드맵 AI 커플 요약</b>

@@ -140,12 +140,12 @@ export default function My() {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 py-4">
-        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden">
+        <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] overflow-hidden">
           {menu.map(([l, h]) => (<Link key={h} href={h} className="flex items-center justify-between px-5 py-4 border-b border-line last:border-0 text-sm font-bold">{l}<span className="text-muted">›</span></Link>))}
         </div>
 
         {/* 커플 연동 */}
-        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] mt-3 p-5">
+        <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] mt-3 p-5">
           <div className="flex items-center justify-between">
             <b className="text-sm text-ink">커플 계정 연동</b>
             {partner && <button onClick={unlink} className="text-[12px] text-muted underline">연결 해제</button>}
@@ -176,7 +176,7 @@ export default function My() {
         </div>
 
         {/* 1:1 문의 */}
-        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] mt-3 p-5">
+        <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] mt-3 p-5">
           <div className="flex items-center justify-between">
             <b className="text-sm text-ink">1:1 문의</b>
             <button onClick={() => setShowInq(!showInq)} className="h-9 px-4 rounded-lg bg-brand-50 text-brand-700 text-xs font-bold">{showInq ? "닫기" : "문의하기"}</button>
@@ -202,7 +202,7 @@ export default function My() {
         </div>
 
         {/* 계정 설정 */}
-        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] mt-3 p-5">
+        <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] mt-3 p-5">
           <b className="text-sm text-ink">계정 설정</b>
           <div className="mt-3 space-y-2">
             <button onClick={() => setShowPw(!showPw)} className="w-full flex items-center justify-between text-sm font-bold text-body py-2">비밀번호 변경 <span className="text-muted">{showPw ? "▴" : "›"}</span></button>

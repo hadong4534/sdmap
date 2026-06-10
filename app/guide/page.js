@@ -38,7 +38,7 @@ export default function Guide() {
       <div className="max-w-2xl mx-auto px-5 pt-5 space-y-4">
         <div className="pt-1 pb-2">
           <span className="inline-block text-[11px] font-extrabold text-brand-700 bg-brand-50 px-3 py-1.5 rounded-full tracking-wide">스드맵 가이드</span>
-          <h1 className="text-[26px] font-extrabold leading-[1.3] tracking-tight text-ink mt-3">계약서에 사인하기 전,<br /><span className="text-grad">이것만은 꼭</span> 물어보세요</h1>
+          <h1 className="font-display text-[27px] font-bold leading-[1.4] text-ink mt-3">계약서에 사인하기 전,<br /><span className="text-grad">이것만은 꼭</span> 물어보세요</h1>
           <p className="text-[14px] text-muted leading-relaxed mt-2.5">추가금 분쟁의 대부분은 &ldquo;계약 전에 묻지 않아서&rdquo; 생겨요.</p>
         </div>
         {GUIDES.map((g) => (

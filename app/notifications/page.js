@@ -49,7 +49,7 @@ export default function Notifications() {
           {items?.map((n) => {
             const [color, icon] = ICONS[n.type] || ICONS.booking_status;
             const Inner = (
-              <div className={`flex gap-3 rounded-2xl border p-4 ${n.read ? "bg-white border-transparent shadow-[0_6px_18px_rgba(139,111,232,0.08)]" : "bg-white border-transparent shadow-[0_8px_24px_rgba(139,111,232,0.16)] ring-1 ring-brand-200"}`}>
+              <div className={`flex gap-3 rounded-2xl border p-4 ${n.read ? "bg-white border-transparent shadow-[0_3px_12px_rgba(37,34,54,0.05)]" : "bg-white border-transparent shadow-[0_5px_18px_rgba(37,34,54,0.09)] ring-1 ring-brand-200"}`}>
                 <span className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center" style={{ background: color + "1A" }}>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
                 </span>

@@ -133,7 +133,7 @@ export default function Vendor() {
   if (ok === null) return <main className="min-h-screen flex items-center justify-center text-muted">불러오는 중...</main>;
   if (ok === false) return (
     <main className="min-h-screen flex flex-col items-center justify-center px-7 bg-surface">
-      <div className="w-full max-w-sm rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-6 text-center">
+      <div className="w-full max-w-sm rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-6 text-center">
         <div className="text-[17px] font-extrabold text-ink">업체 연결 코드를 입력하세요</div>
         <p className="text-[13px] text-muted mt-2 leading-relaxed">입점 승인 시 스드맵 담당자가 전달드린 8자리 코드를 입력하면 내 업체 대시보드가 열려요.</p>
         <input value={claimCode} onChange={(e) => setClaimCode(e.target.value.toUpperCase())} maxLength={8} placeholder="예: A1B2C3D4" className="w-full h-12 mt-4 rounded-xl border border-line px-3 text-center tracking-[0.3em] font-extrabold text-ink bg-white outline-none focus:border-brand-400" />
@@ -182,7 +182,7 @@ export default function Vendor() {
           if (vendor.status === "active" && doneAll) return null;
           return (
             <section className="pt-6">
-              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                 <div className="flex items-center justify-between">
                   <b className="text-[15px] text-ink">입점 준비 체크리스트 {vendor.status !== "active" && <span className="ml-1 text-[11px] font-extrabold text-[#E8663C] bg-[#FFF1EC] px-2 py-0.5 rounded">준비중 · 미공개</span>}</b>
                   <span className="text-[12px] font-bold text-brand-700">{steps.filter(([, ok]) => ok).length}/{steps.length}</span>
@@ -209,9 +209,9 @@ export default function Vendor() {
         {tab === "dash" && (
           <section className="py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[["진행 예약", pending + "건"], ["전체 예약", bookings.length + "건"], ["누적 매출", won(revenue)], ["평점", "★ " + (vendor.rating || 0)]].map(([l, v]) => (
-              <div key={l} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5"><div className="text-xs text-muted font-bold">{l}</div><div className="text-2xl font-extrabold text-brand-700 mt-1">{v}</div></div>
+              <div key={l} className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5"><div className="text-xs text-muted font-bold">{l}</div><div className="text-2xl font-extrabold text-brand-700 mt-1">{v}</div></div>
             ))}
-            <div className="col-span-2 md:col-span-4 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+            <div className="col-span-2 md:col-span-4 rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
               <div className="text-sm font-extrabold mb-2">처리할 일</div>
               <div className="text-sm text-body">· 새 예약요청 <b className="text-brand-700">{pending}</b>건 · 미답변 문의 <b className="text-brand-700">{openCs}</b>건</div>
             </div>
@@ -219,7 +219,7 @@ export default function Vendor() {
         )}
 
         {tab === "bookings" && (
-          <section className="py-6 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-x-auto">
+          <section className="py-6 rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">고객</th><th className="text-left p-3">일시</th><th className="text-right p-3">금액</th><th className="text-left p-3">상태</th><th className="p-3">처리</th></tr></thead>
               <tbody>
@@ -243,7 +243,7 @@ export default function Vendor() {
         )}
 
         {tab === "customers" && (
-          <section className="py-6 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden">
+          <section className="py-6 rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">고객명</th><th className="text-left p-3">연락처</th><th className="text-center p-3">예약 건수</th><th className="text-left p-3">최근 예약일</th></tr></thead>
               <tbody>
@@ -256,7 +256,7 @@ export default function Vendor() {
 
         {tab === "products" && (
           <section className="py-6">
-            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 mb-5">
+            <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5 mb-5">
               <h3 className="font-extrabold mb-3">{editId ? "상품 수정" : "상품 추가"}</h3>
               <div className="space-y-2">
                 <input className={field} placeholder="상품명 (예: 본식+야외 풀패키지)" value={pf.name} onChange={(e) => setPf({ ...pf, name: e.target.value })} />
@@ -285,7 +285,7 @@ export default function Vendor() {
         )}
 
         {tab === "store" && (
-          <section className="py-6 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 max-w-xl">
+          <section className="py-6 rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5 max-w-xl">
             <h3 className="font-extrabold mb-3">매장 정보</h3>
             <div className="space-y-3">
               <input className={field} placeholder="매장명" value={store.name} onChange={(e) => setStore({ ...store, name: e.target.value })} />

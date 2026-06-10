@@ -10,7 +10,7 @@ export default function VendorCard({ v, row }) {
   const inC = has(v.id);
   if (row) {
     return (
-      <div className="flex gap-3 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-3 shadow-card">
+      <div className="flex gap-3 rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-3 shadow-card">
         <Link href={`/shop/${v.id}`} className="w-28 shrink-0 rounded-xl" style={{ aspectRatio: "1/1", ...bg(v.thumbnail_url || CAT_IMG[v.category]) }} />
         <div className="flex-1 min-w-0">
           <Link href={`/shop/${v.id}`}><div className="font-extrabold text-sm text-ink truncate">{v.name}</div></Link>
@@ -25,7 +25,7 @@ export default function VendorCard({ v, row }) {
     );
   }
   return (
-    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden shadow-card">
+    <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] overflow-hidden shadow-card">
       <Link href={`/shop/${v.id}`}><div className="h-36" style={bg(v.thumbnail_url || CAT_IMG[v.category])} /></Link>
       <div className="p-3">
         <Link href={`/shop/${v.id}`}><div className="font-extrabold text-sm text-ink truncate">{v.name}</div></Link>

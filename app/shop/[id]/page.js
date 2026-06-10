@@ -10,7 +10,7 @@ import { AiCheckCard, PriceSummaryCard, RiskGauge, StickyCTA, InfoSheet } from "
 import ComparisonMini from "@/components/ComparisonMini";
 
 const bg = (s) => ({ backgroundImage: `url('${s}')`, backgroundSize: "cover", backgroundPosition: "center" });
-const Card = ({ title, children }) => (<div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">{title && <div className="font-extrabold text-ink text-[16px] mb-3">{title}</div>}{children}</div>);
+const Card = ({ title, children }) => (<div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-4">{title && <div className="font-extrabold text-ink text-[16px] mb-3">{title}</div>}{children}</div>);
 
 export default function Shop() {
   const { id } = useParams();

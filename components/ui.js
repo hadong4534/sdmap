@@ -44,7 +44,7 @@ export function CategoryChip({ label, active, href }) {
 
 export function PriceSummaryCard({ v, className = "", onWhy }) {
   return (
-    <div className={`rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(139,111,232,0.13)] ${className}`}>
+    <div className={`rounded-[22px] bg-white p-5 shadow-[0_5px_18px_rgba(37,34,54,0.07)] ${className}`}>
       <div className="flex items-center justify-between text-[15px]"><span className="text-muted font-bold">기본 견적</span><span className="font-bold text-ink text-lg">{won(v.base_price)}</span></div>
       <div className="flex items-center justify-between text-[15px] mt-2"><span className="text-muted font-bold">예상 추가 비용</span><span className="font-extrabold text-risk">+{won(v.expected_extra_fee)}</span></div>
       <div className="border-t border-line my-3" />
@@ -58,7 +58,7 @@ export function AiCheckCard({ v, title = "AI 체크 요약" }) {
   const r = riskLevel(v.risk_score);
   const lines = Array.isArray(v.ai_summary) ? v.ai_summary : [];
   return (
-    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
+    <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 font-extrabold text-ink"><span className="w-6 h-6 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>{title}</div>
         <span className="text-xs font-extrabold px-2.5 py-1 rounded-lg" style={{ color: r.color, background: r.bg }}>위험 {r.label}</span>
@@ -71,7 +71,7 @@ export function AiCheckCard({ v, title = "AI 체크 요약" }) {
 
 export function EmptyState({ icon, title, desc, ctaLabel, ctaHref, children }) {
   return (
-    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] px-6 py-10 text-center">
+    <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] px-6 py-10 text-center">
       <div className="flex justify-center text-brand-400">{icon || (<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-brand-500"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>)}</div>
       <div className="text-lg font-extrabold text-ink mt-3">{title}</div>
       {desc && <p className="text-[14px] text-muted mt-1.5 max-w-md mx-auto leading-relaxed">{desc}</p>}
@@ -86,7 +86,7 @@ export function VendorCard({ v, rank }) {
   const r = riskLevel(v.risk_score);
   const inC = has(v.id);
   return (
-    <div className="bg-white rounded-[22px] overflow-hidden shadow-[0_10px_30px_rgba(139,111,232,0.13)] press">
+    <div className="bg-white rounded-[22px] overflow-hidden shadow-[0_5px_18px_rgba(37,34,54,0.07)] press">
       <Link href={`/shop/${v.id}`} className="block relative h-36 md:h-44" style={bg(v.thumbnail_url || CAT_IMG[v.category])}>
         {rank && <span className="absolute top-1.5 left-3 text-[30px] font-black italic text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)] leading-none">{rank}</span>}
         {!rank && <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold text-brand-700 bg-white/90 px-2 py-0.5 rounded-md">{CATS[v.category]}</span>}
@@ -98,7 +98,7 @@ export function VendorCard({ v, rank }) {
         <div className="mt-2">
           <div className="text-[11px] text-muted">예상 최종가</div>
           <div className="flex items-baseline gap-1.5 whitespace-nowrap">
-            <span className="text-[19px] md:text-[22px] font-extrabold text-brand-700 leading-none tracking-tight">{won(v.estimated_final_price)}</span>
+            <span className="text-[19px] md:text-[22px] font-extrabold text-ink leading-none tracking-tight">{won(v.estimated_final_price)}</span>
             <span className="text-[11px] text-muted line-through">{won(v.base_price)}</span>
           </div>
         </div>
@@ -116,7 +116,7 @@ export function VendorListItem({ v }) {
   const r = riskLevel(v.risk_score);
   const inC = has(v.id);
   return (
-    <div className="bg-white rounded-[20px] p-3 shadow-[0_8px_24px_rgba(139,111,232,0.11)] flex gap-3 press">
+    <div className="bg-white rounded-[20px] p-3 shadow-[0_4px_16px_rgba(37,34,54,0.06)] flex gap-3 press">
       <Link href={`/shop/${v.id}`} className="w-28 shrink-0 rounded-2xl relative" style={{ aspectRatio: "1/1", ...bg(v.thumbnail_url || CAT_IMG[v.category]) }}>
         <span className="absolute top-2 left-2 text-[10px] font-extrabold text-brand-700 bg-white/90 px-1.5 py-0.5 rounded">{CATS[v.category]}</span>
       </Link>
@@ -128,7 +128,7 @@ export function VendorListItem({ v }) {
           <span className="text-[10.5px] font-extrabold px-1.5 py-0.5 rounded" style={{ color: r.color, background: r.bg }}>추가금 {r.label}</span>
         </div>
         <div className="flex items-end justify-between mt-1 whitespace-nowrap">
-          <div><span className="text-[10.5px] text-muted">예상 </span><b className="text-[16px] text-brand-600">{won(v.estimated_final_price)}</b></div>
+          <div><span className="text-[10.5px] text-muted">예상 </span><b className="text-[17px] text-ink tracking-tight">{won(v.estimated_final_price)}</b></div>
           <button onClick={() => toggle(v.id)} className={`h-7 px-2.5 rounded-lg text-[11px] font-bold border ${inC ? "bg-brand-500 text-white border-brand-500" : "bg-brand-50 text-brand-700 border-brand-100"}`}>{inC ? "담김 ✓" : "비교"}</button>
         </div>
       </div>

@@ -41,10 +41,10 @@ export default function Bookings() {
             </>
           ) : (
             <>
-              <div className="grid grid-cols-4 gap-3 mb-5">{sum.map(([l,n])=>(<div key={l} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-3 md:p-4 text-center"><div className="text-[22px] md:text-[26px] font-extrabold text-brand-600">{n}</div><div className="text-[11px] md:text-[13px] text-muted font-bold mt-0.5">{l}</div></div>))}</div>
+              <div className="grid grid-cols-4 gap-3 mb-5">{sum.map(([l,n])=>(<div key={l} className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-3 md:p-4 text-center"><div className="text-[22px] md:text-[26px] font-extrabold text-brand-600">{n}</div><div className="text-[11px] md:text-[13px] text-muted font-bold mt-0.5">{l}</div></div>))}</div>
               <div className="space-y-3">
                 {items.map(b=>(
-                  <div key={b.id} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
+                  <div key={b.id} className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-4">
                     <div className="flex justify-between items-start">
                       <div><div className="font-extrabold text-[17px]">{b.vendors?.name}</div><div className="text-[13px] text-muted mt-0.5">{b.products?.name || "상담 신청"}</div></div>
                       <span className="text-[12px] font-extrabold px-2.5 py-1 rounded-lg text-white" style={{ background: SC[b.status] }}>{STATUS_KO[b.status]}</span>

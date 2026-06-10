@@ -108,7 +108,7 @@ export default function Quote() {
               <div className="font-extrabold text-ink text-[15px] mb-2.5">내 분석 이력 <span className="text-muted text-[12px] font-bold">{history.length}건</span></div>
               <div className="space-y-2">
                 {history.map((h) => (
-                  <div key={h.id} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-3.5 flex items-center gap-3">
+                  <div key={h.id} className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-3.5 flex items-center gap-3">
                     <button onClick={() => openSaved(h)} className="flex-1 min-w-0 text-left">
                       <div className="flex items-center gap-2">
                         <b className="text-[14px] text-ink truncate">{h.vendor_name || "견적서 분석"}</b>
@@ -133,7 +133,7 @@ export default function Quote() {
               </div>
 
               {/* 종합 결과 카드 */}
-              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                 <div className="text-[13px] text-muted font-bold">{res.vendorName || "견적 종합 결과"}</div>
                 <div className="mt-3 grid grid-cols-2 gap-3">
                   <div className="rounded-xl bg-surface p-3"><div className="text-[11px] text-muted font-bold">표기 총 견적</div><div className="text-[19px] font-extrabold text-ink mt-0.5">{won(res.total)}</div></div>
@@ -146,33 +146,33 @@ export default function Quote() {
               </div>
 
               {/* 추가금 위험도 */}
-              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                 <div className="font-extrabold text-ink mb-3">추가금 위험도</div>
                 <RiskGauge score={res.riskScore || 0} />
               </div>
 
               {/* 항목별 분석 */}
               {res.missingItems?.length > 0 && (
-                <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+                <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                   <div className="flex items-center gap-2 font-extrabold text-ink mb-3">{I_warn}<span>위험 · 누락/미포함 의심 ({res.missingItems.length})</span></div>
                   <div className="space-y-2">{res.missingItems.map((m,i)=>(<div key={i} className="border-l-[3px] border-risk bg-[#FFF1EC] rounded-r-lg px-3 py-2"><div className="text-[14px] font-bold text-ink">{m.name}</div><div className="text-[12.5px] text-muted mt-0.5">{m.reason}</div></div>))}</div>
                 </div>
               )}
               {res.contractQuestions?.length > 0 && (
-                <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+                <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                   <div className="flex items-center gap-2 font-extrabold text-ink mb-3">{I_note}<span>주의 · 계약 전 확인 질문</span></div>
                   <div className="space-y-2">{res.contractQuestions.map((q,i)=>(<div key={i} className="border-l-[3px] border-warn2 bg-[#FFF8EC] rounded-r-lg px-3 py-2 text-[13.5px] text-body"><b className="text-[#C9821B]">Q{i+1}.</b> {q}</div>))}</div>
                 </div>
               )}
               {res.includedItems?.length > 0 && (
-                <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+                <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                   <div className="flex items-center gap-2 font-extrabold text-ink mb-3">{I_ok}<span>안전 · 견적 포함 확인 ({res.includedItems.length})</span></div>
                   <div className="flex flex-wrap gap-1.5">{res.includedItems.map((m,i)=>(<span key={i} className="text-[12.5px] text-[#1E9E80] bg-[#EBFBF6] font-bold px-2.5 py-1 rounded-lg">{m}</span>))}</div>
                 </div>
               )}
 
               {/* 시장 평균 비교 + 대안 업체 */}
-              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5">
                 <div className="font-extrabold text-ink">스드맵 등록 업체와 비교해보기</div>
                 <p className="text-[12.5px] text-muted mt-1">이 견적은 어떤 항목인가요?</p>
                 <div className="flex gap-2 mt-3">

@@ -9,7 +9,7 @@ export default function Privacy() {
     <main className="min-h-screen bg-aurora pb-16">
       <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/login" className="text-xl text-muted">‹</Link><b className="text-lg">개인정보처리방침</b></div></header>
       <div className="max-w-2xl mx-auto px-5 pt-5">
-        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 md:p-7">
+        <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5 md:p-7">
           <P>스드맵(이하 &ldquo;회사&rdquo;)은 개인정보 보호법 등 관련 법령을 준수하며, 이용자의 개인정보를 아래와 같이 처리합니다.</P>
 
           <H>1. 수집하는 항목과 목적</H>

@@ -153,7 +153,7 @@ export default function Home() {
   );
 
   const ddayCard = (
-    <div className="rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(139,111,232,0.13)]">
+    <div className="rounded-[22px] bg-white p-5 shadow-[0_5px_18px_rgba(37,34,54,0.07)]">
       {prof?.wedding_date ? (() => {
         const dd = Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000);
         const idx = dd > 270 ? 0 : dd > 150 ? 1 : dd > 30 ? 2 : dd >= 0 ? 3 : 4;
@@ -193,7 +193,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-6">
           {/* 인사말 헤드라인 */}
           <div className="pt-3 pb-4 anim-up">
-            <h1 className="text-[24px] font-extrabold leading-[1.32] tracking-tight text-ink">
+            <h1 className="font-display text-[26px] font-bold leading-[1.38] text-ink">
               {saveMan
                 ? (<>{name}님, 비교만 잘해도<br /><span className="text-grad">{saveMan}만원 아낄</span> 수 있어요</>)
                 : user
@@ -204,7 +204,7 @@ export default function Home() {
           </div>
 
           {/* 검색 */}
-          <form onSubmit={(e) => { e.preventDefault(); router.push(kw.trim() ? `/search?q=${encodeURIComponent(kw.trim())}` : "/search"); }} className="flex items-center gap-2 bg-white/85 backdrop-blur rounded-[18px] px-4 h-[52px] shadow-[0_8px_28px_rgba(139,111,232,0.14)]">
+          <form onSubmit={(e) => { e.preventDefault(); router.push(kw.trim() ? `/search?q=${encodeURIComponent(kw.trim())}` : "/search"); }} className="flex items-center gap-2 bg-white/85 backdrop-blur rounded-[18px] px-4 h-[52px] shadow-[0_4px_16px_rgba(37,34,54,0.07)]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500 shrink-0"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg>
             <input value={kw} onChange={(e) => setKw(e.target.value)} placeholder="업체명, 지역, 키워드로 검색" className="flex-1 min-w-0 bg-transparent outline-none text-[15px] text-ink placeholder:text-muted" />
             {kw && <button type="submit" className="shrink-0 h-8 px-3 rounded-lg bg-brand-500 text-white text-[12px] font-bold">검색</button>}
@@ -214,7 +214,7 @@ export default function Home() {
           <div className="md:hidden"><IconQuickMenu categories={cats} /></div>
 
           {/* 가이드 배너 */}
-          <Link href="/guide" className="mt-4 flex items-center gap-3 bg-white rounded-[20px] px-4 py-3.5 shadow-[0_8px_24px_rgba(139,111,232,0.11)] press">
+          <Link href="/guide" className="mt-4 flex items-center gap-3 bg-white rounded-[20px] px-4 py-3.5 shadow-[0_4px_16px_rgba(37,34,54,0.06)] press">
             <span className="w-9 h-9 rounded-xl bg-[#FFF2E8] text-[#E08A4A] flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
             <span className="text-[13.5px] text-body leading-snug"><b className="text-ink">계약 전 꼭 물어볼 질문</b> — 카테고리별 추가금·질문 가이드</span>
             <span className="ml-auto text-muted">›</span>
@@ -232,7 +232,7 @@ export default function Home() {
               <h2 className="text-[21px] font-extrabold text-ink mb-4">결혼 준비, 어디서부터 시작할까요?</h2>
               <div className="grid grid-cols-4 gap-3.5">
                 {PC_CATS.map(([k, l, im]) => (
-                  <Link key={k} href={`/search?cat=${k}`} className="group rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden shadow-card hover:-translate-y-0.5 hover:shadow-lg transition">
+                  <Link key={k} href={`/search?cat=${k}`} className="group rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] overflow-hidden shadow-card hover:-translate-y-0.5 hover:shadow-lg transition">
                     <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `url('${im}')` }} />
                     <div className="px-3.5 py-3"><b className="text-[15px] text-ink">{l}</b><div className="text-[12px] text-muted mt-0.5">비교하러 가기 ›</div></div>
                   </Link>

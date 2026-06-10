@@ -27,9 +27,10 @@ html, body {
 
 /* ── Design v2: Lavender Glass ── */
 .bg-aurora{background:
-  radial-gradient(120% 60% at 85% -5%, #E9DFFF 0%, transparent 55%),
-  radial-gradient(100% 50% at 0% 8%, #FDEFF8 0%, transparent 50%),
-  linear-gradient(180deg,#F7F4FF 0%,#FAF8FF 40%,#F6F3FE 100%);}
+  radial-gradient(90% 34% at 88% -4%, rgba(139,111,232,0.07) 0%, transparent 60%),
+  radial-gradient(70% 26% at 4% 2%, rgba(224,139,178,0.05) 0%, transparent 55%),
+  #FBFAFD;}
+.font-display{font-family:'Noto Serif KR','Pretendard',serif;letter-spacing:-0.02em}
 .text-grad{background:linear-gradient(100deg,#6E54CF,#A88BF2);-webkit-background-clip:text;background-clip:text;color:transparent}
 .card-float{background:#fff;border-radius:22px;box-shadow:0 10px 30px rgba(139,111,232,.13)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}

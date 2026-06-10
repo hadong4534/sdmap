@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata = { title: "스드맵 AI는 이렇게 계산해요 — 스드맵" };
 
 const Section = ({ n, title, children }) => (
-  <section className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 md:p-6">
+  <section className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-5 md:p-6">
     <div className="flex items-center gap-2.5">
       <span className="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 font-extrabold text-sm flex items-center justify-center shrink-0">{n}</span>
       <h2 className="text-[17px] font-extrabold text-ink">{title}</h2>

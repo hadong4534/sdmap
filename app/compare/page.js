@@ -60,7 +60,7 @@ export default function Compare() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)]">
+              <div className="overflow-x-auto rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)]">
                 <table className="w-full border-collapse min-w-[480px]">
                   <thead><tr><th className="w-24 p-2"></th>{vendors.map((v) => (<th key={v.id} className="p-2 align-top"><Link href={`/shop/${v.id}`}><div className="rounded-xl mb-2" style={{ aspectRatio: "4/3", ...bg(v.thumbnail_url || CAT_IMG[v.category]) }} /></Link><div className="font-extrabold text-[13px] text-center">{v.name}</div><button onClick={() => toggle(v.id)} className="block mx-auto mt-1 text-[11px] text-muted underline">빼기</button></th>))}</tr></thead>
                   <tbody>

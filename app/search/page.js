@@ -54,7 +54,7 @@ export default function Search() {
       <div className="flex-1 min-w-0 pb-20 md:pb-8">
         <header className="sticky top-0 z-30 bg-surface/95 backdrop-blur border-b border-line">
           <div className="max-w-6xl mx-auto px-4 md:px-8 pt-3 pb-2.5">
-            <div className="flex items-center gap-2 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] px-3.5 h-11 md:max-w-xl">
+            <div className="flex items-center gap-2 rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] px-3.5 h-11 md:max-w-xl">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg>
               <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="업체명, 키워드 검색" className="flex-1 bg-transparent outline-none text-[15px]" />
             </div>
@@ -70,7 +70,7 @@ export default function Search() {
           <main className="flex-1 min-w-0">
             <p className="text-[13px] text-muted font-bold mb-3">검색결과 <b className="text-[17px] text-ink">{list.length}</b>곳</p>
             {list.length === 0 && (
-              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] px-6 py-10 text-center">
+              <div className="rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] px-6 py-10 text-center">
                 <div className="text-[15px] font-extrabold text-ink">조건에 맞는 업체가 없어요</div>
                 <p className="text-[13px] text-muted mt-1.5">검색어를 줄이거나 필터를 풀어보세요.</p>
                 <button onClick={() => { setQ(""); setCat("all"); setRegion("전체"); setPrice("all"); setRisk("all"); }} className="mt-4 h-10 px-5 rounded-xl bg-brand-50 text-brand-700 text-[13px] font-bold">필터 초기화</button>
@@ -82,7 +82,7 @@ export default function Search() {
           </main>
           {/* PC 우측 비교함 패널 */}
           <aside className="hidden md:block w-64 shrink-0">
-            <div className="sticky top-24 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
+            <div className="sticky top-24 rounded-[20px] bg-white shadow-[0_4px_16px_rgba(37,34,54,0.06)] p-4">
               <div className="font-extrabold text-ink mb-2">비교함 <span className="text-brand-600">{compareV.length}</span>/4</div>
               {compareV.length===0 ? <p className="text-[13px] text-muted">담은 업체가 없어요. 카드의 "비교함 담기"를 눌러보세요.</p> :
                 <div className="space-y-2">{compareV.map(v=>(<Link key={v.id} href={`/shop/${v.id}`} className="flex gap-2 items-center"><div className="w-10 h-10 rounded-lg shrink-0" style={bg(v.thumbnail_url||CAT_IMG[v.category])} /><div className="min-w-0"><div className="text-[12px] font-bold truncate">{v.name}</div><div className="text-[11px] text-brand-600 font-bold">{won(v.estimated_final_price)}</div></div></Link>))}</div>}
