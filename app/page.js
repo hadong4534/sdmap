@@ -17,8 +17,9 @@ export default function Splash() {
   return (
     <main className="relative min-h-[100dvh] overflow-hidden bg-brand-50 transition-opacity duration-500" style={{ opacity: leaving ? 0 : 1 }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/intro.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom" />
-      <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-white/35" />
+      <img src="/images/intro.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom md:hidden" />
+      <img src="/images/intro_wide.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom hidden md:block" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-white/5 to-white/40" />
       <div className="relative z-10 min-h-[100dvh] flex flex-col items-center justify-center pb-[24vh]">
         <div className="intro-rise flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}

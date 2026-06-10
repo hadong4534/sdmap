@@ -43,7 +43,8 @@ export default function Login() {
       {/* 비주얼 영역 — 인트로와 이어지는 연출 */}
       <div className="relative h-[36vh] md:h-screen md:flex-[1.15] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/intro.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <img src="/images/intro.jpg" alt="" className="absolute inset-0 w-full h-full object-cover md:hidden" />
+        <img src="/images/intro_wide.jpg" alt="" className="absolute inset-0 w-full h-full object-cover hidden md:block" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/35 md:bg-gradient-to-t" />
         <div className="absolute bottom-9 left-6 right-6 md:bottom-14 md:left-12 text-white">
           <p className="text-[19px] md:text-[27px] font-extrabold leading-snug drop-shadow-[0_1px_8px_rgba(0,0,0,0.35)]">숨은 추가금까지,<br />계약 전에 미리 확인하세요</p>

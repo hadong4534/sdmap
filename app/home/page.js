@@ -3,15 +3,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
-import { CATS, CAT_IMG, won } from "@/lib/const";
-import { useCompare, getRecent } from "@/lib/compare";
+import { useCompare } from "@/lib/compare";
 import Sidebar from "@/components/Sidebar";
 import TabBar from "@/components/TabBar";
 import { VendorCard, SectionHeader, IconQuickMenu } from "@/components/ui";
 
-const bg = (s) => ({ backgroundImage: `url('${s}')`, backgroundSize: "cover", backgroundPosition: "center" });
-const CATS_NAV = [["all","전체","/search"],["studio","스튜디오","/search?cat=studio"],["dress","드레스","/search?cat=dress"],["makeup","메이크업","/search?cat=makeup"],["hall","웨딩홀","/search?cat=hall"],["analyze","분석","/quote"],["etc","예물/예복","/search"]];
-const STEPS = ["예식 확정","업체 계약","촬영","본식","마무리"];
+const STEPS = ["예식 확정", "업체 계약", "촬영", "본식", "마무리"];
+const PC_CATS = [
+  ["studio", "스튜디오", "/images/vendors/lumiere.jpg"],
+  ["dress", "드레스", "/images/vendors/atelier_dress.jpg"],
+  ["makeup", "메이크업", "/images/vendors/glow_makeup.jpg"],
+  ["hall", "웨딩홀", "/images/vendors/thegrace_hall.jpg"],
+];
 
 export default function Home() {
   const router = useRouter();
@@ -24,19 +27,63 @@ export default function Home() {
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getUser().then(async ({ data }) => { const u = data?.user ?? null; setUser(u); if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date, name").eq("id", u.id).maybeSingle(); setProf(p || {}); } });
+    supabase.auth.getUser().then(async ({ data }) => {
+      const u = data?.user ?? null; setUser(u);
+      if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date, name").eq("id", u.id).maybeSingle(); setProf(p || {}); }
+    });
     supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(8).then(({ data }) => setPopular(data || []));
   }, [router]);
   useEffect(() => { if (supabase && ids.length) supabase.from("vendors").select("*").in("id", ids).then(({ data }) => setCompareV(data || [])); else setCompareV([]); }, [ids]);
 
   const mm = user?.user_metadata || {};
-  const name = user ? (mm.name || mm.full_name || mm.nickname || "회원") : "게스트";
+  const name = user ? (prof?.name || mm.name || mm.full_name || mm.nickname || "회원") : "게스트";
+
+  async function saveDate() {
+    if (!wd || !user) return;
+    await supabase.from("profiles").upsert({ id: user.id, wedding_date: wd });
+    setProf({ ...(prof || {}), wedding_date: wd });
+  }
+
+  const aiCard = (
+    <div className="rounded-[20px] border border-brand-100 bg-gradient-to-br from-brand-50 to-white p-5 shadow-card relative overflow-hidden">
+      <div className="flex items-center gap-2"><span className="font-extrabold text-ink text-lg">AI 체크</span><span className="text-[10px] font-extrabold text-white bg-brand-500 px-1.5 py-0.5 rounded">NEW</span></div>
+      <p className="text-[14px] text-body mt-2 leading-relaxed">견적의 숨겨진 항목과 추가 비용 위험을 찾아드려요.</p>
+      <Link href="/quote" className="inline-block mt-3 h-11 leading-[44px] px-5 rounded-xl bg-brand-500 text-white font-bold text-sm">내 견적 AI 분석하기</Link>
+      <span className="absolute right-4 top-4 text-brand-300"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
+    </div>
+  );
+
+  const ddayCard = (
+    <div className="rounded-[20px] border border-line bg-white p-5 shadow-card">
+      {prof?.wedding_date ? (() => {
+        const dd = Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000);
+        const idx = dd > 270 ? 0 : dd > 150 ? 1 : dd > 30 ? 2 : dd >= 0 ? 3 : 4;
+        return (<>
+          <div className="flex items-end justify-between"><div><div className="text-[13px] text-muted font-bold">{name}님의 결혼 준비</div><div className="text-[26px] font-extrabold text-brand-600 leading-tight">{dd >= 0 ? `D-${dd}` : `D+${-dd}`}</div></div><div className="text-sm text-muted font-bold">{STEPS[idx]} 단계</div></div>
+          <div className="mt-3 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${(idx / (STEPS.length - 1)) * 100}%` }} /></div>
+          <div className="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar">{STEPS.map((s, i) => (<span key={s} className={`shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full ${i <= idx ? "bg-brand-50 text-brand-700" : "bg-surface text-muted"}`}>{s}</span>))}</div>
+        </>);
+      })() : (<>
+        <div className="text-[15px] font-extrabold text-ink">예식일을 알려주세요</div>
+        <p className="text-[13px] text-muted mt-1 leading-relaxed">예식일에 맞춰 준비 일정과 확인할 항목을 챙겨드려요.</p>
+        {user ? (
+          <div className="flex gap-2 mt-3">
+            <input type="date" value={wd} onChange={(e) => setWd(e.target.value)} className="flex-1 min-w-0 h-11 rounded-xl border border-line px-3 text-sm text-ink bg-white" />
+            <button onClick={saveDate} className="h-11 px-4 rounded-xl bg-brand-500 text-white font-bold text-sm shrink-0">저장</button>
+          </div>
+        ) : (
+          <Link href="/login" className="inline-block mt-3 h-11 leading-[44px] px-5 rounded-xl bg-brand-50 text-brand-700 font-bold text-sm">로그인하고 일정 받기</Link>
+        )}
+      </>)}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-surface md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
         <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur px-4 py-3 flex items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/logo_full.png" alt="스드맵" className="h-7 w-auto" />
           <Link href="/my" className="ml-auto"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-600"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></Link>
         </header>
@@ -47,55 +94,48 @@ export default function Home() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg><span className="text-[15px] text-muted">업체명, 상품, 키워드로 검색</span>
           </Link>
 
-          {/* 빠른 메뉴 (보조 진입) */}
-          <IconQuickMenu />
+          {/* 빠른 메뉴 (모바일 전용) */}
+          <div className="md:hidden"><IconQuickMenu /></div>
 
-          {/* AI 체크 + 진행률 */}
-          <div className="grid md:grid-cols-2 gap-3 mt-5">
-            <div className="rounded-[20px] border border-brand-100 bg-gradient-to-br from-brand-50 to-white p-5 shadow-card relative overflow-hidden">
-              <div className="flex items-center gap-2"><span className="font-extrabold text-ink text-lg">AI 체크</span><span className="text-[10px] font-extrabold text-white bg-brand-500 px-1.5 py-0.5 rounded">NEW</span></div>
-              <p className="text-[14px] text-body mt-2 leading-relaxed">견적의 숨겨진 항목과 추가 비용 위험을<br className="hidden md:block"/> 찾아드려요.</p>
-              <Link href="/quote" className="inline-block mt-3 h-11 leading-[44px] px-5 rounded-xl bg-brand-500 text-white font-bold text-sm">내 견적 AI 분석하기</Link>
-              <span className="absolute right-4 top-4 text-brand-300"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
-            </div>
-            <div className="rounded-[20px] border border-line bg-white p-5 shadow-card">
-              {prof?.wedding_date ? (() => {
-                const dd = Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000);
-                const idx = dd > 270 ? 0 : dd > 150 ? 1 : dd > 30 ? 2 : dd >= 0 ? 3 : 4;
-                return (<>
-                  <div className="flex items-end justify-between"><div><div className="text-[13px] text-muted font-bold">{name}님의 결혼 준비</div><div className="text-[26px] font-extrabold text-brand-600 leading-tight">{dd >= 0 ? `D-${dd}` : `D+${-dd}`}</div></div><div className="text-sm text-muted font-bold">{STEPS[idx]} 단계</div></div>
-                  <div className="mt-3 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${(idx / (STEPS.length - 1)) * 100}%` }} /></div>
-                  <div className="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar">{STEPS.map((s,i)=>(<span key={s} className={`shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full ${i<=idx?"bg-brand-50 text-brand-700":"bg-surface text-muted"}`}>{s}</span>))}</div>
-                </>);
-              })() : (<>
-                <div className="text-[15px] font-extrabold text-ink">예식일을 알려주세요</div>
-                <p className="text-[13px] text-muted mt-1 leading-relaxed">예식일에 맞춰 준비 일정과 확인할 항목을 챙겨드려요.</p>
-                {user ? (
-                  <div className="flex gap-2 mt-3">
-                    <input type="date" value={wd} onChange={(e)=>setWd(e.target.value)} className="flex-1 h-11 rounded-xl border border-line px-3 text-sm text-ink bg-white" />
-                    <button onClick={async()=>{ if(!wd) return; await supabase.from("profiles").upsert({ id: user.id, wedding_date: wd }); setProf({ ...(prof||{}), wedding_date: wd }); }} className="h-11 px-4 rounded-xl bg-brand-500 text-white font-bold text-sm">저장</button>
-                  </div>
-                ) : (
-                  <Link href="/login" className="inline-block mt-3 h-11 leading-[44px] px-5 rounded-xl bg-brand-50 text-brand-700 font-bold text-sm">로그인하고 일정 받기</Link>
-                )}
-              </>)}
-            </div>
+          {/* 모바일: AI 체크 + 일정 */}
+          <div className="grid gap-3 mt-5 md:hidden">
+            {aiCard}
+            {ddayCard}
+          </div>
+
+          {/* PC: 카테고리 카드 + 우측 AI/일정 */}
+          <div className="hidden md:grid md:grid-cols-[1.75fr_1fr] gap-5 mt-7 items-start">
+            <section>
+              <h2 className="text-[21px] font-extrabold text-ink mb-4">결혼 준비, 어디서부터 시작할까요?</h2>
+              <div className="grid grid-cols-4 gap-3.5">
+                {PC_CATS.map(([k, l, im]) => (
+                  <Link key={k} href={`/search?cat=${k}`} className="group bg-white border border-line rounded-2xl overflow-hidden shadow-card hover:-translate-y-0.5 hover:shadow-lg transition">
+                    <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `url('${im}')` }} />
+                    <div className="px-3.5 py-3"><b className="text-[15px] text-ink">{l}</b><div className="text-[12px] text-muted mt-0.5">비교하러 가기 ›</div></div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+            <section className="space-y-3">
+              {aiCard}
+              {ddayCard}
+            </section>
           </div>
 
           {compareV.length > 0 && (
-            <section className="pt-8"><SectionHeader title="내 비교함" more="/compare" /><div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">{compareV.slice(0,4).map((v)=><VendorCard key={v.id} v={v} />)}</div></section>
+            <section className="pt-8"><SectionHeader title="내 비교함" more="/compare" /><div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">{compareV.slice(0, 4).map((v) => <VendorCard key={v.id} v={v} />)}</div></section>
           )}
 
           <section className="pt-8">
             <SectionHeader title="지금 많이 비교하는 업체" sub="추가금 위험과 예상 최종가를 함께 확인하세요" more="/search" />
             <div className="flex gap-3 overflow-x-auto no-scrollbar md:grid md:grid-cols-4 md:overflow-visible">
-              {popular.slice(0,4).map((v)=>(<div key={v.id} className="w-[260px] md:w-auto shrink-0"><VendorCard v={v} /></div>))}
+              {popular.slice(0, 4).map((v) => (<div key={v.id} className="w-[260px] md:w-auto shrink-0"><VendorCard v={v} /></div>))}
             </div>
           </section>
 
           <section className="pt-8 pb-2">
             <SectionHeader title="지역별 인기 업체" more="/search" />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">{popular.slice(4,8).map((v)=><VendorCard key={v.id} v={v} />)}</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">{popular.slice(4, 8).map((v) => <VendorCard key={v.id} v={v} />)}</div>
           </section>
         </div>
       </div>

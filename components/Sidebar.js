@@ -32,12 +32,7 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="rounded-2xl bg-brand-50 border border-brand-100 p-4 mt-3">
-        <div className="text-xs text-muted font-bold">결혼 준비</div>
-        <div className="text-xl font-extrabold mt-0.5 text-brand-700">D-218</div>
-        <div className="mt-2 h-1.5 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: "32%" }} /></div>
-        <div className="text-[11px] text-muted mt-1">진행률 32%</div>
-      </div>
+
     </aside>
   );
 }
