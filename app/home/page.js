@@ -32,7 +32,7 @@ export default function Home() {
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data?.user ?? null; setUser(u);
       if (u) {
-        const { data: p } = await supabase.from("profiles").select("wedding_date, name, budget").eq("id", u.id).maybeSingle(); setProf(p || {});
+        const { data: p } = await supabase.from("profiles").select("wedding_date, name, budget, checklist").eq("id", u.id).maybeSingle(); setProf(p || {});
         const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", u.id).eq("read", false);
         setUnread(count || 0);
       }
@@ -103,9 +103,11 @@ export default function Home() {
       {prof?.wedding_date ? (() => {
         const dd = Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000);
         const idx = dd > 270 ? 0 : dd > 150 ? 1 : dd > 30 ? 2 : dd >= 0 ? 3 : 4;
+        const ckCnt = Object.values(prof.checklist || {}).filter(Boolean).length;
+        const pct = ckCnt > 0 ? Math.min(100, Math.round((ckCnt / 8) * 100)) : (idx / (STEPS.length - 1)) * 100;
         return (<>
           <div className="flex items-end justify-between"><div><div className="text-[13px] text-muted font-bold">{name}님의 결혼 준비</div><div className="text-[26px] font-extrabold text-brand-600 leading-tight">{dd >= 0 ? `D-${dd}` : `D+${-dd}`}</div></div><div className="text-sm text-muted font-bold">{STEPS[idx]} 단계</div></div>
-          <div className="mt-3 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${(idx / (STEPS.length - 1)) * 100}%` }} /></div>
+          <div className="mt-3 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${pct}%` }} /></div>
           <div className="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar">{STEPS.map((s, i) => (<span key={s} className={`shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full ${i <= idx ? "bg-brand-50 text-brand-700" : "bg-surface text-muted"}`}>{s}</span>))}</div>
         </>);
       })() : (<>

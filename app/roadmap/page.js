@@ -21,15 +21,24 @@ export default function Roadmap() {
   const [prof, setProf] = useState(null);
   const [wd, setWd] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [ck, setCk] = useState({});
 
   useEffect(() => {
     if (!supabase) { setLoaded(true); return; }
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data?.user ?? null; setUser(u);
-      if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date").eq("id", u.id).maybeSingle(); setProf(p || {}); }
+      if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date, checklist").eq("id", u.id).maybeSingle(); setProf(p || {}); setCk(p?.checklist || {}); }
       setLoaded(true);
     });
   }, []);
+
+  async function toggle(key) {
+    if (!user) return;
+    const next = { ...ck, [key]: !ck[key] };
+    setCk(next);
+    await supabase.from("profiles").update({ checklist: next }).eq("id", user.id);
+  }
+  const doneCnt = STEPS.filter((s) => ck[s.t]).length;
 
   const dd = prof?.wedding_date ? Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000) : null;
   const nowIdx = dd === null ? -1 : STEPS.findIndex((s, i) => dd >= s.min || i === STEPS.length - 1);
@@ -43,8 +52,8 @@ export default function Roadmap() {
           <div className="rounded-2xl bg-white border border-brand-100 p-5 shadow-card">
             {dd !== null ? (<>
               <div className="text-sm text-muted font-bold">결혼 준비 {dd >= 0 ? `D-${dd}` : `D+${-dd}`}</div>
-              <div className="mt-2 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${Math.max(6, (nowIdx / (STEPS.length - 1)) * 100)}%` }} /></div>
-              <div className="text-[12px] text-muted mt-1">현재 단계: <b className="text-brand-700">{STEPS[nowIdx]?.t}</b></div>
+              <div className="mt-2 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${Math.max(6, (doneCnt / STEPS.length) * 100)}%` }} /></div>
+              <div className="text-[12px] text-muted mt-1">체크리스트 <b className="text-brand-700">{doneCnt}/{STEPS.length}</b> · 현재 단계: <b className="text-brand-700">{STEPS[nowIdx]?.t}</b></div>
             </>) : (<>
               <div className="text-[15px] font-extrabold text-ink">예식일을 알려주시면 일정에 맞춰 정리해드려요</div>
               {loaded && (user ? (
@@ -60,12 +69,12 @@ export default function Roadmap() {
           <div className="mt-6 relative pl-7">
             <div className="absolute left-[10px] top-1 bottom-1 w-0.5 bg-line" />
             {STEPS.map((s, i) => {
-              const done = nowIdx >= 0 && i < nowIdx, now = i === nowIdx;
+              const done = !!ck[s.t], now = i === nowIdx;
               return (
                 <div key={i} className="relative pb-5">
-                  <span className={`absolute -left-7 top-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${now ? "bg-brand-grad text-white" : done ? "bg-brand-600 text-white" : "bg-white border border-line text-muted"}`}>{done ? "✓" : i + 1}</span>
+                  <button onClick={() => toggle(s.t)} title="완료 체크" className={`absolute -left-7 top-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition ${done ? "bg-brand-600 text-white" : now ? "bg-brand-grad text-white" : "bg-white border border-line text-muted hover:border-brand-400"}`}>{done ? "✓" : i + 1}</button>
                   <div className={`rounded-xl border p-4 ${now ? "border-brand-300 bg-brand-50" : "border-line bg-white"}`}>
-                    <div className="font-extrabold text-ink text-sm">{s.t} {now && <span className="text-[11px] text-brand-700">진행 중</span>}</div>
+                    <div className="flex items-center justify-between"><div className="font-extrabold text-ink text-sm">{s.t} {now && !done && <span className="text-[11px] text-brand-700">진행 중</span>}{done && <span className="text-[11px] text-[#1FA888]">완료</span>}</div>{user && <button onClick={() => toggle(s.t)} className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${done ? "bg-[#E8F8F3] text-[#1FA888]" : "bg-brand-50 text-brand-700"}`}>{done ? "완료 ✓" : "완료 체크"}</button>}</div>
                     <div className="text-[13px] text-muted mt-0.5">{s.d}</div>
                     {now && s.href && <Link href={s.href} className="inline-block mt-2 text-[12px] font-bold text-white bg-brand-grad px-3 py-1.5 rounded-lg">{s.cta}</Link>}
                   </div>

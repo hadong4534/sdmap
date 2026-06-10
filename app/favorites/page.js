@@ -13,25 +13,34 @@ export default function Favorites() {
   const [mine, setMine] = useState(null);
   const [partnerFavs, setPartnerFavs] = useState([]);
   const [partner, setPartner] = useState(null);
+  const [notes, setNotes] = useState({}); // vendorId -> { mine, partner }
+  const [draft, setDraft] = useState({});
+  const [uid, setUid] = useState(null);
   const { ids } = useCompare();
 
   useEffect(() => {
     if (!supabase) return;
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data?.user; if (!u) { router.replace("/login"); return; }
+      setUid(u.id);
       const [{ data: f }, { data: p }] = await Promise.all([
-        supabase.from("favorites").select("vendors(*)").eq("user_id", u.id),
+        supabase.from("favorites").select("note, vendors(*)").eq("user_id", u.id),
         supabase.from("profiles").select("partner_id").eq("id", u.id).maybeSingle(),
       ]);
       setMine((f || []).map((x) => x.vendors).filter(Boolean));
+      const nmap = {};
+      (f || []).forEach((x) => { if (x.vendors) nmap[x.vendors.id] = { ...(nmap[x.vendors.id] || {}), mine: x.note || "" }; });
       if (p?.partner_id) {
         const [{ data: pf }, { data: pp }] = await Promise.all([
-          supabase.from("favorites").select("vendors(*)").eq("user_id", p.partner_id),
+          supabase.from("favorites").select("note, vendors(*)").eq("user_id", p.partner_id),
           supabase.from("profiles").select("name").eq("id", p.partner_id).maybeSingle(),
         ]);
         setPartnerFavs((pf || []).map((x) => x.vendors).filter(Boolean));
+        (pf || []).forEach((x) => { if (x.vendors) nmap[x.vendors.id] = { ...(nmap[x.vendors.id] || {}), partner: x.note || "" }; });
         setPartner(pp);
       }
+      setNotes(nmap);
+      setDraft(Object.fromEntries(Object.entries(nmap).map(([k, v]) => [k, v.mine || ""])));
     });
   }, [router]);
 
@@ -43,10 +52,31 @@ export default function Favorites() {
   const inCompareCnt = (mine || []).filter((v) => ids.includes(v.id)).length;
   const pname = partner?.name || "파트너";
 
+  async function saveNote(vid) {
+    const text = (draft[vid] || "").trim();
+    await supabase.from("favorites").update({ note: text || null }).eq("user_id", uid).eq("vendor_id", vid);
+    setNotes({ ...notes, [vid]: { ...(notes[vid] || {}), mine: text } });
+  }
+
   const Row = ({ v, badge, color }) => (
     <div className="relative">
       <VendorListItem v={v} />
       {badge && <span className={`absolute top-3 right-3 text-[10px] font-extrabold px-2 py-0.5 rounded-full ${color}`}>{badge}</span>}
+      {partner && mineIds.has(v.id) && (
+        <div className="mt-1.5 flex gap-2 items-center">
+          <input
+            value={draft[v.id] ?? ""}
+            onChange={(e) => setDraft({ ...draft, [v.id]: e.target.value })}
+            onBlur={() => saveNote(v.id)}
+            placeholder="내 의견 남기기 (예: 야외 분위기가 좋아!)"
+            maxLength={80}
+            className="flex-1 h-9 rounded-xl border border-line px-3 text-[12.5px] bg-white outline-none focus:border-brand-300"
+          />
+        </div>
+      )}
+      {partner && notes[v.id]?.partner && (
+        <div className="mt-1.5 text-[12.5px] text-body bg-brand-50/70 rounded-xl px-3 py-2"><b className="text-brand-700">{pname}</b> · {notes[v.id].partner}</div>
+      )}
     </div>
   );
 
