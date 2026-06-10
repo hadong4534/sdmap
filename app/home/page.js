@@ -18,11 +18,13 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [popular, setPopular] = useState([]);
   const [compareV, setCompareV] = useState([]);
+  const [prof, setProf] = useState(null);
+  const [wd, setWd] = useState("");
   const { ids } = useCompare();
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
+    supabase.auth.getUser().then(async ({ data }) => { const u = data?.user ?? null; setUser(u); if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date, name").eq("id", u.id).maybeSingle(); setProf(p || {}); } });
     supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(8).then(({ data }) => setPopular(data || []));
   }, [router]);
   useEffect(() => { if (supabase && ids.length) supabase.from("vendors").select("*").in("id", ids).then(({ data }) => setCompareV(data || [])); else setCompareV([]); }, [ids]);
@@ -57,9 +59,26 @@ export default function Home() {
               <span className="absolute right-4 top-4 text-brand-300"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
             </div>
             <div className="rounded-[20px] border border-line bg-white p-5 shadow-card">
-              <div className="flex items-end justify-between"><div><div className="text-[13px] text-muted font-bold">{name}님의 결혼 준비</div><div className="text-[26px] font-extrabold text-brand-600 leading-tight">D-218</div></div><div className="text-sm text-muted font-bold">진행률 32%</div></div>
-              <div className="mt-3 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: "32%" }} /></div>
-              <div className="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar">{STEPS.map((s,i)=>(<span key={s} className={`shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full ${i<=1?"bg-brand-50 text-brand-700":"bg-surface text-muted"}`}>{s}</span>))}</div>
+              {prof?.wedding_date ? (() => {
+                const dd = Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000);
+                const idx = dd > 270 ? 0 : dd > 150 ? 1 : dd > 30 ? 2 : dd >= 0 ? 3 : 4;
+                return (<>
+                  <div className="flex items-end justify-between"><div><div className="text-[13px] text-muted font-bold">{name}님의 결혼 준비</div><div className="text-[26px] font-extrabold text-brand-600 leading-tight">{dd >= 0 ? `D-${dd}` : `D+${-dd}`}</div></div><div className="text-sm text-muted font-bold">{STEPS[idx]} 단계</div></div>
+                  <div className="mt-3 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${(idx / (STEPS.length - 1)) * 100}%` }} /></div>
+                  <div className="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar">{STEPS.map((s,i)=>(<span key={s} className={`shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full ${i<=idx?"bg-brand-50 text-brand-700":"bg-surface text-muted"}`}>{s}</span>))}</div>
+                </>);
+              })() : (<>
+                <div className="text-[15px] font-extrabold text-ink">예식일을 알려주세요</div>
+                <p className="text-[13px] text-muted mt-1 leading-relaxed">예식일에 맞춰 준비 일정과 확인할 항목을 챙겨드려요.</p>
+                {user ? (
+                  <div className="flex gap-2 mt-3">
+                    <input type="date" value={wd} onChange={(e)=>setWd(e.target.value)} className="flex-1 h-11 rounded-xl border border-line px-3 text-sm text-ink bg-white" />
+                    <button onClick={async()=>{ if(!wd) return; await supabase.from("profiles").upsert({ id: user.id, wedding_date: wd }); setProf({ ...(prof||{}), wedding_date: wd }); }} className="h-11 px-4 rounded-xl bg-brand-500 text-white font-bold text-sm">저장</button>
+                  </div>
+                ) : (
+                  <Link href="/login" className="inline-block mt-3 h-11 leading-[44px] px-5 rounded-xl bg-brand-50 text-brand-700 font-bold text-sm">로그인하고 일정 받기</Link>
+                )}
+              </>)}
             </div>
           </div>
 

@@ -21,6 +21,7 @@ export default function Shop() {
   const [user, setUser] = useState(null);
   const [fav, setFav] = useState(false);
   const [msg, setMsg] = useState("");
+  const [sheet, setSheet] = useState(null); // "price" | "risk"
   const { has, toggle } = useCompare();
 
   useEffect(() => {
@@ -76,7 +77,7 @@ export default function Shop() {
               <h1 className="text-[24px] font-extrabold text-ink mt-1.5 leading-tight">{v.name}</h1>
               <div className="text-[14px] text-muted mt-1">★ {v.rating} · 후기 {v.review_count} · 후기 신뢰도 <b className="text-ink">{v.review_trust_score}점</b></div>
               <div className="text-[14px] text-muted mt-0.5">{v.region} · {v.type}</div>
-              <div className="mt-4"><PriceSummaryCard v={v} /></div>
+              <div className="mt-4"><PriceSummaryCard v={v} onWhy={() => setSheet("price")} /></div>
               <div className="hidden md:flex gap-2 mt-3">
                 <button onClick={() => toggle(id)} className={`flex-1 h-12 rounded-xl font-extrabold border ${inCompare ? "bg-brand-500 text-white border-brand-500" : "bg-white text-brand-700 border-brand-200"}`}>{inCompare ? "비교함에 담김 ✓" : "비교함 담기"}</button>
                 <button onClick={consult} className="flex-1 h-12 rounded-xl bg-brand-500 text-white font-extrabold">상담 요청하기</button>
@@ -86,7 +87,7 @@ export default function Shop() {
 
           <div className="px-4 md:px-0 mt-6 space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
             <div className="md:col-span-2"><AiCheckCard v={v} title="AI 체크 요약" /></div>
-            <Card title="추가금 위험도"><RiskGauge score={v.risk_score} /></Card>
+            <Card title="추가금 위험도"><RiskGauge score={v.risk_score} /><button onClick={() => setSheet("risk")} className="mt-3 text-[12px] font-bold text-brand-600 underline underline-offset-2">위험도는 어떻게 정해지나요?</button></Card>
             <Card title="미포함 항목 (추가금 주의)"><ul className="space-y-1.5">{excl.map((e,i)=>(<li key={i} className="flex justify-between text-[14px]"><span className="text-body">{e.name}</span><span className="font-bold text-risk">{e.label}</span></li>))}{excl.length===0&&<li className="text-muted text-sm">미포함 항목 없음</li>}</ul></Card>
             <Card title="포함 항목"><ul className="space-y-1.5">{incl.map((t,i)=>(<li key={i} className="flex gap-2 text-[14px] text-body"><span className="text-safe">✓</span>{t}</li>))}</ul></Card>
             <Card title="계약 전 꼭 물어볼 질문"><ul className="space-y-2">{(v.contract_questions||[]).map((q,i)=>(<li key={i} className="flex gap-2 text-[14px] text-body"><span className="text-brand-500 font-bold">Q{i+1}.</span>{q}</li>))}</ul></Card>
@@ -96,6 +97,26 @@ export default function Shop() {
           {msg && <p className="mx-4 md:mx-0 mt-4 text-[13px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{msg}</p>}
         </div>
       </div>
+
+      <InfoSheet open={sheet === "price"} onClose={() => setSheet(null)} title="예상 최종가 계산 내역">
+        <div className="space-y-2 text-[14px]">
+          <div className="flex justify-between"><span className="text-muted">기준가 (업체 공개 가격)</span><b className="text-ink">{won(v.base_price)}</b></div>
+          <div className="pt-1 text-[12px] font-bold text-muted">+ 미포함 항목 (계약 시 추가될 수 있는 비용)</div>
+          {excl.map((e, i) => (<div key={i} className="flex justify-between pl-2"><span className="text-body">{e.name}</span><span className="font-bold text-risk">{e.label}</span></div>))}
+          {excl.length === 0 && <div className="pl-2 text-muted text-[13px]">미포함 항목 없음</div>}
+          <div className="flex justify-between border-t border-line pt-2"><span className="text-muted">예상 추가금</span><b className="text-risk">+{won(v.expected_extra_fee)}</b></div>
+          <div className="flex justify-between"><span className="font-extrabold text-ink">예상 최종가</span><b className="text-brand-600 text-[18px]">{won(v.estimated_final_price)}</b></div>
+        </div>
+      </InfoSheet>
+      <InfoSheet open={sheet === "risk"} onClose={() => setSheet(null)} title="추가금 위험도 산정 기준">
+        <p className="text-[14px] text-body leading-relaxed">위험도 <b>{v.risk_score}점</b>은 <b>미포함(추가 비용) 항목의 개수와 금액 규모</b>를 기준으로 계산해요.</p>
+        <div className="mt-3 space-y-1.5 text-[13.5px]">
+          <div className="flex justify-between"><span className="text-muted">미포함 항목 수</span><b className="text-ink">{excl.length}개</b></div>
+          <div className="flex justify-between"><span className="text-muted">예상 추가금 합계</span><b className="text-risk">+{won(v.expected_extra_fee)}</b></div>
+          <div className="flex justify-between"><span className="text-muted">기준가 대비 추가금 비율</span><b className="text-ink">{v.base_price ? Math.round((v.expected_extra_fee / v.base_price) * 100) : 0}%</b></div>
+        </div>
+        <p className="text-[13px] text-body mt-3 leading-relaxed">점수가 높을수록 계약 전에 확인할 항목이 많다는 뜻이에요. ‘계약 전 꼭 물어볼 질문’을 상담에서 확인해 보세요.</p>
+      </InfoSheet>
       <StickyCTA inCompare={inCompare} onCompare={() => toggle(id)} onConsult={consult} />
     </div>
   );

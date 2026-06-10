@@ -42,13 +42,14 @@ export function CategoryChip({ label, active, href }) {
   return <C href={href} className={`shrink-0 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap ${active ? "bg-brand-500 text-white" : "bg-white border border-line text-body"}`}>{label}</C>;
 }
 
-export function PriceSummaryCard({ v, className = "" }) {
+export function PriceSummaryCard({ v, className = "", onWhy }) {
   return (
     <div className={`rounded-2xl border border-line bg-white p-4 ${className}`}>
       <div className="flex items-center justify-between text-[15px]"><span className="text-muted font-bold">기본 견적</span><span className="font-bold text-ink text-lg">{won(v.base_price)}</span></div>
       <div className="flex items-center justify-between text-[15px] mt-2"><span className="text-muted font-bold">예상 추가 비용</span><span className="font-extrabold text-risk">+{won(v.expected_extra_fee)}</span></div>
       <div className="border-t border-line my-3" />
       <div className="flex items-center justify-between"><span className="text-ink font-extrabold">예상 최종가</span><span className="text-[22px] md:text-[28px] leading-none font-extrabold text-brand-600 whitespace-nowrap">{won(v.estimated_final_price)}</span></div>
+      {onWhy && <button onClick={onWhy} className="mt-2.5 text-[12px] font-bold text-brand-600 underline underline-offset-2">어떻게 계산했나요?</button>}
     </div>
   );
 }
@@ -166,6 +167,21 @@ export function IconQuickMenu() {
           <span className="text-[11px] font-bold text-body">{l}</span>
         </Link>
       ))}
+    </div>
+  );
+}
+
+export function InfoSheet({ open, onClose, title, children }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[60]" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div onClick={(e)=>e.stopPropagation()} className="absolute bottom-0 left-0 right-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md md:rounded-2xl bg-white rounded-t-3xl p-5 pb-[max(env(safe-area-inset-bottom),20px)] max-h-[80vh] overflow-y-auto">
+        <div className="mx-auto w-10 h-1 rounded-full bg-line mb-4 md:hidden" />
+        <div className="flex items-center justify-between mb-3"><b className="text-[16px] text-ink">{title}</b><button onClick={onClose} className="text-muted text-xl leading-none px-1">×</button></div>
+        {children}
+        <p className="text-[11.5px] text-muted mt-4 leading-relaxed">스드맵의 예상치는 업체가 공개한 정보와 미포함 항목 기준으로 계산한 참고용 수치예요. 실제 금액과 조건은 상담 시 꼭 확인해 보세요.</p>
+      </div>
     </div>
   );
 }
