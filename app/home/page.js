@@ -44,7 +44,44 @@ export default function Home() {
     setProf({ ...(prof || {}), wedding_date: wd });
   }
 
-  const aiCard = (
+  // 비교함 기반 인사이트
+  const fmtMan = (n) => `${Math.round(Math.abs(n) / 10000)}만원`;
+  let insights = null;
+  if (compareV.length >= 2) {
+    const avg = compareV.reduce((a, v) => a + (v.estimated_final_price || 0), 0) / compareV.length;
+    const risky = compareV.filter((v) => (v.risk_score || 0) >= 60);
+    const top = [...compareV].sort((a, b) => (b.estimated_final_price || 0) - (a.estimated_final_price || 0))[0];
+    const low = [...compareV].sort((a, b) => (a.estimated_final_price || 0) - (b.estimated_final_price || 0))[0];
+    insights = [
+      risky.length
+        ? { tone: "risk", text: <>비교 중인 {compareV.length}곳 중 <b>{risky.length}곳은 추가금 확인</b>이 필요해요.</> }
+        : { tone: "safe", text: <>비교 중인 {compareV.length}곳 모두 추가금 위험이 낮은 편이에요.</> },
+      { tone: "brand", text: <><b>{top.name}</b>는 예상 최종가가 비교함 평균보다 <b>{fmtMan(top.estimated_final_price - avg)} 높아요.</b></> },
+      { tone: "safe", text: <>예상 최종가 기준 <b>{low.name}</b>이 가장 합리적이에요.</> },
+    ];
+  }
+
+  const aiCard = insights ? (
+    <div className="rounded-[20px] border border-brand-100 bg-white p-5 shadow-card">
+      <div className="flex items-center gap-2">
+        <span className="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
+        <span className="font-extrabold text-ink text-[16px]">오늘의 스드맵 체크</span>
+        <span className="ml-auto text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full">{insights.length}건</span>
+      </div>
+      <ul className="mt-3 space-y-2">
+        {insights.map((it, i) => (
+          <li key={i} className="flex gap-2 text-[13.5px] text-body leading-relaxed">
+            <span className="mt-[7px] w-1.5 h-1.5 rounded-full shrink-0" style={{ background: it.tone === "risk" ? "#FF8A65" : it.tone === "safe" ? "#41C7A7" : "#8B6FE8" }} />
+            <span>{it.text}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="flex gap-2 mt-4">
+        <Link href="/compare" className="flex-1 h-10 rounded-xl bg-brand-500 text-white text-[13px] font-bold flex items-center justify-center">비교함 보기</Link>
+        <Link href="/quote" className="flex-1 h-10 rounded-xl bg-brand-50 text-brand-700 text-[13px] font-bold flex items-center justify-center">AI 견적 분석</Link>
+      </div>
+    </div>
+  ) : (
     <div className="rounded-[20px] border border-brand-100 bg-gradient-to-br from-brand-50 to-white p-5 shadow-card relative overflow-hidden">
       <div className="flex items-center gap-2"><span className="font-extrabold text-ink text-lg">AI 체크</span><span className="text-[10px] font-extrabold text-white bg-brand-500 px-1.5 py-0.5 rounded">NEW</span></div>
       <p className="text-[14px] text-body mt-2 leading-relaxed">견적의 숨겨진 항목과 추가 비용 위험을 찾아드려요.</p>

@@ -21,10 +21,10 @@ export default function Splash() {
       <img src="/images/intro_wide.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom hidden md:block" />
       <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-white/5 to-white/40" />
       <div className="relative z-10 min-h-[100dvh] flex flex-col items-center justify-center pb-[24vh]">
-        <div className="intro-rise flex flex-col items-center">
+        <div className="intro-rise flex flex-col items-center text-center px-8 py-7 md:px-14 md:py-10 rounded-[28px] md:bg-white/70 md:backdrop-blur-md md:shadow-[0_12px_48px_rgba(139,111,232,0.22)] md:border md:border-white/60">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo_full.png" alt="스드맵" className="w-44 max-w-[55%] h-auto drop-shadow-[0_2px_16px_rgba(255,255,255,0.95)]" />
-          <p className="mt-3 text-[15px] font-extrabold text-ink tracking-tight drop-shadow-[0_1px_10px_rgba(255,255,255,0.9)]">추가금까지 미리 아는 결혼 준비</p>
+          <img src="/images/logo_full.png" alt="스드맵" className="w-44 md:w-64 max-w-[60%] h-auto drop-shadow-[0_2px_16px_rgba(255,255,255,0.95)]" />
+          <p className="mt-3 md:mt-4 text-[15px] md:text-[21px] font-extrabold text-ink tracking-tight drop-shadow-[0_1px_10px_rgba(255,255,255,0.9)]">추가금까지 미리 아는 결혼 준비</p>
         </div>
       </div>
     </main>
