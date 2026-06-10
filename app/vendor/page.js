@@ -61,7 +61,7 @@ export default function Vendor() {
       const { data: v } = await supabase.from("vendors").select("*").eq("owner_id", user.id).maybeSingle();
       if (!v) { setOk(false); return; }
       setVendor(v);
-      setStore({ name: v.name || "", region: v.region || "", phone: v.phone || "", description: v.description || "", thumbnail_url: v.thumbnail_url || "" });
+      setStore({ name: v.name || "", region: v.region || "", phone: v.phone || "", type: v.type || "", description: v.description || "", thumbnail_url: v.thumbnail_url || "" });
       setGallery(Array.isArray(v.images) ? v.images : []);
       setPricing({ base_price: String(v.base_price ?? ""), expected_extra_fee: String(v.expected_extra_fee ?? ""), excluded: (Array.isArray(v.excluded_items) ? v.excluded_items : []).map((e) => `${e.name}|${e.label}`).join("\n") });
       setOk(true);
@@ -101,6 +101,11 @@ export default function Vendor() {
     if (error || data !== "ok") return setMsg("검수 요청 실패: " + (error?.message || data));
     setMsg("검수 요청 완료 — 입점관리자 승인 후 고객 화면에 반영돼요.");
     const { data: v } = await supabase.from("vendors").select("*").eq("id", vendor.id).maybeSingle(); if (v) setVendor(v);
+  }
+  async function requestPublish() {
+    setMsg("");
+    const { data, error } = await supabase.rpc("request_publish", { vid: vendor.id });
+    setMsg(error || data !== "ok" ? "요청 실패: " + (error?.message || data) : "노출 요청 완료 — 스드맵 담당자 확인 후 공개돼요.");
   }
   async function saveStore() {
     setMsg(""); const { error } = await supabase.from("vendors").update(store).eq("id", vendor.id);
@@ -158,6 +163,41 @@ export default function Vendor() {
             <button key={k} onClick={() => setTab(k)} className={`px-4 py-3 text-sm font-bold whitespace-nowrap border-b-2 ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-muted"}`}>{label}</button>
           ))}
         </nav>
+
+        {tab === "dash" && vendor && (() => {
+          const steps = [
+            ["대표 이미지 등록", !!vendor.thumbnail_url, "store"],
+            ["갤러리 사진 1장 이상", Array.isArray(vendor.images) && vendor.images.length > 0, "store"],
+            ["매장 소개 작성", !!vendor.description, "store"],
+            ["가격·구성 정보 입력", !!vendor.base_price && !vendor.pending_update, "store"],
+          ];
+          const doneAll = steps.every(([, ok]) => ok);
+          if (vendor.status === "active" && doneAll) return null;
+          return (
+            <section className="pt-6">
+              <div className="bg-white border border-brand-100 rounded-2xl p-5">
+                <div className="flex items-center justify-between">
+                  <b className="text-[15px] text-ink">입점 준비 체크리스트 {vendor.status !== "active" && <span className="ml-1 text-[11px] font-extrabold text-[#E8663C] bg-[#FFF1EC] px-2 py-0.5 rounded">준비중 · 미공개</span>}</b>
+                  <span className="text-[12px] font-bold text-brand-700">{steps.filter(([, ok]) => ok).length}/{steps.length}</span>
+                </div>
+                <div className="mt-3 space-y-1.5">
+                  {steps.map(([label, ok, go]) => (
+                    <button key={label} onClick={() => setTab(go)} className="w-full flex items-center gap-2.5 text-left">
+                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${ok ? "bg-[#41C7A7] text-white" : "bg-white border border-line text-muted"}`}>{ok ? "✓" : ""}</span>
+                      <span className={`text-[13.5px] ${ok ? "text-muted line-through" : "text-body font-bold"}`}>{label}</span>
+                      {!ok && <span className="ml-auto text-[11px] text-brand-600 font-bold">설정 ›</span>}
+                    </button>
+                  ))}
+                </div>
+                {vendor.status !== "active" && (
+                  <button onClick={requestPublish} disabled={!doneAll} className="w-full mt-4 h-11 rounded-xl bg-brand-500 text-white text-sm font-bold disabled:opacity-40">
+                    {doneAll ? "노출(공개) 요청하기" : "체크리스트 완료 후 노출 요청 가능"}
+                  </button>
+                )}
+              </div>
+            </section>
+          );
+        })()}
 
         {tab === "dash" && (
           <section className="py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -244,6 +284,7 @@ export default function Vendor() {
               <input className={field} placeholder="매장명" value={store.name} onChange={(e) => setStore({ ...store, name: e.target.value })} />
               <input className={field} placeholder="지역" value={store.region} onChange={(e) => setStore({ ...store, region: e.target.value })} />
               <input className={field} placeholder="전화번호" value={store.phone} onChange={(e) => setStore({ ...store, phone: e.target.value })} />
+              <input className={field} placeholder="유형 (예: 실내+야외, 채플형, 본식+촬영)" value={store.type} onChange={(e) => setStore({ ...store, type: e.target.value })} />
               <textarea className={field + " h-24 py-2"} placeholder="소개" value={store.description} onChange={(e) => setStore({ ...store, description: e.target.value })} />
               <div>
                 <div className="text-[13px] font-bold text-ink mb-1.5">대표 이미지</div>

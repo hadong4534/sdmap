@@ -54,12 +54,12 @@ export default function Admin() {
   }
   async function setStatus(id, status) { await supabase.from("vendors").update({ status }).eq("id", id); load(); }
   async function approve(app) {
-    const { data: v, error } = await supabase.from("vendors").insert({ name: app.business_name, category: app.category, region: app.region, phone: app.contact_phone, status: "active" }).select("id").single();
+    const { data: v, error } = await supabase.from("vendors").insert({ name: app.business_name, category: app.category, region: app.region, phone: app.contact_phone, status: "hidden" }).select("id").single();
     if (error) { setMsg("승인 실패: " + error.message); return; }
     const { data: code } = await supabase.rpc("issue_vendor_claim_code", { vid: v.id });
     await supabase.from("vendor_applications").update({ status: "approved" }).eq("id", app.id);
     const sms = await smsClaim(app.contact_phone, code, app.business_name);
-    setMsg(`승인 완료 · 연결코드 ${code} · ${sms}`);
+    setMsg(`승인 완료(준비중 상태) · 연결코드 ${code} · ${sms} · 사장님 세팅 완료 후 노출 요청이 오면 활성화하세요.`);
     load();
   }
   async function smsClaim(phone, code, vendorName) {
@@ -160,7 +160,7 @@ export default function Admin() {
                   {vendors.map((v)=>(
                     <tr key={v.id} className="border-t border-line">
                       <td className="p-3 font-bold">{v.name}</td><td className="p-3">{CATS[v.category]}</td><td className="p-3">{v.region}</td>
-                      <td className="p-3"><span className={`text-xs font-bold px-2 py-0.5 rounded ${v.status==="active"?"bg-green-100 text-green-700":"bg-gray-100 text-gray-500"}`}>{v.status}</span></td>
+                      <td className="p-3"><span className={`text-xs font-bold px-2 py-0.5 rounded ${v.status==="active"?"bg-green-100 text-green-700":"bg-gray-100 text-gray-500"}`}>{({active:"공개",hidden:"준비중"})[v.status] || v.status}</span></td>
                       <td className="p-3">
                         {v.owner_id
                           ? <span className="text-xs font-bold text-[#1FA888] bg-[#E8F8F3] px-2 py-0.5 rounded">계정 연결됨</span>
