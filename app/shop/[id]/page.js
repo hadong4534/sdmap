@@ -48,6 +48,7 @@ export default function Shop() {
   }
 
   if (!v) return <main className="min-h-screen flex items-center justify-center text-muted">불러오는 중...</main>;
+  const imgs = [v.thumbnail_url, ...(Array.isArray(v.images) ? v.images : [])].filter(Boolean);
   const incl = Array.isArray(v.included_items) ? v.included_items : [];
   const excl = Array.isArray(v.excluded_items) ? v.excluded_items : [];
   const inCompare = has(id);
@@ -65,9 +66,9 @@ export default function Shop() {
                 <div className="md:hidden absolute top-4 right-4 flex gap-2">
                   <button onClick={toggleFav} className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-brand-500 text-lg">{fav ? "♥" : "♡"}</button>
                 </div>
-                <span className="absolute bottom-3 right-3 text-[11px] font-bold text-white bg-black/50 px-2 py-0.5 rounded-md">1 / 12</span>
+                {imgs.length > 1 && <span className="absolute bottom-3 right-3 text-[11px] font-bold text-white bg-black/50 px-2 py-0.5 rounded-md">1 / {imgs.length}</span>}
               </div>
-              <div className="hidden md:flex gap-2 mt-2">{[0,1,2,3].map((i)=>(<div key={i} className="flex-1 rounded-lg aspect-square" style={bg(CAT_IMG[["studio","dress","makeup","hall"][i]])} />))}</div>
+              {imgs.length > 1 && <div className="hidden md:flex gap-2 mt-2">{imgs.slice(0,5).map((im,i)=>(<div key={i} className="flex-1 rounded-lg aspect-square" style={bg(im)} />))}</div>}
             </div>
             <div className="px-4 md:px-0 pt-4 md:pt-0">
               <div className="flex items-center gap-2">
