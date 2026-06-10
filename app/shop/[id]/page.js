@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { CATS, CAT_IMG, won } from "@/lib/const";
 import { useCompare, recordView } from "@/lib/compare";
 import Sidebar from "@/components/Sidebar";
-import { AiCheckCard, PriceSummaryCard, RiskGauge, StickyCTA } from "@/components/ui";
+import { AiCheckCard, PriceSummaryCard, RiskGauge, StickyCTA, InfoSheet } from "@/components/ui";
 import ComparisonMini from "@/components/ComparisonMini";
 
 const bg = (s) => ({ backgroundImage: `url('${s}')`, backgroundSize: "cover", backgroundPosition: "center" });
