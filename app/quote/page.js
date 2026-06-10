@@ -2,7 +2,9 @@
 import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import TabBar from "@/components/TabBar";
-import { RiskGauge } from "@/components/ui";
+import { RiskGauge, VendorListItem } from "@/components/ui";
+import { supabase } from "@/lib/supabaseClient";
+import Link from "next/link";
 const won = (n) => (n || 0).toLocaleString() + "원";
 
 function Ico({ d, c }) { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{d}</svg>; }
@@ -16,6 +18,8 @@ export default function Quote() {
   const [busy, setBusy] = useState(false);
   const [res, setRes] = useState(null);
   const [err, setErr] = useState("");
+  const [cat, setCat] = useState("");
+  const [market, setMarket] = useState(null); // { avg, alts }
 
   function onFile(e) {
     const f = e.target.files?.[0]; if (!f) return;
@@ -34,6 +38,16 @@ export default function Quote() {
     } catch { setErr("네트워크 오류가 발생했어요."); }
     setBusy(false);
   }
+  async function pickCat(k) {
+    setCat(k);
+    if (!supabase) return;
+    const { data: vs } = await supabase.from("vendors").select("*").eq("status", "active").eq("category", k);
+    if (!vs || vs.length === 0) { setMarket({ avg: 0, alts: [] }); return; }
+    const avg = Math.round(vs.reduce((a, v) => a + (v.estimated_final_price || 0), 0) / vs.length);
+    const alts = [...vs].sort((a, b) => (a.estimated_final_price || 0) - (b.estimated_final_price || 0)).slice(0, 3);
+    setMarket({ avg, alts });
+  }
+
   const today = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
   const expected = res ? (res.total || 0) + (res.extraEstimate || 0) : 0;
 
@@ -103,6 +117,36 @@ export default function Quote() {
                   <div className="flex flex-wrap gap-1.5">{res.includedItems.map((m,i)=>(<span key={i} className="text-[12.5px] text-[#1E9E80] bg-[#EBFBF6] font-bold px-2.5 py-1 rounded-lg">{m}</span>))}</div>
                 </div>
               )}
+
+              {/* 시장 평균 비교 + 대안 업체 */}
+              <div className="rounded-2xl border border-brand-100 bg-white p-5">
+                <div className="font-extrabold text-ink">스드맵 등록 업체와 비교해보기</div>
+                <p className="text-[12.5px] text-muted mt-1">이 견적은 어떤 항목인가요?</p>
+                <div className="flex gap-2 mt-3">
+                  {[["studio","스튜디오"],["dress","드레스"],["makeup","메이크업"],["hall","웨딩홀"]].map(([k,l]) => (
+                    <button key={k} onClick={() => pickCat(k)} className={`flex-1 h-10 rounded-xl text-[13px] font-bold border ${cat === k ? "bg-brand-500 text-white border-brand-500" : "bg-white text-body border-line"}`}>{l}</button>
+                  ))}
+                </div>
+                {cat && market && (market.alts.length > 0 ? (
+                  <div className="mt-4">
+                    <div className="rounded-xl bg-surface p-3.5 flex items-center justify-between">
+                      <span className="text-[13px] text-muted font-bold">스드맵 평균 예상 최종가</span>
+                      <span className="font-extrabold text-ink">{won(market.avg)}</span>
+                    </div>
+                    <div className={`mt-2 rounded-xl p-3.5 flex items-center justify-between ${expected > market.avg ? "bg-[#FFF1EC]" : "bg-[#EBFBF6]"}`}>
+                      <span className={`text-[13px] font-bold ${expected > market.avg ? "text-risk" : "text-[#1E9E80]"}`}>이 견적의 예상 최종가</span>
+                      <span className={`font-extrabold ${expected > market.avg ? "text-risk" : "text-[#1E9E80]"}`}>{won(expected)} ({expected > market.avg ? "+" : "−"}{won(Math.abs(expected - market.avg))})</span>
+                    </div>
+                    <p className="text-[12px] text-muted mt-2">{expected > market.avg ? "평균보다 높게 보여요. 아래 대안 업체와 비교해 보세요." : "평균보다 합리적인 편이에요. 그래도 미포함 항목은 꼭 확인하세요."}</p>
+                    <div className="mt-3 space-y-2.5">
+                      {market.alts.map((v) => <VendorListItem key={v.id} v={v} />)}
+                    </div>
+                    <Link href={`/search?cat=${cat}`} className="block mt-3 h-11 leading-[44px] text-center rounded-xl bg-brand-50 text-brand-700 font-bold text-[13px]">이 카테고리 전체 보기 →</Link>
+                  </div>
+                ) : (
+                  <p className="text-[13px] text-muted mt-3">이 카테고리에 등록된 업체가 아직 없어요.</p>
+                ))}
+              </div>
 
               <div className="flex gap-2 pt-1">
                 <button onClick={()=>window.print()} className="flex-1 h-12 rounded-xl border border-brand-200 bg-white text-brand-700 font-extrabold text-[14px]">분석 리포트 저장</button>
