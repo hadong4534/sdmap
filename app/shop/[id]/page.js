@@ -129,6 +129,7 @@ export default function Shop() {
                 )}
               </div>
               {imgs.length > 1 && <div className="hidden md:flex gap-2 mt-2">{imgs.slice(0, 5).map((im, i) => (<button key={i} onClick={() => setGIdx(i)} className={`flex-1 rounded-lg aspect-square border-2 ${i === Math.min(gIdx, imgs.length - 1) ? "border-brand-500" : "border-transparent opacity-80"}`} style={bg(im)} />))}</div>}
+            </div>
             <div className="px-4 md:px-0 pt-4 md:pt-0">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">{CATS[v.category]}</span>
