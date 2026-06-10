@@ -159,6 +159,7 @@ export default function Admin() {
             <button key={k} onClick={() => setTab(k)} className={`shrink-0 whitespace-nowrap px-4 py-3 text-sm font-bold border-b-2 ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-muted"}`}>{label}</button>
           ))}
         </nav>
+        {msg && <div className="mt-3 text-[13px] font-bold text-brand-700 bg-brand-50 border border-brand-100 rounded-xl px-4 py-3 break-all">{msg}</div>}
 
         {tab === "dash" && (
           <section className="py-6 grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -182,8 +183,7 @@ export default function Admin() {
                 <select className={field} value={form.status} onChange={(e)=>setForm({...form,status:e.target.value})}><option value="active">활성</option><option value="hidden">숨김</option></select>
                 <button onClick={addVendor} className="h-10 px-5 rounded-lg bg-brand-grad text-white font-bold text-sm">등록</button>
               </div>
-              {msg && <p className="text-xs text-brand-700 mt-2">{msg}</p>}
-            </div>
+                  </div>
             <div className="bg-white border border-line rounded-2xl overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체명</th><th className="text-left p-3">카테고리</th><th className="text-left p-3">지역</th><th className="text-left p-3">상태</th><th className="text-left p-3">계정 연결</th><th className="p-3">관리</th></tr></thead>
