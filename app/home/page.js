@@ -71,7 +71,54 @@ export default function Home() {
     ];
   }
 
+  // A 화법 헤드라인
+  let saveMan = null;
+  if (compareV.length >= 2) {
+    const avgP = compareV.reduce((a, x) => a + (x.estimated_final_price || 0), 0) / compareV.length;
+    const lowP = Math.min(...compareV.map((x) => x.estimated_final_price || 0));
+    saveMan = Math.max(1, Math.round((avgP - lowP) / 10000));
+  }
+  const ckPct = prof?.checklist ? Math.round((Object.values(prof.checklist).filter(Boolean).length / 8) * 100) : 0;
+
   const aiCard = insights ? (
+    <div className="relative rounded-[24px] p-[2px] overflow-hidden shadow-[0_16px_40px_rgba(122,95,224,0.35)]" style={{ background: "linear-gradient(120deg,#8B6FE8,#E08BF2 50%,#6FB9E8)" }}>
+      <span className="ai-shimmer z-10" />
+      <div className="relative rounded-[22px] p-5 text-white" style={{ background: "linear-gradient(135deg,#6E54CF 0%,#8265DE 60%,#9A78EC 100%)" }}>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold bg-white/15 px-2.5 py-1 rounded-full"><span className="live-dot" />스드맵 AI · 실시간 분석</span>
+          {ckPct > 0 && (
+            <span className="ml-auto relative w-10 h-10">
+              <svg viewBox="0 0 40 40" className="w-10 h-10 -rotate-90"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="4"/><circle cx="20" cy="20" r="16" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${ckPct} 100`} pathLength="100"/></svg>
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold">{ckPct}%</span>
+            </span>
+          )}
+        </div>
+        <ul className="mt-3.5 space-y-2">
+          {insights.slice(0, 3).map((it, i) => (
+            <li key={i} className="flex gap-2 text-[13.5px] leading-relaxed text-white/95">
+              <span className="mt-[7px] w-1.5 h-1.5 rounded-full shrink-0" style={{ background: it.tone === "risk" ? "#FFB28F" : it.tone === "safe" ? "#7CF2C8" : "#fff" }} />
+              <span>{it.text}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="flex gap-2 mt-4">
+          <Link href="/compare" className="flex-1 h-11 rounded-xl bg-white text-[#6E54CF] text-[13.5px] font-extrabold flex items-center justify-center press">비교함 보기</Link>
+          <Link href="/quote" className="flex-1 h-11 rounded-xl bg-white/15 text-white text-[13.5px] font-extrabold flex items-center justify-center press">AI 견적 분석</Link>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="relative rounded-[24px] overflow-hidden shadow-[0_16px_40px_rgba(122,95,224,0.30)]" style={{ background: "linear-gradient(135deg,#6E54CF 0%,#8265DE 55%,#9A78EC 100%)" }}>
+      <span className="ai-shimmer" />
+      <span className="absolute -right-8 -top-10 w-36 h-36 rounded-full bg-white/10" />
+      <div className="relative p-5 text-white">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold bg-white/15 px-2.5 py-1 rounded-full"><span className="live-dot" />스드맵 AI</span>
+        <h2 className="text-[19px] font-extrabold leading-[1.35] mt-3 tracking-tight">견적서 속 숨은 비용,<br />AI가 30초 만에 찾아드려요</h2>
+        <Link href="/quote" className="inline-block mt-4 h-11 leading-[44px] px-6 rounded-xl bg-white text-[#6E54CF] font-extrabold text-sm press">내 견적 AI 분석하기</Link>
+      </div>
+    </div>
+  );
+  const _legacyAiCard = false ? (
     <div className="rounded-[20px] border border-brand-100 bg-white p-5 shadow-card">
       <div className="flex items-center gap-2">
         <span className="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
@@ -106,7 +153,7 @@ export default function Home() {
   );
 
   const ddayCard = (
-    <div className="rounded-[20px] border border-line bg-white p-5 shadow-card">
+    <div className="rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(139,111,232,0.13)]">
       {prof?.wedding_date ? (() => {
         const dd = Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000);
         const idx = dd > 270 ? 0 : dd > 150 ? 1 : dd > 30 ? 2 : dd >= 0 ? 3 : 4;
@@ -133,10 +180,10 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
-        <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur px-4 py-3 flex items-center">
+        <header className="md:hidden sticky top-0 z-30 bg-transparent px-4 py-3 flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/logo_full.png" alt="스드맵" className="h-7 w-auto" />
           <span className="ml-2 text-[10px] font-extrabold text-white px-2 py-[3px] rounded-full" style={{ background: "linear-gradient(125deg,#8B6FE8,#A88BF2)" }}>AI 웨딩 비교</span>
@@ -144,8 +191,20 @@ export default function Home() {
         </header>
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-6">
+          {/* 인사말 헤드라인 */}
+          <div className="pt-3 pb-4 anim-up">
+            <h1 className="text-[24px] font-extrabold leading-[1.32] tracking-tight text-ink">
+              {saveMan
+                ? (<>{name}님, 비교만 잘해도<br /><span className="text-grad">{saveMan}만원 아낄</span> 수 있어요</>)
+                : user
+                  ? (<>{name}님,<br />오늘도 <span className="text-grad">현명한 결혼 준비</span> 하세요</>)
+                  : (<>결혼 준비,<br /><span className="text-grad">AI가 가장 현명한 선택</span>으로</>)}
+            </h1>
+            {prof?.wedding_date && <p className="text-[13px] text-muted mt-1.5 font-medium">D-{Math.max(0, Math.ceil((new Date(prof.wedding_date) - new Date()) / 86400000))} · 체크리스트 {Object.values(prof.checklist || {}).filter(Boolean).length}/8</p>}
+          </div>
+
           {/* 검색 */}
-          <form onSubmit={(e) => { e.preventDefault(); router.push(kw.trim() ? `/search?q=${encodeURIComponent(kw.trim())}` : "/search"); }} className="flex items-center gap-2 bg-white border border-line rounded-2xl px-4 h-12 shadow-card focus-within:border-brand-300">
+          <form onSubmit={(e) => { e.preventDefault(); router.push(kw.trim() ? `/search?q=${encodeURIComponent(kw.trim())}` : "/search"); }} className="flex items-center gap-2 bg-white/85 backdrop-blur rounded-[18px] px-4 h-[52px] shadow-[0_8px_28px_rgba(139,111,232,0.14)]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500 shrink-0"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg>
             <input value={kw} onChange={(e) => setKw(e.target.value)} placeholder="업체명, 지역, 키워드로 검색" className="flex-1 min-w-0 bg-transparent outline-none text-[15px] text-ink placeholder:text-muted" />
             {kw && <button type="submit" className="shrink-0 h-8 px-3 rounded-lg bg-brand-500 text-white text-[12px] font-bold">검색</button>}
@@ -155,7 +214,7 @@ export default function Home() {
           <div className="md:hidden"><IconQuickMenu categories={cats} /></div>
 
           {/* 가이드 배너 */}
-          <Link href="/guide" className="mt-4 flex items-center gap-3 bg-white border border-line rounded-2xl px-4 py-3 shadow-card">
+          <Link href="/guide" className="mt-4 flex items-center gap-3 bg-white rounded-[20px] px-4 py-3.5 shadow-[0_8px_24px_rgba(139,111,232,0.11)] press">
             <span className="w-9 h-9 rounded-xl bg-[#FFF2E8] text-[#E08A4A] flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
             <span className="text-[13.5px] text-body leading-snug"><b className="text-ink">계약 전 꼭 물어볼 질문</b> — 카테고리별 추가금·질문 가이드</span>
             <span className="ml-auto text-muted">›</span>
@@ -193,7 +252,7 @@ export default function Home() {
           <section className="pt-8">
             <SectionHeader title="지금 많이 비교하는 업체" sub="추가금 위험과 예상 최종가를 함께 확인하세요" more="/search" />
             <div className="flex gap-3 overflow-x-auto no-scrollbar md:grid md:grid-cols-4 md:overflow-visible">
-              {popular.slice(0, 4).map((v) => (<div key={v.id} className="w-[260px] md:w-auto shrink-0"><VendorCard v={v} /></div>))}
+              {popular.slice(0, 4).map((v, i) => (<div key={v.id} className="w-[260px] md:w-auto shrink-0"><VendorCard v={v} rank={i + 1} /></div>))}
             </div>
           </section>
 

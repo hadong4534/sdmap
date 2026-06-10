@@ -16,7 +16,7 @@ const ITEMS = [
 ];
 export default function TabBar({ active }) {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-line flex z-40 pb-[env(safe-area-inset-bottom)]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/85 backdrop-blur-xl border-t border-white/60 shadow-[0_-8px_30px_rgba(139,111,232,0.10)] flex z-40 pb-[env(safe-area-inset-bottom)]">
       {ITEMS.map((t) => (
         <Link key={t.k} href={t.href} className={`relative flex-1 h-[70px] flex flex-col items-center justify-center gap-1 text-[11.5px] ${active === t.k ? "text-brand-600 font-extrabold" : "text-muted font-bold"}`}>
           {active === t.k && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-9 h-[3px] rounded-b-full bg-brand-500" />}

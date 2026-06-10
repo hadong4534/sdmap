@@ -49,12 +49,14 @@ export default function Compare() {
             </>
           ) : (
             <>
-              <div className="rounded-2xl border border-line bg-white p-4 mb-4">
-                <div className="flex items-center gap-2 font-extrabold text-ink mb-3"><span className="w-6 h-6 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>AI 비교 요약</div>
+              <div className="relative rounded-[22px] overflow-hidden p-4 mb-4 text-white shadow-[0_14px_36px_rgba(122,95,224,0.30)]" style={{ background: "linear-gradient(120deg,#6E54CF,#8265DE 55%,#9A78EC)" }}>
+                <span className="ai-shimmer" />
+                <div className="relative flex items-center gap-2 font-extrabold mb-1.5"><span className="inline-flex items-center gap-1.5 text-[10.5px] bg-white/15 px-2.5 py-1 rounded-full"><span className="live-dot" />스드맵 AI</span></div>
+                {balance && <div className="relative text-[16px] font-extrabold leading-snug mb-3">가격·위험·후기를 종합하면 <span className="underline decoration-white/50 underline-offset-4">{balance.name}</span>이 가장 균형 잡혔어요</div>}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                  {cheapest && <div className="rounded-xl bg-brand-50 p-3"><div className="text-[12px] text-muted font-bold">가격이 가장 합리적</div><div className="font-extrabold text-ink mt-0.5">{cheapest.name}</div><div className="text-[13px] text-brand-700 font-bold">{won(cheapest.estimated_final_price)}</div></div>}
-                  {safest && <div className="rounded-xl p-3" style={{ background: "#E8F8F3" }}><div className="text-[12px] text-muted font-bold">추가금 위험이 가장 낮음</div><div className="font-extrabold text-ink mt-0.5">{safest.name}</div><div className="text-[13px] font-bold" style={{ color: "#41C7A7" }}>위험 {safest.risk_score}점</div></div>}
-                  {balance && <div className="rounded-xl bg-surface p-3"><div className="text-[12px] text-muted font-bold">가격·안전 밸런스 추천</div><div className="font-extrabold text-ink mt-0.5">{balance.name}</div><div className="text-[13px] text-muted font-bold">종합 균형</div></div>}
+                  {cheapest && <div className="relative rounded-xl bg-white/12 backdrop-blur p-3"><div className="text-[11.5px] text-white/75 font-bold">가격이 가장 합리적</div><div className="font-extrabold mt-0.5">{cheapest.name}</div><div className="text-[13px] font-extrabold text-[#FFE9A8]">{won(cheapest.estimated_final_price)}</div></div>}
+                  {safest && <div className="relative rounded-xl bg-white/12 backdrop-blur p-3"><div className="text-[11.5px] text-white/75 font-bold">추가금 위험이 가장 낮음</div><div className="font-extrabold mt-0.5">{safest.name}</div><div className="text-[13px] font-extrabold text-[#7CF2C8]">위험 {safest.risk_score}점</div></div>}
+                  {balance && <div className="relative rounded-xl bg-white/12 backdrop-blur p-3"><div className="text-[11.5px] text-white/75 font-bold">밸런스 추천</div><div className="font-extrabold mt-0.5">{balance.name}</div><div className="text-[13px] font-extrabold text-white/90">종합 균형 1위</div></div>}
                 </div>
               </div>
 

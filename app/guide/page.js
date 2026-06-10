@@ -33,34 +33,50 @@ const GUIDES = [
 
 export default function Guide() {
   return (
-    <main className="min-h-screen bg-surface pb-16">
+    <main className="min-h-screen bg-aurora pb-16">
       <header className="bg-white border-b border-line"><div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/home" className="text-xl text-muted">‹</Link><b className="text-lg">계약 전 질문 가이드</b></div></header>
       <div className="max-w-2xl mx-auto px-5 pt-5 space-y-4">
-        <p className="text-[14px] text-body leading-relaxed">결혼 준비에서 추가금 분쟁의 대부분은 <b className="text-ink">계약 전에 묻지 않아서</b> 생겨요. 카테고리별로 자주 빠지는 비용과 상담에서 꼭 물어볼 질문을 정리했어요.</p>
+        <div className="pt-1 pb-2">
+          <span className="inline-block text-[11px] font-extrabold text-brand-700 bg-brand-50 px-3 py-1.5 rounded-full tracking-wide">스드맵 가이드</span>
+          <h1 className="text-[26px] font-extrabold leading-[1.3] tracking-tight text-ink mt-3">계약서에 사인하기 전,<br /><span className="text-grad">이것만은 꼭</span> 물어보세요</h1>
+          <p className="text-[14px] text-muted leading-relaxed mt-2.5">추가금 분쟁의 대부분은 &ldquo;계약 전에 묻지 않아서&rdquo; 생겨요.</p>
+        </div>
         {GUIDES.map((g) => (
-          <section key={g.k} className="bg-white border border-line rounded-2xl overflow-hidden">
-            <div className="px-5 py-4 flex items-center gap-2.5" style={{ background: g.bg }}>
-              <b className="text-[17px]" style={{ color: g.c }}>{g.t}</b>
-              <Link href={`/search?cat=${g.k}`} className="ml-auto text-[12px] font-bold px-3 py-1.5 rounded-lg bg-white" style={{ color: g.c }}>업체 비교 ›</Link>
+          <section key={g.k} className="bg-white rounded-[24px] overflow-hidden shadow-[0_10px_30px_rgba(139,111,232,0.12)]">
+            <div className="relative px-5 py-5 overflow-hidden" style={{ background: `linear-gradient(120deg, ${g.bg}, #fff)` }}>
+              <span className="absolute -right-1 -top-5 text-[64px] font-black italic opacity-[0.08] select-none" style={{ color: g.c }}>{g.k.toUpperCase()}</span>
+              <b className="relative text-[20px] tracking-tight" style={{ color: g.c }}>{g.t}에서 새는 돈</b>
+              <Link href={`/search?cat=${g.k}`} className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] font-extrabold px-3.5 py-2 rounded-xl bg-white shadow-sm" style={{ color: g.c }}>업체 비교 ›</Link>
             </div>
             <div className="p-5">
-              <div className="text-[13px] font-extrabold text-ink mb-2">자주 빠지는 추가금</div>
-              <ul className="space-y-1.5 mb-4">
-                {g.fees.map(([n, d]) => (<li key={n} className="flex justify-between gap-3 text-[13px]"><span className="text-body font-bold shrink-0">{n}</span><span className="text-muted text-right">{d}</span></li>))}
-              </ul>
-              <div className="text-[13px] font-extrabold text-ink mb-2">계약 전 꼭 물어볼 질문</div>
-              <ul className="space-y-1.5 mb-4">
-                {g.qs.map((q, i) => (<li key={i} className="flex gap-2 text-[13px] text-body leading-relaxed"><b style={{ color: g.c }}>Q{i + 1}.</b>{q}</li>))}
-              </ul>
-              <div className="rounded-xl px-3.5 py-3 text-[12.5px] leading-relaxed text-body" style={{ background: g.bg }}>
-                <b style={{ color: g.c }}>TIP</b> · {g.tip}
+              <div className="space-y-2.5 mb-6">
+                {g.fees.map(([n, d], i) => (
+                  <div key={n} className="grid grid-cols-[84px_1fr_auto] items-center gap-2.5">
+                    <span className="text-[12.5px] font-bold text-body truncate">{n}</span>
+                    <span className="h-[9px] rounded-full bg-surface overflow-hidden"><i className="block h-full rounded-full" style={{ width: `${88 - i * 14}%`, background: `linear-gradient(90deg, ${g.c}55, ${g.c})` }} /></span>
+                    <span className="text-[11.5px] font-extrabold text-right" style={{ color: g.c }}>{d.split(" — ")[0]}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2.5 mb-5">
+                {g.qs.map((q, i) => (
+                  <div key={i} className="flex gap-3.5 items-start bg-surface/60 rounded-2xl px-4 py-3.5">
+                    <span className="text-[21px] font-black italic leading-none mt-0.5 font-serif" style={{ color: g.c }}>{`Q${i + 1}`}</span>
+                    <span className="text-[13.5px] font-bold text-ink leading-snug pt-1">{q}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="rounded-[18px] p-[1.5px]" style={{ background: `linear-gradient(120deg, ${g.c}, ${g.c}44)` }}>
+                <div className="rounded-[17px] bg-white px-4 py-3.5 text-[12.5px] leading-relaxed text-body">
+                  <b style={{ color: g.c }}>스드맵 TIP</b> — {g.tip}
+                </div>
               </div>
             </div>
           </section>
         ))}
-        <div className="rounded-2xl bg-brand-50 border border-brand-100 p-5 text-center">
-          <p className="text-[14px] font-extrabold text-ink">받은 견적서가 있다면, AI가 누락 항목을 찾아드려요</p>
-          <Link href="/quote" className="inline-block mt-3 h-11 leading-[44px] px-6 rounded-xl bg-brand-500 text-white text-sm font-bold">견적서 AI 분석하기</Link>
+        <div className="relative overflow-hidden rounded-[24px] p-6 text-center text-white shadow-[0_16px_40px_rgba(122,95,224,0.35)]" style={{ background: "linear-gradient(120deg,#6E54CF,#8265DE 55%,#9A78EC)" }}>
+          <p className="text-[16px] font-extrabold leading-snug">받은 견적서가 있다면,<br />AI가 누락 항목을 찾아드려요</p>
+          <Link href="/quote" className="inline-block mt-4 h-12 leading-[48px] px-7 rounded-2xl bg-white text-[#6E54CF] text-sm font-extrabold shadow-lg">견적서 AI 분석하기</Link>
         </div>
       </div>
     </main>

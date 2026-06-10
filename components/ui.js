@@ -21,8 +21,8 @@ export function RiskGauge({ score = 0 }) {
   const r = riskLevel(score);
   return (
     <div>
-      <div className="flex items-end justify-between mb-1.5"><span className="text-3xl font-extrabold text-ink">{score}<span className="text-base text-muted">/100</span></span><span className="text-sm font-extrabold" style={{ color: r.color }}>{r.label}</span></div>
-      <div className="h-2.5 rounded-full bg-line overflow-hidden"><div className="h-full rounded-full" style={{ width: `${score}%`, background: r.color }} /></div>
+      <div className="flex items-end justify-between mb-2"><span className="text-[46px] leading-none font-black text-ink tracking-tight">{score}<span className="text-[15px] text-muted font-bold ml-1">/ 100</span></span><span className="text-sm font-extrabold px-2.5 py-1 rounded-lg" style={{ color: r.color, background: r.bg }}>{r.label}</span></div>
+      <div className="h-3 rounded-full bg-line overflow-hidden"><div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, background: `linear-gradient(90deg, ${r.color}88, ${r.color})` }} /></div>
       <div className="flex justify-between text-[11px] text-muted mt-1"><span>낮음</span><span>보통</span><span>높음</span></div>
     </div>
   );
@@ -31,7 +31,7 @@ export function RiskGauge({ score = 0 }) {
 export function SectionHeader({ title, sub, more }) {
   return (
     <div className="flex items-end justify-between mb-3">
-      <div><h3 className="text-lg md:text-[22px] font-extrabold text-ink leading-tight">{title}</h3>{sub && <p className="text-[13px] text-muted mt-0.5">{sub}</p>}</div>
+      <div><h3 className="text-[20px] md:text-[23px] font-extrabold text-ink leading-tight tracking-tight">{title}</h3>{sub && <p className="text-[13px] text-muted mt-0.5">{sub}</p>}</div>
       {more && <Link href={more} className="text-[13px] text-brand-600 font-bold shrink-0">전체보기 ›</Link>}
     </div>
   );
@@ -44,11 +44,11 @@ export function CategoryChip({ label, active, href }) {
 
 export function PriceSummaryCard({ v, className = "", onWhy }) {
   return (
-    <div className={`rounded-2xl border border-line bg-white p-4 ${className}`}>
+    <div className={`rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(139,111,232,0.13)] ${className}`}>
       <div className="flex items-center justify-between text-[15px]"><span className="text-muted font-bold">기본 견적</span><span className="font-bold text-ink text-lg">{won(v.base_price)}</span></div>
       <div className="flex items-center justify-between text-[15px] mt-2"><span className="text-muted font-bold">예상 추가 비용</span><span className="font-extrabold text-risk">+{won(v.expected_extra_fee)}</span></div>
       <div className="border-t border-line my-3" />
-      <div className="flex items-center justify-between"><span className="text-ink font-extrabold">예상 최종가</span><span className="text-[22px] md:text-[28px] leading-none font-extrabold text-brand-600 whitespace-nowrap">{won(v.estimated_final_price)}</span></div>
+      <div className="flex items-center justify-between"><span className="text-ink font-extrabold">예상 최종가</span><span className="text-[30px] md:text-[34px] leading-none font-black text-ink whitespace-nowrap tracking-tight">{won(v.estimated_final_price)}</span></div>
       {onWhy && <button onClick={onWhy} className="mt-2.5 text-[12px] font-bold text-brand-600 underline underline-offset-2">어떻게 계산했나요?</button>}
     </div>
   );
@@ -81,14 +81,15 @@ export function EmptyState({ icon, title, desc, ctaLabel, ctaHref, children }) {
   );
 }
 
-export function VendorCard({ v }) {
+export function VendorCard({ v, rank }) {
   const { has, toggle } = useCompare();
   const r = riskLevel(v.risk_score);
   const inC = has(v.id);
   return (
-    <div className="bg-white border border-line rounded-[18px] overflow-hidden shadow-card">
+    <div className="bg-white rounded-[22px] overflow-hidden shadow-[0_10px_30px_rgba(139,111,232,0.13)] press">
       <Link href={`/shop/${v.id}`} className="block relative h-36 md:h-44" style={bg(v.thumbnail_url || CAT_IMG[v.category])}>
-        <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold text-brand-700 bg-white/90 px-2 py-0.5 rounded-md">{CATS[v.category]}</span>
+        {rank && <span className="absolute top-1.5 left-3 text-[30px] font-black italic text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)] leading-none">{rank}</span>}
+        {!rank && <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold text-brand-700 bg-white/90 px-2 py-0.5 rounded-md">{CATS[v.category]}</span>}
         <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md" style={{ color: r.color, background: r.bg }}>{r.label}</span>
       </Link>
       <div className="p-3 md:p-4">
@@ -97,7 +98,7 @@ export function VendorCard({ v }) {
         <div className="mt-2">
           <div className="text-[11px] text-muted">예상 최종가</div>
           <div className="flex items-baseline gap-1.5 whitespace-nowrap">
-            <span className="text-[17px] md:text-[21px] font-extrabold text-brand-600 leading-none">{won(v.estimated_final_price)}</span>
+            <span className="text-[19px] md:text-[22px] font-extrabold text-brand-700 leading-none tracking-tight">{won(v.estimated_final_price)}</span>
             <span className="text-[11px] text-muted line-through">{won(v.base_price)}</span>
           </div>
         </div>
@@ -115,7 +116,7 @@ export function VendorListItem({ v }) {
   const r = riskLevel(v.risk_score);
   const inC = has(v.id);
   return (
-    <div className="bg-white border border-line rounded-[18px] p-3 shadow-card flex gap-3">
+    <div className="bg-white rounded-[20px] p-3 shadow-[0_8px_24px_rgba(139,111,232,0.11)] flex gap-3 press">
       <Link href={`/shop/${v.id}`} className="w-28 shrink-0 rounded-2xl relative" style={{ aspectRatio: "1/1", ...bg(v.thumbnail_url || CAT_IMG[v.category]) }}>
         <span className="absolute top-2 left-2 text-[10px] font-extrabold text-brand-700 bg-white/90 px-1.5 py-0.5 rounded">{CATS[v.category]}</span>
       </Link>
