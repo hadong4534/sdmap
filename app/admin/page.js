@@ -11,10 +11,13 @@ const field = "h-10 rounded-lg border border-line px-3 text-sm outline-none focu
 export default function Admin() {
   const router = useRouter();
   const [ok, setOk] = useState(null);
+  const [myRole, setMyRole] = useState("");
   const [tab, setTab] = useState("dash");
   const [vendors, setVendors] = useState([]);
   const [apps, setApps] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
+  const [users, setUsers] = useState([]);
   const [form, setForm] = useState({ name: "", category: "studio", region: "서울", status: "active" });
   const [msg, setMsg] = useState("");
 
@@ -24,18 +27,24 @@ export default function Admin() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.replace("/login"); return; }
       const { data: prof } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-      if (!prof || prof.role !== "admin") { setOk(false); return; }
-      setOk(true); load();
+      if (!prof || !["admin","manager","cs"].includes(prof.role)) { setOk(false); return; }
+      setMyRole(prof.role); setOk(true); load(prof.role);
     })();
   }, [router]);
 
-  async function load() {
-    const [{ data: v }, { data: a }, { data: b }] = await Promise.all([
+  async function load(role) {
+    const r = role || myRole;
+    const [{ data: v }, { data: a }, { data: b }, { data: cs }] = await Promise.all([
       supabase.from("vendors").select("*").order("created_at", { ascending: false }),
       supabase.from("vendor_applications").select("*").order("created_at", { ascending: false }),
       supabase.from("bookings").select("*, vendors(name)").order("created_at", { ascending: false }).limit(200),
+      supabase.from("cs_inquiries").select("*, vendors(name)").order("created_at", { ascending: false }).limit(200),
     ]);
-    setVendors(v || []); setApps(a || []); setBookings(b || []);
+    setVendors(v || []); setApps(a || []); setBookings(b || []); setInquiries(cs || []);
+    if (r === "admin") {
+      const { data: u } = await supabase.from("profiles").select("id, name, phone, role, created_at").order("created_at", { ascending: false }).limit(300);
+      setUsers(u || []);
+    }
   }
   async function addVendor() {
     setMsg(""); if (!form.name) return setMsg("업체명을 입력하세요.");
@@ -49,6 +58,15 @@ export default function Admin() {
     await supabase.from("vendor_applications").update({ status: "approved" }).eq("id", app.id); load();
   }
   async function reject(id) { await supabase.from("vendor_applications").update({ status: "rejected" }).eq("id", id); load(); }
+  async function answerInquiry(id) {
+    const a = window.prompt("답변 내용을 입력하세요"); if (!a) return;
+    const { error } = await supabase.from("cs_inquiries").update({ answer: a, status: "answered", answered_at: new Date().toISOString() }).eq("id", id);
+    if (error) setMsg("답변 실패: " + error.message); load();
+  }
+  async function changeRole(id, role) {
+    const { error } = await supabase.from("profiles").update({ role }).eq("id", id);
+    if (error) setMsg("역할 변경 실패: " + error.message); else load();
+  }
 
   const revenue = bookings.filter((b) => ["confirmed", "done"].includes(b.status)).reduce((s, b) => s + (b.amount || 0), 0);
   const pendingApps = apps.filter((a) => a.status === "pending");
@@ -56,14 +74,23 @@ export default function Admin() {
   if (ok === null) return <main className="min-h-screen flex items-center justify-center text-muted">불러오는 중...</main>;
   if (ok === false) return <main className="min-h-screen flex items-center justify-center text-muted text-sm">관리자 전용 페이지입니다. (권한 없음)</main>;
 
-  const TABS = [["dash", "대시보드"], ["vendors", "업체 관리"], ["apps", `입점 신청${pendingApps.length ? ` (${pendingApps.length})` : ""}`], ["bookings", "예약 데이터"]];
+  const openCs = inquiries.filter((c) => c.status === "open" || !c.status).length;
+  const ALL_TABS = [
+    ["dash", "대시보드", ["admin","manager","cs"]],
+    ["vendors", "업체 관리", ["admin","manager"]],
+    ["apps", `입점 신청${pendingApps.length ? ` (${pendingApps.length})` : ""}`, ["admin","manager"]],
+    ["bookings", "예약 데이터", ["admin","manager"]],
+    ["cs", `CS 문의${openCs ? ` (${openCs})` : ""}`, ["admin","cs"]],
+    ["users", "회원·역할", ["admin"]],
+  ];
+  const TABS = ALL_TABS.filter(([,,roles]) => roles.includes(myRole)).map(([k,l]) => [k,l]);
 
   return (
     <div className="min-h-screen bg-surface">
       <header className="bg-ink text-white">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
           <span className="font-extrabold text-lg">스드맵 <span className="text-brand-300">ADMIN</span></span>
-          <span className="text-xs text-white/60">직원용 관리자</span>
+          <span className="text-xs text-white/60">{({admin:"최고관리자",manager:"입점관리자",cs:"CS담당자"})[myRole]}</span>
           <a href="/home" className="ml-auto text-xs text-white/70 underline">고객 화면 →</a>
         </div>
       </header>
@@ -96,7 +123,51 @@ export default function Admin() {
                 <select className={field} value={form.status} onChange={(e)=>setForm({...form,status:e.target.value})}><option value="active">활성</option><option value="hidden">숨김</option></select>
                 <button onClick={addVendor} className="h-10 px-5 rounded-lg bg-brand-grad text-white font-bold text-sm">등록</button>
               </div>
-              {msg && <p className="text-xs text-brand-700 mt-2">{msg}</p>}
+              {tab === "cs" && (
+          <section className="py-6 space-y-3">
+            {inquiries.map((c) => (
+              <div key={c.id} className="bg-white border border-line rounded-2xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="font-bold text-sm">{c.subject || "문의"} <span className="text-muted font-normal">· {c.vendors?.name || "플랫폼 일반 문의"}</span></div>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${(!c.status || c.status === "open") ? "bg-[#FFF1EC] text-[#E8663C]" : "bg-brand-50 text-brand-700"}`}>{(!c.status || c.status === "open") ? "미답변" : "답변완료"}</span>
+                </div>
+                <p className="text-sm text-body mt-2 whitespace-pre-wrap">{c.content}</p>
+                {c.answer && <div className="mt-2 bg-surface rounded-lg p-3 text-sm text-body"><b className="text-brand-700">답변</b> · {c.answer}</div>}
+                {(!c.status || c.status === "open") && <button onClick={() => answerInquiry(c.id)} className="mt-3 h-9 px-4 rounded-lg bg-brand-500 text-white text-xs font-bold">답변하기</button>}
+                <div className="text-[11px] text-muted mt-2">{new Date(c.created_at).toLocaleString("ko-KR")}</div>
+              </div>
+            ))}
+            {inquiries.length === 0 && <p className="text-center text-muted text-sm py-10">접수된 문의가 없어요.</p>}
+          </section>
+        )}
+
+        {tab === "users" && (
+          <section className="py-6 bg-white border border-line rounded-2xl mt-6 overflow-x-auto">
+            <table className="w-full text-sm min-w-[560px]">
+              <thead><tr className="text-left text-muted text-xs border-b border-line"><th className="px-4 py-2">이름</th><th className="px-4 py-2">연락처</th><th className="px-4 py-2">가입일</th><th className="px-4 py-2">역할</th></tr></thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id} className="border-b border-line/60">
+                    <td className="px-4 py-2.5 font-bold">{u.name || "-"}</td>
+                    <td className="px-4 py-2.5 text-muted">{u.phone || "-"}</td>
+                    <td className="px-4 py-2.5 text-muted">{u.created_at ? new Date(u.created_at).toLocaleDateString("ko-KR") : "-"}</td>
+                    <td className="px-4 py-2.5">
+                      <select value={u.role || "user"} onChange={(e) => changeRole(u.id, e.target.value)} className="h-9 rounded-lg border border-line px-2 text-xs bg-white">
+                        <option value="user">일반회원</option>
+                        <option value="vendor">입점업체</option>
+                        <option value="cs">CS담당자</option>
+                        <option value="manager">입점관리자</option>
+                        <option value="admin">최고관리자</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
+        {msg && <p className="text-xs text-brand-700 mt-2">{msg}</p>}
             </div>
             <div className="bg-white border border-line rounded-2xl overflow-hidden">
               <table className="w-full text-sm">

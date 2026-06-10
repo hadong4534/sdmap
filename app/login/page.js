@@ -80,6 +80,7 @@ export default function Login() {
           </div>
 
           <Link href="/home" className="w-full mt-2.5 h-11 md:h-10 rounded-xl border border-line text-body font-bold text-sm flex items-center justify-center">로그인 없이 둘러보기</Link>
+          <Link href="/partner" className="text-muted text-[12px] font-bold mt-4 underline underline-offset-2">사장님이신가요? 입점 신청하기</Link>
           {msg && <p className="mt-3 text-[12px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{msg}</p>}
         </div>
       </div>
