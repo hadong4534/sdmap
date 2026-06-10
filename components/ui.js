@@ -144,3 +144,28 @@ export function StickyCTA({ onCompare, onConsult, inCompare }) {
     </div>
   );
 }
+
+const _qm = [
+  ["studio","스튜디오","/search?cat=studio",<g key="a"><rect x="3" y="7" width="18" height="12" rx="2.5"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.4-2h5L16 7"/></g>],
+  ["dress","드레스","/search?cat=dress",<g key="b"><path d="M10 3l2 2 2-2M12 5v3M9 8l-3 11h12L15 8a3 3 0 00-6 0z"/></g>],
+  ["makeup","메이크업","/search?cat=makeup",<g key="c"><path d="M5 19l8-8M14 7l3 3M13 10l2.5-6 3.5 3.5-6 2.5"/><circle cx="7" cy="17" r="1.6"/></g>],
+  ["hall","웨딩홀","/search?cat=hall",<g key="d"><path d="M3 21V9l9-5 9 5v12M9 21v-6h6v6"/></g>],
+  ["snap","스냅","/search",<g key="e"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 16l-5-5L5 19"/></g>],
+  ["suit","예복","/search",<g key="f"><path d="M12 3a1.8 1.8 0 00-1 3.4L4 12v3h16v-3l-7-5.6A1.8 1.8 0 0012 3z"/></g>],
+  ["ring","예물","/search",<g key="g"><circle cx="12" cy="14" r="5.5"/><path d="M9 9l3-4 3 4"/></g>],
+  ["more","더보기","/search",<g key="h"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></g>],
+];
+export function IconQuickMenu() {
+  return (
+    <div className="grid grid-cols-4 gap-y-3.5 gap-x-1 mt-4">
+      {_qm.map(([k, l, h, icon]) => (
+        <Link key={k} href={h} className="flex flex-col items-center gap-1.5">
+          <span className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+          </span>
+          <span className="text-[11px] font-bold text-body">{l}</span>
+        </Link>
+      ))}
+    </div>
+  );
+}

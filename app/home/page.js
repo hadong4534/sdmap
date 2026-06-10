@@ -7,7 +7,7 @@ import { CATS, CAT_IMG, won } from "@/lib/const";
 import { useCompare, getRecent } from "@/lib/compare";
 import Sidebar from "@/components/Sidebar";
 import TabBar from "@/components/TabBar";
-import { VendorCard, SectionHeader, CategoryChip, riskLevel } from "@/components/ui";
+import { VendorCard, SectionHeader, IconQuickMenu } from "@/components/ui";
 
 const bg = (s) => ({ backgroundImage: `url('${s}')`, backgroundSize: "cover", backgroundPosition: "center" });
 const CATS_NAV = [["all","전체","/search"],["studio","스튜디오","/search?cat=studio"],["dress","드레스","/search?cat=dress"],["makeup","메이크업","/search?cat=makeup"],["hall","웨딩홀","/search?cat=hall"],["analyze","분석","/quote"],["etc","예물/예복","/search"]];
@@ -45,10 +45,8 @@ export default function Home() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-500"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg><span className="text-[15px] text-muted">업체명, 상품, 키워드로 검색</span>
           </Link>
 
-          {/* 카테고리 */}
-          <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar">
-            {CATS_NAV.map(([k,l,h]) => <CategoryChip key={k} label={l} href={h} active={k==="all"} />)}
-          </div>
+          {/* 빠른 메뉴 (보조 진입) */}
+          <IconQuickMenu />
 
           {/* AI 체크 + 진행률 */}
           <div className="grid md:grid-cols-2 gap-3 mt-5">
