@@ -39,50 +39,52 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-white md:flex">
-      {/* 비주얼 영역 — 인트로와 이어지는 연출 */}
-      <div className="relative h-[36vh] md:h-screen md:flex-[1.15] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/intro.jpg" alt="" className="absolute inset-0 w-full h-full object-cover md:hidden" />
-        <img src="/images/intro_wide.jpg" alt="" className="absolute inset-0 w-full h-full object-cover hidden md:block" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/35 md:bg-gradient-to-t" />
-        <div className="absolute bottom-9 left-6 right-6 md:bottom-14 md:left-12 text-white">
-          <p className="text-[19px] md:text-[27px] font-extrabold leading-snug drop-shadow-[0_1px_8px_rgba(0,0,0,0.35)]">숨은 추가금까지,<br />계약 전에 미리 확인하세요</p>
-          <p className="text-[12px] md:text-[14px] mt-2 opacity-95 font-bold drop-shadow">예상 최종가 비교 · AI 견적 분석 · 커플 비교함</p>
+    <main className="relative min-h-[100dvh] overflow-hidden bg-[#F3EEFF]">
+      {/* 백드롭: 모바일 세로 / PC 가로 — 화면 전체가 한 장의 이미지 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/brand_v.jpg" alt="" className="absolute inset-0 w-full h-full object-cover md:hidden" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/brand_w.jpg" alt="" className="absolute inset-0 w-full h-full object-cover hidden md:block" />
+      {/* 버튼 영역만 부드럽게 밝아지는 그라데이션 (경계 없는 화이트 페이드) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/35 to-white/85 md:bg-gradient-to-r md:from-transparent md:via-white/30 md:to-white/90" />
+
+      <div className="relative z-10 min-h-[100dvh] flex flex-col md:flex-row">
+        {/* 브랜드 카피 — 이미지 위에 직접 */}
+        <div className="flex-1 flex flex-col justify-end md:justify-center px-8 pt-14 pb-6 md:pl-[7vw] md:pb-0">
+          <div className="md:max-w-md">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo_full.png" alt="스드맵" className="w-36 md:w-52 h-auto" />
+            <p className="mt-4 md:mt-6 text-[21px] md:text-[30px] font-extrabold leading-[1.35] text-ink tracking-tight">숨은 추가금까지,<br />계약 전에 미리 확인하세요</p>
+            <p className="mt-2 text-[13px] md:text-[15px] font-bold text-[#7B748C]">예상 최종가 비교 · AI 견적 분석 · 커플 비교함</p>
+          </div>
         </div>
-      </div>
 
-      {/* 로그인 패널 */}
-      <div className="relative -mt-6 md:mt-0 md:flex-1 bg-white rounded-t-3xl md:rounded-none flex flex-col items-center md:justify-center px-7 pt-8 pb-10">
-        <div className="w-full max-w-sm md:max-w-[330px] flex flex-col items-center text-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo_full.png" alt="스드맵" className="w-28 md:w-36 h-auto" />
-          <p className="mt-2.5 text-[14px] md:text-[15px] font-bold text-ink">웨딩부터 신혼·출산까지, 한 곳에서</p>
-
-          <div className="w-full mt-6 md:mt-8 space-y-2.5">
-            <button onClick={() => oauth("kakao")} className="relative w-full h-12 md:h-11 rounded-xl bg-[#FEE500] text-[#191600] font-bold text-sm flex items-center justify-center">
-              <span className="absolute left-4"><KakaoIcon /></span> 카카오로 시작하기
+        {/* 로그인 액션 — 시트/카드 없이 떠 있는 버튼 */}
+        <div className="md:w-[420px] flex flex-col justify-start md:justify-center px-7 pb-12 md:pr-[6vw] md:pb-0">
+          <div className="w-full max-w-sm mx-auto space-y-2.5">
+            <button onClick={() => oauth("kakao")} className="relative w-full h-[52px] rounded-2xl bg-[#FEE500] text-[#191600] font-bold text-[15px] flex items-center justify-center shadow-[0_4px_18px_rgba(37,34,54,0.10)]">
+              <span className="absolute left-5"><KakaoIcon /></span> 카카오로 시작하기
             </button>
-            <button onClick={() => oauth("naver")} className="relative w-full h-12 md:h-11 rounded-xl bg-[#03C75A] text-white font-bold text-sm flex items-center justify-center">
-              <span className="absolute left-4"><NaverIcon /></span> 네이버로 시작하기
+            <button onClick={() => oauth("naver")} className="relative w-full h-[52px] rounded-2xl bg-[#03C75A] text-white font-bold text-[15px] flex items-center justify-center shadow-[0_4px_18px_rgba(37,34,54,0.10)]">
+              <span className="absolute left-5"><NaverIcon /></span> 네이버로 시작하기
             </button>
-            <button onClick={() => oauth("google")} className="relative w-full h-12 md:h-11 rounded-xl bg-white border border-line text-[#1F1F1F] font-bold text-sm flex items-center justify-center">
-              <span className="absolute left-4"><GoogleIcon /></span> Google로 시작하기
+            <button onClick={() => oauth("google")} className="relative w-full h-[52px] rounded-2xl bg-white text-[#1F1F1F] font-bold text-[15px] flex items-center justify-center shadow-[0_4px_18px_rgba(37,34,54,0.10)]">
+              <span className="absolute left-5"><GoogleIcon /></span> Google로 시작하기
             </button>
-          </div>
 
-          <div className="flex items-center gap-3 w-full my-3 text-muted text-[11px]">
-            <span className="flex-1 h-px bg-line" /> 또는 <span className="flex-1 h-px bg-line" />
-          </div>
+            <div className="flex items-center gap-3 w-full pt-1.5 pb-0.5 text-[#7B748C] text-[11px]">
+              <span className="flex-1 h-px bg-[#252236]/10" /> 또는 <span className="flex-1 h-px bg-[#252236]/10" />
+            </div>
 
-          <div className="w-full flex gap-2">
-            <Link href="/signin" className="flex-1 h-11 md:h-10 rounded-xl bg-brand-grad text-white font-bold text-sm flex items-center justify-center">로그인</Link>
-            <Link href="/signup" className="flex-1 h-11 md:h-10 rounded-xl bg-brand-50 text-brand-700 font-bold text-sm flex items-center justify-center">회원가입</Link>
-          </div>
+            <div className="w-full flex gap-2">
+              <Link href="/signin" className="flex-1 h-11 rounded-2xl bg-brand-grad text-white font-bold text-sm flex items-center justify-center shadow-[0_4px_18px_rgba(139,111,232,0.25)]">로그인</Link>
+              <Link href="/signup" className="flex-1 h-11 rounded-2xl bg-white/80 backdrop-blur text-brand-700 font-bold text-sm flex items-center justify-center">회원가입</Link>
+            </div>
 
-          <Link href="/home" className="w-full mt-2.5 h-11 md:h-10 rounded-xl border border-line text-body font-bold text-sm flex items-center justify-center">로그인 없이 둘러보기</Link>
-          <Link href="/partner" className="text-muted text-[12px] font-bold mt-4 underline underline-offset-2">사장님이신가요? 입점 신청하기</Link>
-          {msg && <p className="mt-3 text-[12px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{msg}</p>}
+            <Link href="/home" className="block w-full text-center pt-3 text-[13.5px] font-bold text-[#564F6B] underline underline-offset-4 decoration-[#B7A6F0]">로그인 없이 둘러보기</Link>
+            <Link href="/partner" className="block w-full text-center pt-1 text-[12px] font-bold text-[#7B748C]">사장님이신가요? 입점 신청하기</Link>
+            {msg && <p className="mt-2 text-[12px] text-brand-700 bg-white/80 rounded-lg px-3 py-2">{msg}</p>}
+          </div>
         </div>
       </div>
     </main>

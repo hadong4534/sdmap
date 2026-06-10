@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-// 인트로 스플래시: 시네마틱 이미지 + 로고/카피, 약 2초 후 자동 이동 (탭 불필요)
+// 인트로: 여백형 브랜드 백드롭 위에 로고·카피가 직접 얹히는 구조 (박스 없음, 약 2초 자동 전환)
 export default function Splash() {
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
@@ -15,17 +15,24 @@ export default function Splash() {
   }, [router]);
 
   return (
-    <main className="relative min-h-[100dvh] overflow-hidden bg-brand-50 transition-opacity duration-500" style={{ opacity: leaving ? 0 : 1 }}>
+    <main className="relative min-h-[100dvh] overflow-hidden bg-[#F3EEFF] transition-opacity duration-500" style={{ opacity: leaving ? 0 : 1 }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/intro.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom md:hidden" />
-      <img src="/images/intro_wide.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom hidden md:block" />
-      <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-white/5 to-white/40" />
-      <div className="relative z-10 min-h-[100dvh] flex flex-col items-center justify-center pb-[24vh]">
-        <div className="intro-rise flex flex-col items-center text-center px-9 py-8 md:px-16 md:py-12 rounded-[30px] bg-white/88 backdrop-blur-lg shadow-[0_16px_56px_rgba(139,111,232,0.28)] border border-white/70">
+      <img src="/images/brand_v.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom md:hidden" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/brand_w.jpg" alt="" className="absolute inset-0 w-full h-full object-cover intro-zoom hidden md:block" />
+
+      <div className="relative z-10 min-h-[100dvh] flex flex-col items-center justify-center pb-[16vh] md:pb-[8vh]">
+        <div className="intro-rise flex flex-col items-center text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo_full.png" alt="스드맵" className="w-52 md:w-72 max-w-[64vw] h-auto" />
-          <p className="mt-3.5 md:mt-5 text-[17px] md:text-[24px] font-extrabold text-ink tracking-tight">추가금까지 미리 아는 결혼 준비</p>
+          <img src="/images/logo_full.png" alt="스드맵" className="w-56 md:w-80 max-w-[66vw] h-auto" />
+          <p className="mt-4 md:mt-6 text-[17px] md:text-[25px] font-extrabold text-ink/90 tracking-tight">추가금까지 미리 아는 결혼 준비</p>
+          <p className="mt-1.5 text-[12.5px] md:text-[15px] font-bold text-[#7B748C]">예상 최종가 비교 · AI 견적 분석 · 커플 비교함</p>
         </div>
+      </div>
+
+      {/* 하단 진행 점 */}
+      <div className="absolute bottom-9 left-1/2 -translate-x-1/2 flex gap-1.5 intro-rise">
+        <span className="w-5 h-1.5 rounded-full bg-brand-400" /><span className="w-1.5 h-1.5 rounded-full bg-brand-200" />
       </div>
     </main>
   );
