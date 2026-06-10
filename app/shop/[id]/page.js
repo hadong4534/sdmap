@@ -18,6 +18,9 @@ export default function Shop() {
   const [v, setV] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [similar, setSimilar] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [ask, setAsk] = useState({ subject: "", content: "" });
+  const [askMsg, setAskMsg] = useState("");
   const [user, setUser] = useState(null);
   const [fav, setFav] = useState(false);
   const [msg, setMsg] = useState("");
@@ -37,6 +40,7 @@ export default function Shop() {
       if (data) { const { data: sim } = await supabase.from("vendors").select("*").eq("category", data.category).eq("status", "active").neq("id", id).limit(4); setSimilar(sim || []); }
     });
     supabase.from("reviews").select("*").eq("vendor_id", id).order("created_at", { ascending: false }).then(({ data }) => setReviews(data || []));
+    supabase.from("products").select("*").eq("vendor_id", id).order("created_at").then(({ data }) => setProducts(data || []));
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data?.user ?? null; setUser(u);
       if (u) {
@@ -54,6 +58,14 @@ export default function Shop() {
     if (!user) return router.push("/login");
     if (fav) { await supabase.from("favorites").delete().eq("user_id", user.id).eq("vendor_id", id); setFav(false); }
     else { await supabase.from("favorites").insert({ user_id: user.id, vendor_id: id }); setFav(true); }
+  }
+  async function sendAsk() {
+    setAskMsg("");
+    if (!user) return router.push("/login");
+    if (!ask.subject || !ask.content) return setAskMsg("제목과 내용을 입력해 주세요.");
+    const { error } = await supabase.from("cs_inquiries").insert({ user_id: user.id, vendor_id: id, subject: ask.subject, content: ask.content, status: "open" });
+    if (error) return setAskMsg("접수 실패: " + error.message);
+    setAsk({ subject: "", content: "" }); setAskMsg("문의가 접수됐어요. 답변은 알림으로 알려드릴게요.");
   }
   async function consult() {
     if (!user) return router.push("/login");
@@ -119,6 +131,7 @@ export default function Shop() {
               <div className="text-[14px] text-muted mt-1">★ {v.rating} · 후기 {v.review_count} · 후기 신뢰도 <b className="text-ink">{v.review_trust_score}점</b></div>
               <div className="text-[14px] text-muted mt-0.5">{v.region} · {v.type}</div>
               <div className="mt-4"><PriceSummaryCard v={v} onWhy={() => setSheet("price")} /></div>
+              <button onClick={() => setSheet("ask")} className="mt-2 text-[12.5px] font-bold text-brand-600 underline underline-offset-2">업체에 직접 문의하기</button>
               <div className="hidden md:flex gap-2 mt-3">
                 <button onClick={() => toggle(id)} className={`flex-1 h-12 rounded-xl font-extrabold border ${inCompare ? "bg-brand-500 text-white border-brand-500" : "bg-white text-brand-700 border-brand-200"}`}>{inCompare ? "비교함에 담김 ✓" : "비교함 담기"}</button>
                 <button onClick={consult} className="flex-1 h-12 rounded-xl bg-brand-500 text-white font-extrabold">상담 요청하기</button>
@@ -131,6 +144,22 @@ export default function Shop() {
             <Card title="추가금 위험도"><RiskGauge score={v.risk_score} /><button onClick={() => setSheet("risk")} className="mt-3 text-[12px] font-bold text-brand-600 underline underline-offset-2">위험도는 어떻게 정해지나요?</button></Card>
             <Card title="미포함 항목 (추가금 주의)"><ul className="space-y-1.5">{excl.map((e,i)=>(<li key={i} className="flex justify-between text-[14px]"><span className="text-body">{e.name}</span><span className="font-bold text-risk">{e.label}</span></li>))}{excl.length===0&&<li className="text-muted text-sm">미포함 항목 없음</li>}</ul></Card>
             <Card title="포함 항목"><ul className="space-y-1.5">{incl.map((t,i)=>(<li key={i} className="flex gap-2 text-[14px] text-body"><span className="text-safe">✓</span>{t}</li>))}</ul></Card>
+            {products.length > 0 && (
+              <Card title="상품 · 패키지">
+                <div className="space-y-2.5">
+                  {products.map((p) => (
+                    <div key={p.id} className="border border-line rounded-xl p-3.5">
+                      <div className="flex items-center justify-between">
+                        <b className="text-[14px] text-ink">{p.name}</b>
+                        <b className="text-[15px] text-brand-700">{won(p.price)}</b>
+                      </div>
+                      {p.includes && <p className="text-[12.5px] text-muted mt-1">{p.includes}</p>}
+                      {p.instant_bookable && <span className="inline-block mt-1.5 text-[10.5px] font-extrabold text-[#1FA888] bg-[#E8F8F3] px-2 py-0.5 rounded">즉시 예약 가능</span>}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
             <Card title="계약 전 꼭 물어볼 질문"><ul className="space-y-2">{(v.contract_questions||[]).map((q,i)=>(<li key={i} className="flex gap-2 text-[14px] text-body"><span className="text-brand-500 font-bold">Q{i+1}.</span>{q}</li>))}</ul></Card>
             <div className="md:col-span-2"><ComparisonMini vendors={similar.slice(0,3)} /></div>
             <div className="md:col-span-2"><Card title={`후기 ${reviews.length} · 신뢰도 ${v.review_trust_score}점`}>
@@ -162,6 +191,14 @@ export default function Shop() {
           {excl.length === 0 && <div className="pl-2 text-muted text-[13px]">미포함 항목 없음</div>}
           <div className="flex justify-between border-t border-line pt-2"><span className="text-muted">예상 추가금</span><b className="text-risk">+{won(v.expected_extra_fee)}</b></div>
           <div className="flex justify-between"><span className="font-extrabold text-ink">예상 최종가</span><b className="text-brand-600 text-[18px]">{won(v.estimated_final_price)}</b></div>
+        </div>
+      </InfoSheet>
+      <InfoSheet open={sheet === "ask"} onClose={() => setSheet(null)} title={`${v.name}에 문의하기`}>
+        <div className="space-y-2">
+          <input value={ask.subject} onChange={(e) => setAsk({ ...ask, subject: e.target.value })} placeholder="제목 (예: 주말 예약 가능 여부)" className="w-full h-11 rounded-xl border border-line px-3 text-sm bg-white outline-none focus:border-brand-400" />
+          <textarea value={ask.content} onChange={(e) => setAsk({ ...ask, content: e.target.value })} rows={4} placeholder="문의 내용을 적어주세요" className="w-full rounded-xl border border-line px-3 py-2.5 text-sm bg-white resize-none outline-none focus:border-brand-400" />
+          <button onClick={sendAsk} className="w-full h-11 rounded-xl bg-brand-500 text-white text-sm font-bold">문의 보내기</button>
+          {askMsg && <p className="text-[12px] text-brand-700 bg-brand-50 rounded-lg px-3 py-2">{askMsg}</p>}
         </div>
       </InfoSheet>
       <InfoSheet open={sheet === "risk"} onClose={() => setSheet(null)} title="추가금 위험도 산정 기준">

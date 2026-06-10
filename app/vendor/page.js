@@ -42,6 +42,7 @@ export default function Vendor() {
   const [gallery, setGallery] = useState([]);
   const [pricing, setPricing] = useState({ base_price: "", expected_extra_fee: "", excluded: "" });
   const [upBusy, setUpBusy] = useState(false);
+  const [unread, setUnread] = useState(0);
   const [claimMsg, setClaimMsg] = useState("");
   async function doClaim() {
     setClaimMsg("");
@@ -66,6 +67,8 @@ export default function Vendor() {
       setPricing({ base_price: String(v.base_price ?? ""), expected_extra_fee: String(v.expected_extra_fee ?? ""), excluded: (Array.isArray(v.excluded_items) ? v.excluded_items : []).map((e) => `${e.name}|${e.label}`).join("\n") });
       setOk(true);
       loadAll(v.id);
+      const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false);
+      setUnread(count || 0);
     })();
   }, [router, loadAll]);
 
@@ -154,7 +157,11 @@ export default function Vendor() {
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
           <span className="font-extrabold text-lg">스드맵 파트너</span>
           <span className="text-sm text-white/85">{vendor.name} · {CATS[vendor.category]}</span>
-          <a href="/home" className="ml-auto text-xs text-white/80 underline">고객 화면 →</a>
+          <a href="/notifications" className="ml-auto relative flex items-center">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+            {unread > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-[15px] h-[15px] px-0.5 rounded-full bg-[#FF8A65] text-white text-[9px] font-extrabold flex items-center justify-center">{unread > 9 ? "9+" : unread}</span>}
+          </a>
+          <a href="/home" className="text-xs text-white/80 underline">고객 화면 →</a>
         </div>
       </header>
       <div className="max-w-5xl mx-auto px-6">
