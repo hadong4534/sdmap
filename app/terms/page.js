@@ -6,10 +6,10 @@ const P = ({ children }) => <p className="text-[13.5px] text-body leading-relaxe
 
 export default function Terms() {
   return (
-    <main className="min-h-screen bg-surface pb-16">
-      <header className="bg-white border-b border-line"><div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/login" className="text-xl text-muted">‹</Link><b className="text-lg">이용약관</b></div></header>
+    <main className="min-h-screen bg-aurora pb-16">
+      <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/login" className="text-xl text-muted">‹</Link><b className="text-lg">이용약관</b></div></header>
       <div className="max-w-2xl mx-auto px-5 pt-5">
-        <div className="bg-white border border-line rounded-2xl p-5 md:p-7">
+        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 md:p-7">
           <P>본 약관은 스드맵(이하 &ldquo;회사&rdquo;)이 제공하는 결혼 준비 비교·예약 플랫폼 서비스(이하 &ldquo;서비스&rdquo;)의 이용 조건을 정합니다.</P>
 
           <H>제1조 (정의)</H>

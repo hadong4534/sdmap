@@ -36,10 +36,10 @@ export default function Compare() {
   const balance = vendors.length ? vendors.reduce((a, b) => ((a.estimated_final_price / 100000 + a.risk_score) <= (b.estimated_final_price / 100000 + b.risk_score) ? a : b)) : null;
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-8">
-        <header className="bg-white border-b border-line"><div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between"><span className="font-extrabold text-[20px]">비교 보드 <span className="text-muted text-sm font-bold">{vendors.length}/4</span></span>{vendors.length > 0 && <button onClick={() => navigator.share?.({ title: "스드맵 비교", url: location.href }).catch(()=>{})} className="text-[13px] font-bold text-brand-700 bg-brand-50 px-3 py-2 rounded-lg">공유하기</button>}</div></header>
+        <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between"><span className="font-extrabold text-[20px]">비교 보드 <span className="text-muted text-sm font-bold">{vendors.length}/4</span></span>{vendors.length > 0 && <button onClick={() => navigator.share?.({ title: "스드맵 비교", url: location.href }).catch(()=>{})} className="text-[13px] font-bold text-brand-700 bg-brand-50 px-3 py-2 rounded-lg">공유하기</button>}</div></header>
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-5">
           {vendors.length === 0 ? (
@@ -60,7 +60,7 @@ export default function Compare() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+              <div className="overflow-x-auto rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)]">
                 <table className="w-full border-collapse min-w-[480px]">
                   <thead><tr><th className="w-24 p-2"></th>{vendors.map((v) => (<th key={v.id} className="p-2 align-top"><Link href={`/shop/${v.id}`}><div className="rounded-xl mb-2" style={{ aspectRatio: "4/3", ...bg(v.thumbnail_url || CAT_IMG[v.category]) }} /></Link><div className="font-extrabold text-[13px] text-center">{v.name}</div><button onClick={() => toggle(v.id)} className="block mx-auto mt-1 text-[11px] text-muted underline">빼기</button></th>))}</tr></thead>
                   <tbody>

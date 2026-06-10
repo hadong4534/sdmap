@@ -117,9 +117,11 @@ export default function My() {
   const menu = [["개인정보 설정", "/onboarding"], ["내 예약 / 계약", "/bookings"], ["위시리스트", "/favorites"], ["비교함", "/compare"]];
 
   return (
-    <div className="min-h-screen bg-surface pb-20">
+    <div className="min-h-screen bg-aurora pb-20">
       {/* 프로필 헤더 */}
-      <div className="bg-brand-grad text-white px-6 pt-8 pb-6">
+      <div className="relative overflow-hidden text-white px-6 pt-9 pb-7" style={{ background: "linear-gradient(125deg,#6E54CF 0%,#8265DE 55%,#9A78EC 100%)" }}>
+        <span className="ai-shimmer" />
+        <span className="absolute -right-10 -top-14 w-44 h-44 rounded-full bg-white/10" />
         <div className="max-w-3xl mx-auto flex items-center gap-4">
           <button onClick={() => fileRef.current?.click()} className="relative shrink-0">
             {prof?.avatar_url
@@ -138,12 +140,12 @@ export default function My() {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 py-4">
-        <div className="bg-white border border-line rounded-2xl overflow-hidden">
+        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden">
           {menu.map(([l, h]) => (<Link key={h} href={h} className="flex items-center justify-between px-5 py-4 border-b border-line last:border-0 text-sm font-bold">{l}<span className="text-muted">›</span></Link>))}
         </div>
 
         {/* 커플 연동 */}
-        <div className="bg-white border border-line rounded-2xl mt-3 p-5">
+        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] mt-3 p-5">
           <div className="flex items-center justify-between">
             <b className="text-sm text-ink">커플 계정 연동</b>
             {partner && <button onClick={unlink} className="text-[12px] text-muted underline">연결 해제</button>}
@@ -174,7 +176,7 @@ export default function My() {
         </div>
 
         {/* 1:1 문의 */}
-        <div className="bg-white border border-line rounded-2xl mt-3 p-5">
+        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] mt-3 p-5">
           <div className="flex items-center justify-between">
             <b className="text-sm text-ink">1:1 문의</b>
             <button onClick={() => setShowInq(!showInq)} className="h-9 px-4 rounded-lg bg-brand-50 text-brand-700 text-xs font-bold">{showInq ? "닫기" : "문의하기"}</button>
@@ -200,7 +202,7 @@ export default function My() {
         </div>
 
         {/* 계정 설정 */}
-        <div className="bg-white border border-line rounded-2xl mt-3 p-5">
+        <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] mt-3 p-5">
           <b className="text-sm text-ink">계정 설정</b>
           <div className="mt-3 space-y-2">
             <button onClick={() => setShowPw(!showPw)} className="w-full flex items-center justify-between text-sm font-bold text-body py-2">비밀번호 변경 <span className="text-muted">{showPw ? "▴" : "›"}</span></button>

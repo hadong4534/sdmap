@@ -1,7 +1,7 @@
 const won = (n) => (n || 0).toLocaleString() + "원";
 export default function PriceSummary({ v, big }) {
   return (
-    <div className="rounded-2xl border border-line bg-white p-4">
+    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
       <div className="flex items-center justify-between text-sm">
         <span className="text-muted font-bold">기준가</span>
         <span className="font-bold text-ink">{won(v.base_price)}</span>

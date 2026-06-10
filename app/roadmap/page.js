@@ -44,16 +44,16 @@ export default function Roadmap() {
   const nowIdx = dd === null ? -1 : STEPS.findIndex((s, i) => dd >= s.min || i === STEPS.length - 1);
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
-        <header className="bg-white border-b border-line"><div className="max-w-4xl mx-auto px-4 md:px-8 py-4 font-extrabold text-lg">준비 로드맵</div></header>
+        <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-4xl mx-auto px-4 md:px-8 py-4 font-extrabold text-lg">준비 로드맵</div></header>
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-6">
           <div className="rounded-2xl bg-white border border-brand-100 p-5 shadow-card">
             {dd !== null ? (<>
-              <div className="text-sm text-muted font-bold">결혼 준비 {dd >= 0 ? `D-${dd}` : `D+${-dd}`}</div>
-              <div className="mt-2 h-2 bg-brand-100 rounded-full overflow-hidden"><div className="h-full bg-brand-500 rounded-full" style={{ width: `${Math.max(6, (doneCnt / STEPS.length) * 100)}%` }} /></div>
-              <div className="text-[12px] text-muted mt-1">체크리스트 <b className="text-brand-700">{doneCnt}/{STEPS.length}</b> · 현재 단계: <b className="text-brand-700">{STEPS[nowIdx]?.t}</b></div>
+              <div className="text-[26px] font-black tracking-tight">{dd >= 0 ? `D-${dd}` : `D+${-dd}`}</div>
+              <div className="mt-2.5 h-2 bg-white/25 rounded-full overflow-hidden"><div className="h-full bg-white rounded-full" style={{ width: `${Math.max(6, (doneCnt / STEPS.length) * 100)}%` }} /></div>
+              <div className="text-[12px] text-white/85 mt-1.5">체크리스트 <b className="text-white">{doneCnt}/{STEPS.length}</b> · 현재 단계: <b className="text-white">{STEPS[nowIdx]?.t}</b></div>
             </>) : (<>
               <div className="text-[15px] font-extrabold text-ink">예식일을 알려주시면 일정에 맞춰 정리해드려요</div>
               {loaded && (user ? (

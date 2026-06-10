@@ -3,7 +3,7 @@ import { riskLevel } from "./RiskBadge";
 const won = (n) => (n || 0).toLocaleString() + "원";
 export default function ComparisonMini({ vendors, title = "비슷한 업체 비교" }) {
   return (
-    <div className="rounded-2xl border border-line bg-white p-4">
+    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
       <div className="font-extrabold text-ink text-sm mb-3">{title}</div>
       <div className="space-y-2">
         {vendors.map((v) => {

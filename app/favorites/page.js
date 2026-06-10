@@ -81,21 +81,21 @@ export default function Favorites() {
   );
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
-        <header className="bg-white border-b border-line"><div className="max-w-3xl mx-auto px-4 md:px-8 py-4 font-extrabold text-lg">{partner ? "커플 위시리스트" : "위시리스트"} {mine ? <span className="text-muted text-sm font-bold">{mine.length + onlyPartner.length}곳</span> : null}</div></header>
+        <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-3xl mx-auto px-4 md:px-8 py-4 font-extrabold text-lg">{partner ? "커플 위시리스트" : "위시리스트"} {mine ? <span className="text-muted text-sm font-bold">{mine.length + onlyPartner.length}곳</span> : null}</div></header>
         <main className="max-w-3xl mx-auto px-4 md:px-8 py-5 space-y-3">
           {mine === null && <p className="text-center text-muted text-sm py-10">불러오는 중...</p>}
 
           {mine && !partner && mine.length > 0 && (
-            <div className="rounded-2xl border border-brand-100 bg-white p-4 text-[13.5px] text-body">
+            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4 text-[13.5px] text-body">
               <b className="text-brand-700">커플 계정을 연결</b>하면 두 분의 찜을 한눈에 볼 수 있어요. <Link href="/my" className="font-bold text-brand-600 underline underline-offset-2">마이페이지에서 연결 →</Link>
             </div>
           )}
 
           {mine && mine.length > 0 && (
-            <div className="rounded-2xl border border-brand-100 bg-white p-4 flex items-center justify-between">
+            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4 flex items-center justify-between">
               <div className="text-[13.5px] text-body"><b className="text-brand-700">{inCompareCnt}곳</b>이 비교함에 담겨 있어요.</div>
               <Link href="/compare" className="shrink-0 h-10 px-4 rounded-xl bg-brand-500 text-white text-[13px] font-bold flex items-center">비교함 →</Link>
             </div>
@@ -111,7 +111,7 @@ export default function Favorites() {
               return score(a) - score(b);
             })[0];
             return (
-              <div className="rounded-2xl border border-brand-100 bg-white p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
                   <b className="text-[15.5px] text-ink">스드맵 AI 커플 요약</b>

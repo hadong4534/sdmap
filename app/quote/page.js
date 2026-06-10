@@ -84,10 +84,10 @@ export default function Quote() {
   const expected = res ? (res.total || 0) + (res.extraEstimate || 0) : 0;
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
-        <header className="bg-white border-b border-line"><div className="max-w-3xl mx-auto px-4 md:px-8 py-4 flex items-center gap-2">
+        <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-3xl mx-auto px-4 md:px-8 py-4 flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-white bg-brand-grad px-2 py-0.5 rounded-md">AI</span>
           <span className="font-extrabold text-[20px]">견적서 AI 체크</span>
         </div></header>
@@ -95,12 +95,12 @@ export default function Quote() {
         <div className="max-w-3xl mx-auto px-4 md:px-8 py-6">
           {!res && <p className="text-[13px] text-muted mb-4 leading-relaxed">스드메·웨딩홀 견적서 사진을 올리면 <b className="text-ink">총 견적, 예상 추가금, 누락 의심 항목, 계약 전 질문</b>을 AI가 분석해드려요. <Link href="/methodology" className="text-brand-600 font-bold underline underline-offset-2">어떻게 분석하나요?</Link></p>}
 
-          <label className="block rounded-2xl border-2 border-dashed border-brand-200 bg-white p-6 text-center cursor-pointer">
+          <label className="block rounded-[22px] border-2 border-dashed border-brand-300 bg-white/80 backdrop-blur p-7 text-center cursor-pointer shadow-[0_8px_24px_rgba(139,111,232,0.10)] press">
             {preview ? <img src={preview} alt="견적서" className="max-h-56 mx-auto rounded-lg" /> : <><div className="flex justify-center"><Ico c="#7A5FE0" d={<><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></>} /></div><div className="font-extrabold text-ink mt-2">견적서 사진 / 캡처 올리기</div><div className="text-[12px] text-muted mt-1">탭하여 카메라 촬영 또는 파일 선택</div></>}
             <input type="file" accept="image/*" onChange={onFile} className="hidden" />
           </label>
 
-          {preview && !res && <button onClick={analyze} disabled={busy} className="w-full mt-3 h-12 rounded-xl bg-brand-grad text-white font-extrabold disabled:opacity-60">{busy ? "AI가 견적서를 읽고 있어요…" : "AI로 분석하기"}</button>}
+          {preview && !res && <button onClick={analyze} disabled={busy} className="w-full mt-3 h-12 rounded-xl text-white font-extrabold disabled:opacity-60 shadow-[0_12px_30px_rgba(122,95,224,0.4)]" style={{ background: "linear-gradient(110deg,#7A5FE0,#9D7BEE)" }} data-x="">{busy ? "AI가 견적서를 읽고 있어요…" : "AI로 분석하기"}</button>}
           {err && <p className="mt-3 text-[13px] text-risk bg-[#FFF1EC] rounded-lg px-3 py-2">{err}</p>}
 
           {!res && history.length > 0 && (
@@ -108,7 +108,7 @@ export default function Quote() {
               <div className="font-extrabold text-ink text-[15px] mb-2.5">내 분석 이력 <span className="text-muted text-[12px] font-bold">{history.length}건</span></div>
               <div className="space-y-2">
                 {history.map((h) => (
-                  <div key={h.id} className="bg-white border border-line rounded-2xl p-3.5 flex items-center gap-3">
+                  <div key={h.id} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-3.5 flex items-center gap-3">
                     <button onClick={() => openSaved(h)} className="flex-1 min-w-0 text-left">
                       <div className="flex items-center gap-2">
                         <b className="text-[14px] text-ink truncate">{h.vendor_name || "견적서 분석"}</b>
@@ -133,7 +133,7 @@ export default function Quote() {
               </div>
 
               {/* 종합 결과 카드 */}
-              <div className="rounded-2xl border border-line bg-white p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                 <div className="text-[13px] text-muted font-bold">{res.vendorName || "견적 종합 결과"}</div>
                 <div className="mt-3 grid grid-cols-2 gap-3">
                   <div className="rounded-xl bg-surface p-3"><div className="text-[11px] text-muted font-bold">표기 총 견적</div><div className="text-[19px] font-extrabold text-ink mt-0.5">{won(res.total)}</div></div>
@@ -146,33 +146,33 @@ export default function Quote() {
               </div>
 
               {/* 추가금 위험도 */}
-              <div className="rounded-2xl border border-line bg-white p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                 <div className="font-extrabold text-ink mb-3">추가금 위험도</div>
                 <RiskGauge score={res.riskScore || 0} />
               </div>
 
               {/* 항목별 분석 */}
               {res.missingItems?.length > 0 && (
-                <div className="rounded-2xl border border-line bg-white p-5">
+                <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                   <div className="flex items-center gap-2 font-extrabold text-ink mb-3">{I_warn}<span>위험 · 누락/미포함 의심 ({res.missingItems.length})</span></div>
                   <div className="space-y-2">{res.missingItems.map((m,i)=>(<div key={i} className="border-l-[3px] border-risk bg-[#FFF1EC] rounded-r-lg px-3 py-2"><div className="text-[14px] font-bold text-ink">{m.name}</div><div className="text-[12.5px] text-muted mt-0.5">{m.reason}</div></div>))}</div>
                 </div>
               )}
               {res.contractQuestions?.length > 0 && (
-                <div className="rounded-2xl border border-line bg-white p-5">
+                <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                   <div className="flex items-center gap-2 font-extrabold text-ink mb-3">{I_note}<span>주의 · 계약 전 확인 질문</span></div>
                   <div className="space-y-2">{res.contractQuestions.map((q,i)=>(<div key={i} className="border-l-[3px] border-warn2 bg-[#FFF8EC] rounded-r-lg px-3 py-2 text-[13.5px] text-body"><b className="text-[#C9821B]">Q{i+1}.</b> {q}</div>))}</div>
                 </div>
               )}
               {res.includedItems?.length > 0 && (
-                <div className="rounded-2xl border border-line bg-white p-5">
+                <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                   <div className="flex items-center gap-2 font-extrabold text-ink mb-3">{I_ok}<span>안전 · 견적 포함 확인 ({res.includedItems.length})</span></div>
                   <div className="flex flex-wrap gap-1.5">{res.includedItems.map((m,i)=>(<span key={i} className="text-[12.5px] text-[#1E9E80] bg-[#EBFBF6] font-bold px-2.5 py-1 rounded-lg">{m}</span>))}</div>
                 </div>
               )}
 
               {/* 시장 평균 비교 + 대안 업체 */}
-              <div className="rounded-2xl border border-brand-100 bg-white p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                 <div className="font-extrabold text-ink">스드맵 등록 업체와 비교해보기</div>
                 <p className="text-[12.5px] text-muted mt-1">이 견적은 어떤 항목인가요?</p>
                 <div className="flex gap-2 mt-3">

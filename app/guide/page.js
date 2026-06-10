@@ -34,7 +34,7 @@ const GUIDES = [
 export default function Guide() {
   return (
     <main className="min-h-screen bg-aurora pb-16">
-      <header className="bg-white border-b border-line"><div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/home" className="text-xl text-muted">‹</Link><b className="text-lg">계약 전 질문 가이드</b></div></header>
+      <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/home" className="text-xl text-muted">‹</Link><b className="text-lg">계약 전 질문 가이드</b></div></header>
       <div className="max-w-2xl mx-auto px-5 pt-5 space-y-4">
         <div className="pt-1 pb-2">
           <span className="inline-block text-[11px] font-extrabold text-brand-700 bg-brand-50 px-3 py-1.5 rounded-full tracking-wide">스드맵 가이드</span>

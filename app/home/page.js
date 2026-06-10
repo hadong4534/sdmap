@@ -232,7 +232,7 @@ export default function Home() {
               <h2 className="text-[21px] font-extrabold text-ink mb-4">결혼 준비, 어디서부터 시작할까요?</h2>
               <div className="grid grid-cols-4 gap-3.5">
                 {PC_CATS.map(([k, l, im]) => (
-                  <Link key={k} href={`/search?cat=${k}`} className="group bg-white border border-line rounded-2xl overflow-hidden shadow-card hover:-translate-y-0.5 hover:shadow-lg transition">
+                  <Link key={k} href={`/search?cat=${k}`} className="group rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden shadow-card hover:-translate-y-0.5 hover:shadow-lg transition">
                     <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `url('${im}')` }} />
                     <div className="px-3.5 py-3"><b className="text-[15px] text-ink">{l}</b><div className="text-[12px] text-muted mt-0.5">비교하러 가기 ›</div></div>
                   </Link>

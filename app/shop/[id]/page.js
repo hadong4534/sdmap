@@ -10,7 +10,7 @@ import { AiCheckCard, PriceSummaryCard, RiskGauge, StickyCTA, InfoSheet } from "
 import ComparisonMini from "@/components/ComparisonMini";
 
 const bg = (s) => ({ backgroundImage: `url('${s}')`, backgroundSize: "cover", backgroundPosition: "center" });
-const Card = ({ title, children }) => (<div className="rounded-2xl border border-line bg-white p-4">{title && <div className="font-extrabold text-ink text-[16px] mb-3">{title}</div>}{children}</div>);
+const Card = ({ title, children }) => (<div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">{title && <div className="font-extrabold text-ink text-[16px] mb-3">{title}</div>}{children}</div>);
 
 export default function Shop() {
   const { id } = useParams();
@@ -92,7 +92,7 @@ export default function Shop() {
   const inCompare = has(id);
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-28 md:pb-8">
         <div className="hidden md:block px-8 pt-6 text-[13px] text-muted">홈 › 업체 탐색 › {CATS[v.category]} › <b className="text-ink">{v.name}</b></div>

@@ -40,16 +40,16 @@ export default function Notifications() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-10">
-        <header className="bg-white border-b border-line"><div className="max-w-2xl mx-auto px-4 md:px-8 py-4 flex items-center gap-2"><button onClick={() => router.back()} className="md:hidden text-xl text-muted pr-1">‹</button><b className="text-lg">알림</b></div></header>
+        <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-2xl mx-auto px-4 md:px-8 py-4 flex items-center gap-2"><button onClick={() => router.back()} className="md:hidden text-xl text-muted pr-1">‹</button><b className="text-lg">알림</b></div></header>
         <main className="max-w-2xl mx-auto px-4 md:px-8 py-5 space-y-2.5">
           {items === null && <p className="text-center text-muted text-sm py-10">불러오는 중...</p>}
           {items?.map((n) => {
             const [color, icon] = ICONS[n.type] || ICONS.booking_status;
             const Inner = (
-              <div className={`flex gap-3 rounded-2xl border p-4 ${n.read ? "bg-white border-line" : "bg-brand-50/60 border-brand-100"}`}>
+              <div className={`flex gap-3 rounded-2xl border p-4 ${n.read ? "bg-white border-transparent shadow-[0_6px_18px_rgba(139,111,232,0.08)]" : "bg-white border-transparent shadow-[0_8px_24px_rgba(139,111,232,0.16)] ring-1 ring-brand-200"}`}>
                 <span className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center" style={{ background: color + "1A" }}>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
                 </span>

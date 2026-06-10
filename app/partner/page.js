@@ -29,17 +29,17 @@ export default function Partner() {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-surface">
-      <header className="bg-white border-b border-line"><div className="max-w-xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/login" className="text-xl text-muted">‹</Link><b className="text-lg">입점 신청</b></div></header>
+    <main className="min-h-[100dvh] bg-aurora">
+      <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-xl mx-auto px-5 py-4 flex items-center gap-3"><Link href="/login" className="text-xl text-muted">‹</Link><b className="text-lg">입점 신청</b></div></header>
       <div className="max-w-xl mx-auto px-5 py-6">
         {done ? (
-          <div className="bg-white border border-line rounded-2xl p-8 text-center">
+          <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-8 text-center">
             <div className="text-[17px] font-extrabold text-ink">신청이 접수됐어요</div>
             <p className="text-[13.5px] text-muted mt-2 leading-relaxed">입점 담당자가 확인 후 영업일 기준 2~3일 내<br />남겨주신 연락처로 안내드릴게요.</p>
             <Link href="/home" className="inline-block mt-5 h-11 leading-[44px] px-6 rounded-xl bg-brand-500 text-white text-sm font-bold">홈으로</Link>
           </div>
         ) : (
-          <div className="bg-white border border-line rounded-2xl p-5 space-y-3">
+          <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 space-y-3">
             <p className="text-[13px] text-muted leading-relaxed">스드맵은 가격이 투명한 업체를 우선 노출해요. 기준가·포함 항목을 공개할수록 더 많은 예비부부에게 추천됩니다.</p>
             <input className={field} placeholder="업체명 *" value={f.business_name} onChange={set("business_name")} />
             <div className="flex gap-2">

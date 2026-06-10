@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata = { title: "스드맵 AI는 이렇게 계산해요 — 스드맵" };
 
 const Section = ({ n, title, children }) => (
-  <section className="bg-white border border-line rounded-2xl p-5 md:p-6">
+  <section className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 md:p-6">
     <div className="flex items-center gap-2.5">
       <span className="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 font-extrabold text-sm flex items-center justify-center shrink-0">{n}</span>
       <h2 className="text-[17px] font-extrabold text-ink">{title}</h2>
@@ -14,8 +14,8 @@ const Section = ({ n, title, children }) => (
 
 export default function Methodology() {
   return (
-    <main className="min-h-screen bg-surface pb-16">
-      <header className="bg-white border-b border-line">
+    <main className="min-h-screen bg-aurora pb-16">
+      <header className="bg-white/75 backdrop-blur-xl border-b border-white/50">
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3">
           <Link href="/home" className="text-xl text-muted">‹</Link>
           <b className="text-lg">스드맵 AI는 이렇게 계산해요</b>

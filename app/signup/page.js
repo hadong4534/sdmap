@@ -99,7 +99,7 @@ export default function Signup() {
   }
 
   return (
-    <main className="min-h-screen bg-surface px-6 py-10 flex flex-col items-center">
+    <main className="min-h-screen bg-aurora px-6 py-10 flex flex-col items-center">
       <div className="w-full max-w-sm">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/images/logo_full.png" alt="스드맵" className="w-32 h-auto mx-auto" />

@@ -58,7 +58,7 @@ export function AiCheckCard({ v, title = "AI 체크 요약" }) {
   const r = riskLevel(v.risk_score);
   const lines = Array.isArray(v.ai_summary) ? v.ai_summary : [];
   return (
-    <div className="rounded-2xl border border-line bg-white p-4">
+    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 font-extrabold text-ink"><span className="w-6 h-6 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>{title}</div>
         <span className="text-xs font-extrabold px-2.5 py-1 rounded-lg" style={{ color: r.color, background: r.bg }}>위험 {r.label}</span>
@@ -71,7 +71,7 @@ export function AiCheckCard({ v, title = "AI 체크 요약" }) {
 
 export function EmptyState({ icon, title, desc, ctaLabel, ctaHref, children }) {
   return (
-    <div className="rounded-2xl border border-line bg-white px-6 py-10 text-center">
+    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] px-6 py-10 text-center">
       <div className="flex justify-center text-brand-400">{icon || (<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-brand-500"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>)}</div>
       <div className="text-lg font-extrabold text-ink mt-3">{title}</div>
       {desc && <p className="text-[14px] text-muted mt-1.5 max-w-md mx-auto leading-relaxed">{desc}</p>}

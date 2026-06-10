@@ -28,10 +28,10 @@ export default function Bookings() {
   const sum = [["예정/요청", cnt("requested")],["확정", cnt("confirmed")],["완료", cnt("done")],["전체", (items||[]).length]];
 
   return (
-    <div className="min-h-screen bg-surface md:flex">
+    <div className="min-h-screen bg-aurora md:flex">
       <Sidebar />
       <div className="flex-1 min-w-0 pb-24 md:pb-8">
-        <header className="bg-white border-b border-line"><div className="max-w-5xl mx-auto px-4 md:px-8 py-4 font-extrabold text-[20px]">내 예약 / 계약</div></header>
+        <header className="bg-white/75 backdrop-blur-xl border-b border-white/50"><div className="max-w-5xl mx-auto px-4 md:px-8 py-4 font-extrabold text-[20px]">내 예약 / 계약</div></header>
         <div className="max-w-5xl mx-auto px-4 md:px-8 py-5">
           {items === null ? <p className="text-center text-muted text-sm py-12">불러오는 중...</p> :
            items.length === 0 ? (
@@ -41,10 +41,10 @@ export default function Bookings() {
             </>
           ) : (
             <>
-              <div className="grid grid-cols-4 gap-3 mb-5">{sum.map(([l,n])=>(<div key={l} className="rounded-2xl border border-line bg-white p-3 md:p-4 text-center"><div className="text-[22px] md:text-[26px] font-extrabold text-brand-600">{n}</div><div className="text-[11px] md:text-[13px] text-muted font-bold mt-0.5">{l}</div></div>))}</div>
+              <div className="grid grid-cols-4 gap-3 mb-5">{sum.map(([l,n])=>(<div key={l} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-3 md:p-4 text-center"><div className="text-[22px] md:text-[26px] font-extrabold text-brand-600">{n}</div><div className="text-[11px] md:text-[13px] text-muted font-bold mt-0.5">{l}</div></div>))}</div>
               <div className="space-y-3">
                 {items.map(b=>(
-                  <div key={b.id} className="bg-white border border-line rounded-2xl p-4">
+                  <div key={b.id} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
                     <div className="flex justify-between items-start">
                       <div><div className="font-extrabold text-[17px]">{b.vendors?.name}</div><div className="text-[13px] text-muted mt-0.5">{b.products?.name || "상담 신청"}</div></div>
                       <span className="text-[12px] font-extrabold px-2.5 py-1 rounded-lg text-white" style={{ background: SC[b.status] }}>{STATUS_KO[b.status]}</span>

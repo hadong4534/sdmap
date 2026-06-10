@@ -152,7 +152,7 @@ export default function Admin() {
   const TABS = ALL_TABS.filter(([,,roles]) => roles.includes(myRole)).map(([k,l]) => [k,l]);
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-aurora">
       <header className="bg-ink text-white">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
           <span className="font-extrabold text-lg">스드맵 <span className="text-brand-300">ADMIN</span></span>
@@ -181,7 +181,7 @@ export default function Admin() {
 
         {tab === "vendors" && (
           <section className="py-6">
-            <div className="bg-white border border-line rounded-2xl p-5 mb-5">
+            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 mb-5">
               <h3 className="font-extrabold mb-1">카테고리 운영</h3>
               <p className="text-[12px] text-muted mb-3">준비중: 입점 모집만 노출 · 활성: 고객 탐색 공개 · 숨김: 미노출</p>
               <div className="flex flex-wrap gap-2">
@@ -195,7 +195,7 @@ export default function Admin() {
                 ))}
               </div>
             </div>
-            <div className="bg-white border border-line rounded-2xl p-5 mb-5">
+            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5 mb-5">
               <h3 className="font-extrabold mb-3">업체 직접 등록</h3>
               <div className="flex flex-wrap gap-2 items-center">
                 <input className={field + " flex-1 min-w-[160px]"} placeholder="업체명" value={form.name} onChange={(e)=>setForm({...form,name:e.target.value})} />
@@ -205,7 +205,7 @@ export default function Admin() {
                 <button onClick={addVendor} className="h-10 px-5 rounded-lg bg-brand-grad text-white font-bold text-sm">등록</button>
               </div>
                   </div>
-            <div className="bg-white border border-line rounded-2xl overflow-hidden">
+            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체명</th><th className="text-left p-3">카테고리</th><th className="text-left p-3">지역</th><th className="text-left p-3">상태</th><th className="text-left p-3">계정 연결</th><th className="p-3">관리</th></tr></thead>
                 <tbody>
@@ -243,7 +243,7 @@ export default function Admin() {
         {tab === "cs" && (
           <section className="py-6 space-y-3">
             {inquiries.map((c) => (
-              <div key={c.id} className="bg-white border border-line rounded-2xl p-4">
+              <div key={c.id} className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
                 <div className="flex items-center justify-between">
                   <div className="font-bold text-sm">{c.subject || "문의"} <span className="text-muted font-normal">· {c.vendors?.name || "플랫폼 일반 문의"}</span></div>
                   <span className={`text-xs font-bold px-2 py-0.5 rounded ${(!c.status || c.status === "open") ? "bg-[#FFF1EC] text-[#E8663C]" : "bg-brand-50 text-brand-700"}`}>{(!c.status || c.status === "open") ? "미답변" : "답변완료"}</span>
@@ -261,7 +261,7 @@ export default function Admin() {
         {tab === "staff" && (
           <section className="py-6 space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-white border border-line rounded-2xl p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                 <h3 className="font-extrabold mb-1">직원 계정 발급</h3>
                 <p className="text-[12px] text-muted mb-3">본사에서 직접 생성해 임시 비밀번호를 전달하세요.</p>
                 <div className="space-y-2">
@@ -276,7 +276,7 @@ export default function Admin() {
                   <button onClick={createStaff} className="w-full h-11 rounded-lg bg-brand-grad text-white font-bold text-sm">계정 발급</button>
                 </div>
               </div>
-              <div className="bg-white border border-line rounded-2xl p-5">
+              <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-5">
                 <h3 className="font-extrabold mb-1">기존 회원 승격</h3>
                 <p className="text-[12px] text-muted mb-3">이미 가입한 회원을 이메일로 직원으로 지정해요.</p>
                 <div className="space-y-2">
@@ -288,7 +288,7 @@ export default function Admin() {
                 </div>
               </div>
             </div>
-            <div className="bg-white border border-line rounded-2xl overflow-x-auto">
+            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-x-auto">
               <div className="px-5 pt-4 font-extrabold">직원 목록 <span className="text-muted text-sm font-bold">{staff.length}명</span></div>
               <table className="w-full text-sm min-w-[560px]">
                 <thead><tr className="text-left text-muted text-xs border-b border-line"><th className="px-5 py-2.5">이름</th><th className="px-4 py-2.5">이메일</th><th className="px-4 py-2.5">역할</th><th className="px-4 py-2.5">관리</th></tr></thead>
@@ -313,7 +313,7 @@ export default function Admin() {
               <input className={field + " flex-1 max-w-sm"} placeholder="이름·연락처 검색" value={memberQ} onChange={(e)=>setMemberQ(e.target.value)} onKeyDown={(e)=>e.key==="Enter"&&searchMembers(memberQ)} />
               <button onClick={()=>searchMembers(memberQ)} className="h-10 px-5 rounded-lg bg-brand-500 text-white text-sm font-bold">검색</button>
             </div>
-            <div className="bg-white border border-line rounded-2xl overflow-x-auto">
+            <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-x-auto">
               <table className="w-full text-sm min-w-[560px]">
                 <thead><tr className="text-left text-muted text-xs border-b border-line"><th className="px-5 py-2.5">이름</th><th className="px-4 py-2.5">연락처</th><th className="px-4 py-2.5">가입일</th><th className="px-4 py-2.5">역할</th></tr></thead>
                 <tbody>
@@ -334,7 +334,7 @@ export default function Admin() {
         )}
 
         {tab === "apps" && (
-          <section className="py-6 bg-white border border-line rounded-2xl overflow-hidden mt-0">
+          <section className="py-6 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden mt-0">
             <table className="w-full text-sm">
               <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체명</th><th className="text-left p-3">카테고리</th><th className="text-left p-3">연락처</th><th className="text-left p-3">상태</th><th className="p-3">처리</th></tr></thead>
               <tbody>
@@ -354,7 +354,7 @@ export default function Admin() {
         )}
 
         {tab === "bookings" && (
-          <section className="py-6 bg-white border border-line rounded-2xl overflow-hidden">
+          <section className="py-6 rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체</th><th className="text-left p-3">고객</th><th className="text-left p-3">일시</th><th className="text-left p-3">상태</th><th className="text-right p-3">금액</th></tr></thead>
               <tbody>

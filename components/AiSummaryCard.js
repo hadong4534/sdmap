@@ -2,7 +2,7 @@ import RiskBadge from "./RiskBadge";
 export default function AiSummaryCard({ v, compact }) {
   const lines = Array.isArray(v.ai_summary) ? v.ai_summary : [];
   return (
-    <div className="rounded-2xl border border-line bg-white p-4">
+    <div className="rounded-[20px] bg-white shadow-[0_8px_24px_rgba(139,111,232,0.11)] p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 font-extrabold text-ink text-sm"><span className="text-brand-600">✦</span> 스드맵 AI 한눈에 요약</div>
         <RiskBadge score={v.risk_score} />
