@@ -83,6 +83,7 @@ export default function Login() {
 
             <Link href="/home" className="block w-full text-center pt-3 text-[13.5px] font-bold text-[#564F6B] underline underline-offset-4 decoration-[#B7A6F0]">로그인 없이 둘러보기</Link>
             <Link href="/partner" className="block w-full text-center pt-1 text-[12px] font-bold text-[#7B748C]">사장님이신가요? 입점 신청하기</Link>
+            <p className="text-center text-[11px] text-[#8d86a0] pt-3 leading-relaxed">시작하면 <Link href="/terms" className="underline underline-offset-2">이용약관</Link>과 <Link href="/privacy" className="underline underline-offset-2">개인정보처리방침</Link>에 동의하게 됩니다.</p>
             {msg && <p className="mt-2 text-[12px] text-brand-700 bg-white/80 rounded-lg px-3 py-2">{msg}</p>}
           </div>
         </div>

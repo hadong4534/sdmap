@@ -218,6 +218,11 @@ export default function My() {
 
         {["admin", "manager", "cs"].includes(prof?.role) && <Link href="/admin" className="block mt-3 text-center bg-ink text-white rounded-xl py-3 text-sm font-bold">직원 관리자 페이지 →</Link>}
         {prof?.role === "vendor" && <Link href="/vendor" className="block mt-3 text-center bg-brand-600 text-white rounded-xl py-3 text-sm font-bold">내 업체 대시보드 →</Link>}
+        <div className="flex justify-center gap-4 mt-4 text-[12px] text-muted">
+          <Link href="/terms" className="underline underline-offset-2">이용약관</Link>
+          <Link href="/privacy" className="underline underline-offset-2">개인정보처리방침</Link>
+          <Link href="/methodology" className="underline underline-offset-2">산정 방식 안내</Link>
+        </div>
         <button onClick={logout} className="w-full mt-3 border border-line rounded-xl py-3 text-sm font-bold text-muted">로그아웃</button>
         <button onClick={deleteAccount} disabled={busy} className="w-full mt-2 py-3 text-[12.5px] font-bold text-muted underline underline-offset-2 disabled:opacity-50">회원탈퇴</button>
       </main>

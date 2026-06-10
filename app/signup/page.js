@@ -12,6 +12,7 @@ const field = "w-full h-12 rounded-xl border border-line px-3.5 text-sm outline-
 export default function Signup() {
   const router = useRouter();
   const [who, setWho] = useState("customer"); // customer | vendor
+  const [agree, setAgree] = useState(false);
   const [tab, setTab] = useState("email");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -75,6 +76,7 @@ export default function Signup() {
     if (!name) return setMsg("이름을 입력해 주세요.");
     if (!address) return setMsg("주소를 입력해 주세요.");
     if (!path) return setMsg("가입 경로를 선택해 주세요.");
+    if (!agree) return setMsg("이용약관과 개인정보처리방침에 동의해 주세요.");
     if (tab === "email" && (!email || !pw)) return setMsg("이메일과 비밀번호를 입력해 주세요.");
 
     setBusy(true);
@@ -158,6 +160,11 @@ export default function Signup() {
               {PATHS.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
           </div>
+          <label className="flex items-start gap-2.5 mt-1 cursor-pointer">
+            <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 w-4.5 h-4.5 accent-[#8B6FE8]" />
+            <span className="text-[12.5px] text-body leading-relaxed">(필수) <a href="/terms" target="_blank" className="font-bold text-brand-600 underline underline-offset-2">이용약관</a> 및 <a href="/privacy" target="_blank" className="font-bold text-brand-600 underline underline-offset-2">개인정보처리방침</a>에 동의합니다.</span>
+          </label>
+
 
           <button onClick={submit} disabled={busy} className="w-full h-[52px] rounded-xl bg-brand-grad text-white font-extrabold text-sm shadow-soft mt-1 disabled:opacity-60">
             {busy ? "처리 중..." : "가입 완료"}

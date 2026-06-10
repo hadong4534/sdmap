@@ -192,6 +192,13 @@ export default function Home() {
             <SectionHeader title="지역별 인기 업체" more="/search" />
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">{popular.slice(4, 8).map((v) => <VendorCard key={v.id} v={v} />)}</div>
           </section>
+          <footer className="mt-10 pt-6 border-t border-line text-[11.5px] text-muted leading-relaxed pb-4">
+            <div className="flex gap-3 font-bold mb-2">
+              <Link href="/terms">이용약관</Link><Link href="/privacy" className="text-ink">개인정보처리방침</Link><Link href="/methodology">산정 방식</Link><Link href="/partner">입점 신청</Link>
+            </div>
+            스드맵 · 상호/대표자/사업자등록번호/통신판매업 신고번호: 등록 후 표기 예정<br />
+            스드맵은 통신판매중개자로서 거래 당사자가 아니며, 상품·거래 정보 및 거래에 대한 책임은 입점 업체에 있습니다.
+          </footer>
         </div>
       </div>
       <TabBar active="home" />
