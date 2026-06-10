@@ -102,11 +102,11 @@ export default function Admin() {
         </nav>
 
         {tab === "dash" && (
-          <section className="py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <section className="py-6 grid grid-cols-2 md:grid-cols-3 gap-4">
             {[["전체 업체", vendors.length], ["활성 업체", vendors.filter(v=>v.status==="active").length], ["총 예약", bookings.length], ["확정 매출", won(revenue)]].map(([l, val]) => (
-              <div key={l} className="bg-white border border-line rounded-2xl p-5">
-                <div className="text-xs text-muted font-bold">{l}</div>
-                <div className="text-2xl font-extrabold text-brand-700 mt-1">{val}</div>
+              <div key={l} onClick={() => go && setTab(go)} className={`bg-white border rounded-2xl p-5 ${go ? "cursor-pointer hover:border-brand-300" : ""} ${(l === "입점 신청 대기" && val > 0) || (l === "미답변 문의" && val > 0) ? "border-[#FFD8C9] bg-[#FFFAF7]" : "border-line"}`}>
+                <div className="text-xs text-muted font-bold">{l}{go && " ›"}</div>
+                <div className={`text-2xl font-extrabold mt-1 ${(l === "입점 신청 대기" || l === "미답변 문의") && val > 0 ? "text-[#E8663C]" : "text-brand-700"}`}>{val}</div>
               </div>
             ))}
           </section>

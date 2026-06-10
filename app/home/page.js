@@ -23,13 +23,18 @@ export default function Home() {
   const [compareV, setCompareV] = useState([]);
   const [prof, setProf] = useState(null);
   const [wd, setWd] = useState("");
+  const [unread, setUnread] = useState(0);
   const { ids } = useCompare();
 
   useEffect(() => {
     if (!supabase) return;
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data?.user ?? null; setUser(u);
-      if (u) { const { data: p } = await supabase.from("profiles").select("wedding_date, name, budget").eq("id", u.id).maybeSingle(); setProf(p || {}); }
+      if (u) {
+        const { data: p } = await supabase.from("profiles").select("wedding_date, name, budget").eq("id", u.id).maybeSingle(); setProf(p || {});
+        const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", u.id).eq("read", false);
+        setUnread(count || 0);
+      }
     });
     supabase.from("vendors").select("*").eq("status", "active").order("review_count", { ascending: false }).limit(8).then(({ data }) => setPopular(data || []));
   }, [router]);
@@ -124,7 +129,7 @@ export default function Home() {
         <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur px-4 py-3 flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/logo_full.png" alt="스드맵" className="h-7 w-auto" />
-          <Link href="/my" className="ml-auto"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-600"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></Link>
+          <Link href="/notifications" className="ml-auto relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-600"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>{unread > 0 && <span className="absolute -top-1 -right-1 min-w-[15px] h-[15px] px-0.5 rounded-full bg-[#FF8A65] text-white text-[9px] font-extrabold flex items-center justify-center border border-white">{unread > 9 ? "9+" : unread}</span>}</Link>
         </header>
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-6">

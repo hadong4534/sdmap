@@ -22,6 +22,7 @@ export default function Shop() {
   const [fav, setFav] = useState(false);
   const [msg, setMsg] = useState("");
   const [sheet, setSheet] = useState(null); // "price" | "risk"
+  const [gIdx, setGIdx] = useState(0);
   const { has, toggle } = useCompare();
 
   useEffect(() => {
@@ -61,12 +62,27 @@ export default function Shop() {
         <div className="max-w-5xl mx-auto md:px-8 md:pt-4">
           <div className="grid md:grid-cols-[1.2fr_1fr] md:gap-6">
             <div>
-              <div className="relative h-64 md:h-auto md:rounded-2xl overflow-hidden md:aspect-[4/3]" style={bg(v.thumbnail_url || CAT_IMG[v.category])}>
+              <div className="relative h-64 md:h-auto md:rounded-2xl overflow-hidden md:aspect-[4/3]">
+                <div
+                  className="flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                  onScroll={(e) => setGIdx(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
+                >
+                  {(imgs.length ? imgs : [CAT_IMG[v.category]]).map((im, i) => (
+                    <div key={i} className="w-full h-full shrink-0 snap-center" style={bg(im)} />
+                  ))}
+                </div>
                 <button onClick={() => router.back()} className="md:hidden absolute top-4 left-4 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-xl">‹</button>
                 <div className="md:hidden absolute top-4 right-4 flex gap-2">
                   <button onClick={toggleFav} className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-brand-500 text-lg">{fav ? "♥" : "♡"}</button>
                 </div>
-                {imgs.length > 1 && <span className="absolute bottom-3 right-3 text-[11px] font-bold text-white bg-black/50 px-2 py-0.5 rounded-md">1 / {imgs.length}</span>}
+                {imgs.length > 1 && (
+                  <>
+                    <span className="absolute bottom-3 right-3 text-[11px] font-bold text-white bg-black/50 px-2 py-0.5 rounded-md">{Math.min(gIdx + 1, imgs.length)} / {imgs.length}</span>
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      {imgs.map((_, i) => <span key={i} className={`w-1.5 h-1.5 rounded-full ${i === Math.min(gIdx, imgs.length - 1) ? "bg-white" : "bg-white/45"}`} />)}
+                    </div>
+                  </>
+                )}
               </div>
               {imgs.length > 1 && <div className="hidden md:flex gap-2 mt-2">{imgs.slice(0,5).map((im,i)=>(<div key={i} className="flex-1 rounded-lg aspect-square" style={bg(im)} />))}</div>}
             </div>
