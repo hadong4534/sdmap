@@ -152,6 +152,13 @@ export default function Home() {
           {/* 빠른 메뉴 (모바일 전용) */}
           <div className="md:hidden"><IconQuickMenu /></div>
 
+          {/* 가이드 배너 */}
+          <Link href="/guide" className="mt-4 flex items-center gap-3 bg-white border border-line rounded-2xl px-4 py-3 shadow-card">
+            <span className="w-9 h-9 rounded-xl bg-[#FFF2E8] text-[#E08A4A] flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
+            <span className="text-[13.5px] text-body leading-snug"><b className="text-ink">계약 전 꼭 물어볼 질문</b> — 카테고리별 추가금·질문 가이드</span>
+            <span className="ml-auto text-muted">›</span>
+          </Link>
+
           {/* 모바일: AI 체크 + 일정 */}
           <div className="grid gap-3 mt-5 md:hidden">
             {aiCard}
@@ -194,7 +201,7 @@ export default function Home() {
           </section>
           <footer className="mt-10 pt-6 border-t border-line text-[11.5px] text-muted leading-relaxed pb-4">
             <div className="flex gap-3 font-bold mb-2">
-              <Link href="/terms">이용약관</Link><Link href="/privacy" className="text-ink">개인정보처리방침</Link><Link href="/methodology">산정 방식</Link><Link href="/partner">입점 신청</Link>
+              <Link href="/guide">계약 가이드</Link><Link href="/terms">이용약관</Link><Link href="/privacy" className="text-ink">개인정보처리방침</Link><Link href="/methodology">산정 방식</Link><Link href="/partner">입점 신청</Link>
             </div>
             스드맵 · 상호/대표자/사업자등록번호/통신판매업 신고번호: 등록 후 표기 예정<br />
             스드맵은 통신판매중개자로서 거래 당사자가 아니며, 상품·거래 정보 및 거래에 대한 책임은 입점 업체에 있습니다.

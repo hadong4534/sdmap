@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import TabBar from "@/components/TabBar";
 import { RiskGauge, VendorListItem } from "@/components/ui";
@@ -20,6 +20,17 @@ export default function Quote() {
   const [err, setErr] = useState("");
   const [cat, setCat] = useState("");
   const [market, setMarket] = useState(null); // { avg, alts }
+  const [user, setUser] = useState(null);
+  const [history, setHistory] = useState([]);
+
+  async function loadHistory(uid) {
+    const { data } = await supabase.from("quote_analyses").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(10);
+    setHistory(data || []);
+  }
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.auth.getUser().then(({ data }) => { const u = data?.user ?? null; setUser(u); if (u) loadHistory(u.id); });
+  }, []);
 
   function onFile(e) {
     const f = e.target.files?.[0]; if (!f) return;
@@ -34,7 +45,18 @@ export default function Quote() {
       const r = await fetch("/api/ai/quote", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: preview }) });
       const j = await r.json();
       if (!r.ok || j.error) setErr(j.error || "분석에 실패했어요. 잠시 후 다시 시도해 주세요.");
-      else setRes(j.data);
+      else {
+        setRes(j.data);
+        if (user) {
+          const d = j.data;
+          await supabase.from("quote_analyses").insert({
+            user_id: user.id, vendor_name: d.vendorName || null, total: d.total || 0, extra_estimate: d.extraEstimate || 0,
+            risk_score: d.riskScore || 0, included_items: d.includedItems || [], missing_items: d.missingItems || [],
+            contract_questions: d.contractQuestions || [], summary: d.summary || null,
+          });
+          loadHistory(user.id);
+        }
+      }
     } catch { setErr("네트워크 오류가 발생했어요."); }
     setBusy(false);
   }
@@ -46,6 +68,16 @@ export default function Quote() {
     const avg = Math.round(vs.reduce((a, v) => a + (v.estimated_final_price || 0), 0) / vs.length);
     const alts = [...vs].sort((a, b) => (a.estimated_final_price || 0) - (b.estimated_final_price || 0)).slice(0, 3);
     setMarket({ avg, alts });
+  }
+
+  function openSaved(h) {
+    setRes({ vendorName: h.vendor_name, total: h.total, extraEstimate: h.extra_estimate, riskScore: h.risk_score, includedItems: h.included_items || [], missingItems: h.missing_items || [], contractQuestions: h.contract_questions || [], summary: h.summary });
+    setPreview(""); setFname(h.vendor_name || "저장된 분석"); setCat(""); setMarket(null);
+    window.scrollTo({ top: 0 });
+  }
+  async function delSaved(id) {
+    await supabase.from("quote_analyses").delete().eq("id", id);
+    if (user) loadHistory(user.id);
   }
 
   const today = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
@@ -70,6 +102,27 @@ export default function Quote() {
 
           {preview && !res && <button onClick={analyze} disabled={busy} className="w-full mt-3 h-12 rounded-xl bg-brand-grad text-white font-extrabold disabled:opacity-60">{busy ? "AI가 견적서를 읽고 있어요…" : "AI로 분석하기"}</button>}
           {err && <p className="mt-3 text-[13px] text-risk bg-[#FFF1EC] rounded-lg px-3 py-2">{err}</p>}
+
+          {!res && history.length > 0 && (
+            <div className="mt-6">
+              <div className="font-extrabold text-ink text-[15px] mb-2.5">내 분석 이력 <span className="text-muted text-[12px] font-bold">{history.length}건</span></div>
+              <div className="space-y-2">
+                {history.map((h) => (
+                  <div key={h.id} className="bg-white border border-line rounded-2xl p-3.5 flex items-center gap-3">
+                    <button onClick={() => openSaved(h)} className="flex-1 min-w-0 text-left">
+                      <div className="flex items-center gap-2">
+                        <b className="text-[14px] text-ink truncate">{h.vendor_name || "견적서 분석"}</b>
+                        <span className={`shrink-0 text-[10.5px] font-extrabold px-1.5 py-0.5 rounded ${h.risk_score >= 70 ? "bg-[#FFF1EC] text-[#E8663C]" : h.risk_score >= 45 ? "bg-[#FFF6E8] text-[#C9821B]" : "bg-[#E8F8F3] text-[#1FA888]"}`}>위험 {h.risk_score}</span>
+                      </div>
+                      <div className="text-[12px] text-muted mt-0.5">총 {won(h.total)} · 예상 추가 +{won(h.extra_estimate)} · {new Date(h.created_at).toLocaleDateString("ko-KR")}</div>
+                    </button>
+                    <button onClick={() => delSaved(h.id)} className="shrink-0 text-muted text-lg px-1">×</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {!res && !user && <p className="mt-4 text-[12px] text-muted text-center">로그인하면 분석 결과가 자동 저장돼 언제든 다시 볼 수 있어요.</p>}
 
           {res && (
             <div className="mt-5 space-y-3">
