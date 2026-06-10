@@ -123,9 +123,9 @@ export default function Admin() {
         </div>
       </header>
       <div className="max-w-6xl mx-auto px-6">
-        <nav className="flex gap-1 border-b border-line">
+        <nav className="flex gap-1 border-b border-line overflow-x-auto no-scrollbar">
           {TABS.map(([k, label]) => (
-            <button key={k} onClick={() => setTab(k)} className={`px-4 py-3 text-sm font-bold border-b-2 ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-muted"}`}>{label}</button>
+            <button key={k} onClick={() => setTab(k)} className={`shrink-0 whitespace-nowrap px-4 py-3 text-sm font-bold border-b-2 ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-muted"}`}>{label}</button>
           ))}
         </nav>
 

@@ -156,17 +156,30 @@ const _qm = [
   ["ring","예물","/search",<g key="g"><circle cx="12" cy="14" r="5.5"/><path d="M9 9l3-4 3 4"/></g>],
   ["more","더보기","/search",<g key="h"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></g>],
 ];
+const _qmColor = {
+  studio: { bg: "linear-gradient(135deg,#EFE9FF,#E3D8FE)", fg: "#7A5FE0" },
+  dress: { bg: "linear-gradient(135deg,#FDEFF6,#F9DEEC)", fg: "#D6679F" },
+  makeup: { bg: "linear-gradient(135deg,#FFF2E8,#FCE3CE)", fg: "#E08A4A" },
+  hall: { bg: "linear-gradient(135deg,#EAF3FC,#D9E9F8)", fg: "#5E8FBC" },
+  snap: { bg: "linear-gradient(135deg,#E9F8F3,#D7F1E8)", fg: "#2FA88C" },
+  suit: { bg: "linear-gradient(135deg,#ECECFE,#DEDEFB)", fg: "#6366F1" },
+  ring: { bg: "linear-gradient(135deg,#FFF7E5,#FBECC8)", fg: "#D9A21B" },
+  more: { bg: "linear-gradient(135deg,#F3F2F7,#E9E7F0)", fg: "#6E6880" },
+};
 export function IconQuickMenu() {
   return (
     <div className="grid grid-cols-4 gap-y-3.5 gap-x-1 mt-4">
-      {_qm.map(([k, l, h, icon]) => (
-        <Link key={k} href={h} className="flex flex-col items-center gap-1.5">
-          <span className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
-          </span>
-          <span className="text-[11px] font-bold text-body">{l}</span>
-        </Link>
-      ))}
+      {_qm.map(([k, l, h, icon]) => {
+        const c = _qmColor[k] || _qmColor.more;
+        return (
+          <Link key={k} href={h} className="flex flex-col items-center gap-1.5">
+            <span className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center shadow-[0_2px_10px_rgba(139,111,232,0.10)]" style={{ background: c.bg, color: c.fg }}>
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+            </span>
+            <span className="text-[11.5px] font-bold text-body">{l}</span>
+          </Link>
+        );
+      })}
     </div>
   );
 }

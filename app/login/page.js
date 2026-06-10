@@ -50,7 +50,7 @@ export default function Login() {
 
       <div className="relative z-10 min-h-[100dvh] flex flex-col md:flex-row">
         {/* 브랜드 카피 — 이미지 위에 직접 */}
-        <div className="flex-1 flex flex-col justify-end md:justify-center px-8 pt-14 pb-6 md:pl-[7vw] md:pb-0">
+        <div className="flex flex-col justify-start md:flex-1 md:justify-center px-8 pt-[max(env(safe-area-inset-top),48px)] pb-2 md:pl-[7vw] md:pt-0 md:pb-0">
           <div className="md:max-w-md">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/images/logo_full.png" alt="스드맵" className="w-36 md:w-52 h-auto" />
@@ -60,7 +60,7 @@ export default function Login() {
         </div>
 
         {/* 로그인 액션 — 시트/카드 없이 떠 있는 버튼 */}
-        <div className="md:w-[420px] flex flex-col justify-start md:justify-center px-7 pb-12 md:pr-[6vw] md:pb-0">
+        <div className="flex-1 md:flex-none md:w-[420px] flex flex-col justify-end md:justify-center px-7 pb-10 md:pr-[6vw] md:pb-0">
           <div className="w-full max-w-sm mx-auto space-y-2.5">
             <button onClick={() => oauth("kakao")} className="relative w-full h-[52px] rounded-2xl bg-[#FEE500] text-[#191600] font-bold text-[15px] flex items-center justify-center shadow-[0_4px_18px_rgba(37,34,54,0.10)]">
               <span className="absolute left-5"><KakaoIcon /></span> 카카오로 시작하기

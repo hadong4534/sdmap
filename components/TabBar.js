@@ -18,8 +18,9 @@ export default function TabBar({ active }) {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-line flex z-40 pb-[env(safe-area-inset-bottom)]">
       {ITEMS.map((t) => (
-        <Link key={t.k} href={t.href} className={`flex-1 h-16 flex flex-col items-center justify-center gap-1 text-[10px] font-bold ${active === t.k ? "text-brand-600" : "text-muted"}`}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{ICONS[t.k]}</svg>
+        <Link key={t.k} href={t.href} className={`relative flex-1 h-[70px] flex flex-col items-center justify-center gap-1 text-[11.5px] ${active === t.k ? "text-brand-600 font-extrabold" : "text-muted font-bold"}`}>
+          {active === t.k && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-9 h-[3px] rounded-b-full bg-brand-500" />}
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active === t.k ? 2.4 : 1.9} strokeLinecap="round" strokeLinejoin="round">{ICONS[t.k]}</svg>
           {t.label}
         </Link>
       ))}

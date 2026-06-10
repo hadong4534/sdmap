@@ -90,11 +90,16 @@ export default function Home() {
       </div>
     </div>
   ) : (
-    <div className="rounded-[20px] border border-brand-100 bg-gradient-to-br from-brand-50 to-white p-5 shadow-card relative overflow-hidden">
-      <div className="flex items-center gap-2"><span className="font-extrabold text-ink text-lg">AI 체크</span><span className="text-[10px] font-extrabold text-white bg-brand-500 px-1.5 py-0.5 rounded">NEW</span></div>
-      <p className="text-[14px] text-body mt-2 leading-relaxed">견적의 숨겨진 항목과 추가 비용 위험을 찾아드려요.</p>
-      <Link href="/quote" className="inline-block mt-3 h-11 leading-[44px] px-5 rounded-xl bg-brand-500 text-white font-bold text-sm">내 견적 AI 분석하기</Link>
-      <span className="absolute right-4 top-4 text-brand-300"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
+    <div className="rounded-[22px] p-5 shadow-[0_10px_30px_rgba(122,95,224,0.30)] relative overflow-hidden text-white" style={{ background: "linear-gradient(125deg,#8B6FE8 0%,#7A5FE0 45%,#A88BF2 100%)" }}>
+      <span className="absolute -right-7 -top-9 w-36 h-36 rounded-full bg-white/10" />
+      <span className="absolute right-10 bottom-2 w-16 h-16 rounded-full bg-white/10" />
+      <div className="flex items-center gap-2 relative">
+        <span className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.9 5.1L19 9l-5.1 1.9L12 16l-1.9-5.1L5 9l5.1-1.9z"/></svg></span>
+        <span className="font-extrabold text-lg">AI 체크</span>
+        <span className="text-[10px] font-extrabold text-brand-700 bg-white px-1.5 py-0.5 rounded">NEW</span>
+      </div>
+      <p className="text-[14px] mt-2 leading-relaxed text-white/95 relative">견적서 속 숨은 항목과 추가 비용 위험,<br/>AI가 30초 만에 찾아드려요.</p>
+      <Link href="/quote" className="relative inline-block mt-3.5 h-11 leading-[44px] px-5 rounded-xl bg-white text-brand-700 font-extrabold text-sm shadow-sm">내 견적 AI 분석하기</Link>
     </div>
   );
 
@@ -132,6 +137,7 @@ export default function Home() {
         <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur px-4 py-3 flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/logo_full.png" alt="스드맵" className="h-7 w-auto" />
+          <span className="ml-2 text-[10px] font-extrabold text-white px-2 py-[3px] rounded-full" style={{ background: "linear-gradient(125deg,#8B6FE8,#A88BF2)" }}>AI 웨딩 비교</span>
           <Link href="/notifications" className="ml-auto relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-600"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>{unread > 0 && <span className="absolute -top-1 -right-1 min-w-[15px] h-[15px] px-0.5 rounded-full bg-[#FF8A65] text-white text-[9px] font-extrabold flex items-center justify-center border border-white">{unread > 9 ? "9+" : unread}</span>}</Link>
         </header>
 
