@@ -133,7 +133,37 @@ export default function Admin() {
                 <select className={field} value={form.status} onChange={(e)=>setForm({...form,status:e.target.value})}><option value="active">활성</option><option value="hidden">숨김</option></select>
                 <button onClick={addVendor} className="h-10 px-5 rounded-lg bg-brand-grad text-white font-bold text-sm">등록</button>
               </div>
-              {tab === "cs" && (
+              {msg && <p className="text-xs text-brand-700 mt-2">{msg}</p>}
+            </div>
+            <div className="bg-white border border-line rounded-2xl overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체명</th><th className="text-left p-3">카테고리</th><th className="text-left p-3">지역</th><th className="text-left p-3">상태</th><th className="text-left p-3">계정 연결</th><th className="p-3">관리</th></tr></thead>
+                <tbody>
+                  {vendors.map((v)=>(
+                    <tr key={v.id} className="border-t border-line">
+                      <td className="p-3 font-bold">{v.name}</td><td className="p-3">{CATS[v.category]}</td><td className="p-3">{v.region}</td>
+                      <td className="p-3"><span className={`text-xs font-bold px-2 py-0.5 rounded ${v.status==="active"?"bg-green-100 text-green-700":"bg-gray-100 text-gray-500"}`}>{v.status}</span></td>
+                      <td className="p-3">
+                        {v.owner_id
+                          ? <span className="text-xs font-bold text-[#1FA888] bg-[#E8F8F3] px-2 py-0.5 rounded">계정 연결됨</span>
+                          : v.claim_code
+                            ? <span className="text-xs font-bold text-brand-700">코드 <b className="tracking-widest">{v.claim_code}</b> <button onClick={()=>reissueCode(v.id)} className="ml-1 underline text-muted">재발급</button></span>
+                            : <button onClick={()=>reissueCode(v.id)} className="text-xs font-bold text-brand-700 underline">연결코드 발급</button>}
+                      </td>
+                      <td className="p-3 text-center">
+                        {v.status!=="active" && <button onClick={()=>setStatus(v.id,"active")} className="text-xs text-brand-700 font-bold mr-2">활성화</button>}
+                        {v.status==="active" && <button onClick={()=>setStatus(v.id,"hidden")} className="text-xs text-muted font-bold">숨김</button>}
+                      </td>
+                    </tr>
+                  ))}
+                  {vendors.length===0 && <tr><td colSpan="6" className="p-6 text-center text-muted">등록된 업체가 없어요.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {tab === "cs" && (
           <section className="py-6 space-y-3">
             {inquiries.map((c) => (
               <div key={c.id} className="bg-white border border-line rounded-2xl p-4">
@@ -174,36 +204,6 @@ export default function Admin() {
                 ))}
               </tbody>
             </table>
-          </section>
-        )}
-
-        {msg && <p className="text-xs text-brand-700 mt-2">{msg}</p>}
-            </div>
-            <div className="bg-white border border-line rounded-2xl overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-brand-50 text-brand-700"><tr><th className="text-left p-3">업체명</th><th className="text-left p-3">카테고리</th><th className="text-left p-3">지역</th><th className="text-left p-3">상태</th><th className="text-left p-3">계정 연결</th><th className="p-3">관리</th></tr></thead>
-                <tbody>
-                  {vendors.map((v)=>(
-                    <tr key={v.id} className="border-t border-line">
-                      <td className="p-3 font-bold">{v.name}</td><td className="p-3">{CATS[v.category]}</td><td className="p-3">{v.region}</td>
-                      <td className="p-3"><span className={`text-xs font-bold px-2 py-0.5 rounded ${v.status==="active"?"bg-green-100 text-green-700":"bg-gray-100 text-gray-500"}`}>{v.status}</span></td>
-                      <td className="p-3">
-                        {v.owner_id
-                          ? <span className="text-xs font-bold text-[#1FA888] bg-[#E8F8F3] px-2 py-0.5 rounded">계정 연결됨</span>
-                          : v.claim_code
-                            ? <span className="text-xs font-bold text-brand-700">코드 <b className="tracking-widest">{v.claim_code}</b> <button onClick={()=>reissueCode(v.id)} className="ml-1 underline text-muted">재발급</button></span>
-                            : <button onClick={()=>reissueCode(v.id)} className="text-xs font-bold text-brand-700 underline">연결코드 발급</button>}
-                      </td>
-                      <td className="p-3 text-center">
-                        {v.status!=="active" && <button onClick={()=>setStatus(v.id,"active")} className="text-xs text-brand-700 font-bold mr-2">활성화</button>}
-                        {v.status==="active" && <button onClick={()=>setStatus(v.id,"hidden")} className="text-xs text-muted font-bold">숨김</button>}
-                      </td>
-                    </tr>
-                  ))}
-                  {vendors.length===0 && <tr><td colSpan="6" className="p-6 text-center text-muted">등록된 업체가 없어요.</td></tr>}
-                </tbody>
-              </table>
-            </div>
           </section>
         )}
 
