@@ -26,6 +26,7 @@ export default function Shop() {
   const [msg, setMsg] = useState("");
   const [sheet, setSheet] = useState(null); // "price" | "risk"
   const [gIdx, setGIdx] = useState(0);
+  const [viewer, setViewer] = useState(-1);
   const [canReview, setCanReview] = useState(false);
   const [myReview, setMyReview] = useState(null);
   const [rv, setRv] = useState({ rating: 5, content: "" });
@@ -100,13 +101,20 @@ export default function Shop() {
             <div>
               <div className="relative h-64 md:h-auto md:rounded-2xl overflow-hidden md:aspect-[4/3]">
                 <div
-                  className="flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                  className="md:hidden flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"
                   onScroll={(e) => setGIdx(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
                 >
                   {(imgs.length ? imgs : [CAT_IMG[v.category]]).map((im, i) => (
-                    <div key={i} className="w-full h-full shrink-0 snap-center" style={bg(im)} />
+                    <div key={i} onClick={() => setViewer(i)} className="w-full h-full shrink-0 snap-center cursor-zoom-in" style={bg(im)} />
                   ))}
                 </div>
+                <div className="hidden md:block w-full h-full cursor-zoom-in" onClick={() => setViewer(Math.min(gIdx, Math.max(imgs.length - 1, 0)))} style={bg(imgs[Math.min(gIdx, Math.max(imgs.length - 1, 0))] || CAT_IMG[v.category])} />
+                {imgs.length > 1 && (
+                  <>
+                    <button onClick={() => setGIdx((gIdx - 1 + imgs.length) % imgs.length)} className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 items-center justify-center text-xl text-ink shadow">‹</button>
+                    <button onClick={() => setGIdx((gIdx + 1) % imgs.length)} className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 items-center justify-center text-xl text-ink shadow">›</button>
+                  </>
+                )}
                 <button onClick={() => router.back()} className="md:hidden absolute top-4 left-4 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-xl">‹</button>
                 <div className="md:hidden absolute top-4 right-4 flex gap-2">
                   <button onClick={toggleFav} className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-brand-500 text-lg">{fav ? "♥" : "♡"}</button>
@@ -120,8 +128,7 @@ export default function Shop() {
                   </>
                 )}
               </div>
-              {imgs.length > 1 && <div className="hidden md:flex gap-2 mt-2">{imgs.slice(0,5).map((im,i)=>(<div key={i} className="flex-1 rounded-lg aspect-square" style={bg(im)} />))}</div>}
-            </div>
+              {imgs.length > 1 && <div className="hidden md:flex gap-2 mt-2">{imgs.slice(0, 5).map((im, i) => (<button key={i} onClick={() => setGIdx(i)} className={`flex-1 rounded-lg aspect-square border-2 ${i === Math.min(gIdx, imgs.length - 1) ? "border-brand-500" : "border-transparent opacity-80"}`} style={bg(im)} />))}</div>}
             <div className="px-4 md:px-0 pt-4 md:pt-0">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">{CATS[v.category]}</span>
@@ -193,6 +200,28 @@ export default function Shop() {
           <div className="flex justify-between"><span className="font-extrabold text-ink">예상 최종가</span><b className="text-brand-600 text-[18px]">{won(v.estimated_final_price)}</b></div>
         </div>
       </InfoSheet>
+
+      {viewer >= 0 && imgs.length > 0 && (
+        <div className="fixed inset-0 z-[70] bg-black/95 flex flex-col" onClick={() => setViewer(-1)}>
+          <div className="flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top),16px)] pb-3 text-white">
+            <span className="text-[13px] font-bold">{viewer + 1} / {imgs.length}</span>
+            <button onClick={() => setViewer(-1)} className="text-2xl leading-none px-2">×</button>
+          </div>
+          <div className="flex-1 relative" onClick={(e) => e.stopPropagation()}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imgs[viewer]} alt="" className="absolute inset-0 w-full h-full object-contain" />
+            {imgs.length > 1 && (
+              <>
+                <button onClick={() => setViewer((viewer - 1 + imgs.length) % imgs.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/15 text-white text-2xl flex items-center justify-center">‹</button>
+                <button onClick={() => setViewer((viewer + 1) % imgs.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/15 text-white text-2xl flex items-center justify-center">›</button>
+              </>
+            )}
+          </div>
+          <div className="flex justify-center gap-1.5 pb-[max(env(safe-area-inset-bottom),20px)] pt-3">
+            {imgs.map((_, i) => <button key={i} onClick={(e) => { e.stopPropagation(); setViewer(i); }} className={`w-2 h-2 rounded-full ${i === viewer ? "bg-white" : "bg-white/35"}`} />)}
+          </div>
+        </div>
+      )}
       <InfoSheet open={sheet === "ask"} onClose={() => setSheet(null)} title={`${v.name}에 문의하기`}>
         <div className="space-y-2">
           <input value={ask.subject} onChange={(e) => setAsk({ ...ask, subject: e.target.value })} placeholder="제목 (예: 주말 예약 가능 여부)" className="w-full h-11 rounded-xl border border-line px-3 text-sm bg-white outline-none focus:border-brand-400" />
